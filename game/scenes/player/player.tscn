@@ -13,6 +13,7 @@
 [ext_resource type="Script" path="res://scripts/combat/dodge.gd" id="12_dodge"]
 [ext_resource type="Resource" path="res://resources/combat/player_dodge.tres" id="13_dodge_data"]
 [ext_resource type="Script" path="res://scripts/player/dodge_lean.gd" id="14_lean"]
+[ext_resource type="Script" path="res://scripts/loot/inventory.gd" id="15_inventory"]
 [ext_resource type="Material" path="res://resources/materials/hit_flash.tres" id="11_flash"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
@@ -90,3 +91,6 @@ health = NodePath("../Health")
 script = ExtResource("14_lean")
 dodge = NodePath("../Dodge")
 visual = NodePath("../Visual")
+
+[node name="Inventory" type="Node" parent="."]
+script = ExtResource("15_inventory")

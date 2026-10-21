@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="LootTable" format=3]
+
+[ext_resource type="Script" path="res://scripts/loot/item_data.gd" id="1_lup4o"]
+[ext_resource type="Resource" path="res://resources/items/ashen_sword.tres" id="2_iwj75"]
+[ext_resource type="Resource" path="res://resources/items/bone_axe.tres" id="3_dhcxm"]
+[ext_resource type="Resource" path="res://resources/items/hunters_bow.tres" id="4_m0r16"]
+[ext_resource type="Resource" path="res://resources/items/ember_staff.tres" id="5_xjwjw"]
+[ext_resource type="Resource" path="res://resources/items/iron_cuirass.tres" id="6_0sbn5"]
+[ext_resource type="Resource" path="res://resources/items/grave_ring.tres" id="7_tktlx"]
+[ext_resource type="Script" path="res://scripts/loot/loot_table.gd" id="8_b2ord"]
+
+[resource]
+script = ExtResource("8_b2ord")
+gold_min = 3
+gold_max = 8
+item_chance = 0.35
+rarity_weights = PackedFloat32Array(60, 25, 10, 4, 1)
+items = Array[ExtResource("1_lup4o")]([ExtResource("2_iwj75"), ExtResource("3_dhcxm"), ExtResource("4_m0r16"), ExtResource("5_xjwjw"), ExtResource("6_0sbn5"), ExtResource("7_tktlx")])

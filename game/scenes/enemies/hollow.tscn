@@ -10,6 +10,8 @@
 [ext_resource type="Resource" path="res://resources/enemies/hollow_attack.tres" id="8_attack_data"]
 [ext_resource type="Script" path="res://scripts/player/weapon_swing.gd" id="9_swing"]
 [ext_resource type="Script" path="res://scripts/combat/attack_telegraph.gd" id="10_telegraph"]
+[ext_resource type="Script" path="res://scripts/loot/loot_dropper.gd" id="15_dropper"]
+[ext_resource type="Resource" path="res://resources/loot/hollow_loot.tres" id="16_loot"]
 [ext_resource type="Material" path="res://resources/materials/hollow_body.tres" id="11_body"]
 [ext_resource type="Material" path="res://resources/materials/hollow_eyes.tres" id="12_eyes"]
 [ext_resource type="Material" path="res://resources/materials/iron.tres" id="13_iron"]
@@ -72,6 +74,11 @@ number_height = 2.3
 script = ExtResource("7_attack")
 data = ExtResource("8_attack_data")
 target_mask = 2
+
+[node name="LootDropper" type="Node" parent="." node_paths=PackedStringArray("health")]
+script = ExtResource("15_dropper")
+loot_table = ExtResource("16_loot")
+health = NodePath("../Health")
 
 [node name="NavigationAgent" type="NavigationAgent3D" parent="."]
 path_desired_distance = 0.5

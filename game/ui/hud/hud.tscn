@@ -67,6 +67,14 @@ layout_mode = 2
 theme_type_variation = &"DimLabel"
 text = "FPS --"
 
+[node name="GoldLabel" type="Label" parent="Root/TopBar/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 0
+theme_type_variation = &"HeaderLabel"
+theme_override_colors/font_color = Color(0.95, 0.75, 0.3, 1)
+text = "0 gold"
+
 [node name="PauseButton" type="Button" parent="Root/TopBar/Row"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(96, 96)
@@ -74,6 +82,20 @@ layout_mode = 2
 size_flags_vertical = 0
 focus_mode = 0
 text = "II"
+
+[node name="LootFeed" type="VBoxContainer" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -480.0
+offset_top = 140.0
+offset_right = -32.0
+offset_bottom = 360.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_override_constants/separation = 4
 
 [node name="TouchJoystick" type="Control" parent="Root"]
 unique_name_in_owner = true

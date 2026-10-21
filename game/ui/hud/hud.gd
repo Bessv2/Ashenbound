@@ -1,9 +1,14 @@
 class_name Hud
 extends CanvasLayer
-## In-game overlay: title, player health, pause button, touch controls and a
-## debug readout. Emits requests; it does not change game state itself.
+## In-game overlay: title, player health, gold, a feed of picked-up items,
+## pause button, touch controls and a debug readout. Emits requests; it does
+## not change game state itself.
 
 signal pause_requested
+
+## Picked-up items stay listed this long, then fade out.
+const FEED_ENTRY_TIME := 3.0
+const FEED_MAX_ENTRIES := 5
 
 @onready var _root: Control = $Root
 @onready var _pause_button: Button = %PauseButton
@@ -13,6 +18,8 @@ signal pause_requested
 @onready var _health_bar: ProgressBar = %HealthBar
 @onready var _health_text: Label = %HealthText
 @onready var _dodge_button: TouchActionButton = %DodgeButton
+@onready var _gold_label: Label = %GoldLabel
+@onready var _loot_feed: VBoxContainer = %LootFeed
 
 var _health: Health
 
@@ -40,6 +47,36 @@ func track_health(health: Health) -> void:
 ## Shows `dodge`'s cooldown on the dodge button.
 func track_dodge(dodge: Dodge) -> void:
 	_dodge_button.cooldown = dodge.cooldown_fraction
+
+
+## Shows `inventory`'s gold, and lists the items it picks up.
+func track_inventory(inventory: Inventory) -> void:
+	inventory.gold_changed.connect(_show_gold)
+	inventory.item_added.connect(_add_feed_entry)
+	_show_gold(inventory.gold)
+
+
+func _show_gold(total: int) -> void:
+	_gold_label.text = "%d gold" % total
+
+
+func _add_feed_entry(item: Item) -> void:
+	var entry := Label.new()
+	entry.text = item.describe()
+	entry.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	entry.add_theme_color_override("font_color", Rarity.text_color_of(item.rarity))
+	entry.add_theme_color_override("font_outline_color", Color.BLACK)
+	entry.add_theme_constant_override("outline_size", 6)
+	entry.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_loot_feed.add_child(entry)
+	while _loot_feed.get_child_count() > FEED_MAX_ENTRIES:
+		var oldest := _loot_feed.get_child(0)
+		_loot_feed.remove_child(oldest)
+		oldest.queue_free()
+	var tween := entry.create_tween()
+	tween.tween_interval(FEED_ENTRY_TIME)
+	tween.tween_property(entry, "modulate:a", 0.0, 0.5)
+	tween.tween_callback(entry.queue_free)
 
 
 func _update_health() -> void:
