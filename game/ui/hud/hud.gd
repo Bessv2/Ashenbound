@@ -5,6 +5,7 @@ extends CanvasLayer
 
 signal pause_requested
 
+@onready var _root: Control = $Root
 @onready var _pause_button: Button = %PauseButton
 @onready var _joystick: TouchJoystick = %TouchJoystick
 @onready var _debug_label: Label = %DebugLabel
@@ -19,12 +20,44 @@ func _ready() -> void:
 	_controls_hint.visible = not OS.has_feature("mobile")
 	Settings.changed.connect(_apply_settings)
 	_apply_settings(Settings.current)
+	get_viewport().size_changed.connect(_fit_to_safe_area)
+	_fit_to_safe_area()
 
 
 func _process(_delta: float) -> void:
 	if _debug_label.visible:
 		var intent := MovementInput.get_vector()
 		_debug_label.text = "FPS %d   move (%.2f, %.2f)" % [Engine.get_frames_per_second(), intent.x, intent.y]
+
+
+## Insets in canvas units, as (left, top, right, bottom), that keep content
+## inside the display's safe area: clear of camera cutouts and rounded corners.
+## safe_area and window_rect are in screen pixels. Returns zero insets when the
+## safe area does not overlap the window, which happens on multi-monitor
+## desktops where the reported safe area belongs to another screen.
+static func safe_area_insets(safe_area: Rect2, window_rect: Rect2, canvas_size: Vector2) -> Vector4:
+	if not window_rect.has_area() or not safe_area.intersects(window_rect):
+		return Vector4.ZERO
+	var scale := canvas_size / window_rect.size
+	return Vector4(
+			maxf(safe_area.position.x - window_rect.position.x, 0.0) * scale.x,
+			maxf(safe_area.position.y - window_rect.position.y, 0.0) * scale.y,
+			maxf(window_rect.end.x - safe_area.end.x, 0.0) * scale.x,
+			maxf(window_rect.end.y - safe_area.end.y, 0.0) * scale.y)
+
+
+func _fit_to_safe_area() -> void:
+	# Cutouts only exist on phones. On desktop the "safe area" is the usable
+	# screen area, which says nothing about where the HUD may draw.
+	var insets := Vector4.ZERO
+	if OS.has_feature("mobile"):
+		var window := get_window()
+		insets = safe_area_insets(Rect2(DisplayServer.get_display_safe_area()),
+				Rect2(window.position, window.size), get_viewport().get_visible_rect().size)
+	_root.offset_left = insets.x
+	_root.offset_top = insets.y
+	_root.offset_right = -insets.z
+	_root.offset_bottom = -insets.w
 
 
 func _apply_settings(settings: GameSettings) -> void:
