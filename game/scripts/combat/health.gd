@@ -10,6 +10,8 @@ signal hit(amount: int)
 signal damaged(amount: int, remaining: int)
 signal died
 signal revived
+## Health was restored by `amount`, leaving `remaining`.
+signal healed(amount: int, remaining: int)
 
 @export_range(1, 100000, 1) var max_health: int = 100
 
@@ -48,6 +50,19 @@ func apply_damage(amount: int) -> int:
 	if current == 0:
 		died.emit()
 	return dealt
+
+
+## Restores up to `amount` health, never above `max_health`, and returns how
+## much was restored. The dead stay dead (see revive()).
+func heal(amount: int) -> int:
+	if is_dead() or amount <= 0:
+		return 0
+	var restored := mini(amount, max_health - current)
+	if restored == 0:
+		return 0
+	current += restored
+	healed.emit(restored, current)
+	return restored
 
 
 func revive() -> void:

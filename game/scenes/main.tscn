@@ -2,20 +2,18 @@
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/core/pause_controller.gd" id="2_pause"]
-[ext_resource type="PackedScene" path="res://scenes/arena/test_arena.tscn" id="3_arena"]
+[ext_resource type="PackedScene" path="res://scenes/dungeon/crypt.tscn" id="3_level"]
 [ext_resource type="PackedScene" path="res://scenes/player/warden.tscn" id="4_player"]
 [ext_resource type="PackedScene" path="res://scenes/camera/isometric_camera_rig.tscn" id="5_camera"]
 [ext_resource type="PackedScene" path="res://ui/hud/hud.tscn" id="6_hud"]
 [ext_resource type="PackedScene" path="res://ui/pause_menu/pause_menu.tscn" id="7_menu"]
-[ext_resource type="PackedScene" path="res://scenes/enemies/training_dummy.tscn" id="8_dummy"]
 [ext_resource type="PackedScene" path="res://ui/death_screen/death_screen.tscn" id="9_death"]
-[ext_resource type="Script" path="res://scripts/encounters/encounter_controller.gd" id="10_encounter"]
-[ext_resource type="Resource" path="res://resources/encounters/ossuary_hall.tres" id="11_encounter_data"]
 [ext_resource type="Script" path="res://scripts/dungeon/run_controller.gd" id="13_run"]
 [ext_resource type="Script" path="res://scripts/core/perf_log.gd" id="12_perf"]
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
+level_scene = ExtResource("3_level")
 
 [node name="PauseController" type="Node" parent="."]
 script = ExtResource("2_pause")
@@ -23,44 +21,8 @@ script = ExtResource("2_pause")
 [node name="PerfLog" type="Node" parent="."]
 script = ExtResource("12_perf")
 
-[node name="TestArena" parent="." instance=ExtResource("3_arena")]
-
 [node name="Player" parent="." node_paths=PackedStringArray("camera") instance=ExtResource("4_player")]
 camera = NodePath("../CameraRig/Camera3D")
-
-[node name="Enemies" type="Node3D" parent="."]
-
-[node name="TrainingDummyEast" parent="Enemies" instance=ExtResource("8_dummy")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 0)
-
-[node name="TrainingDummyNorth" parent="Enemies" instance=ExtResource("8_dummy")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
-
-[node name="TrainingDummyWest" parent="Enemies" instance=ExtResource("8_dummy")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 0)
-
-[node name="Encounter" type="Node3D" parent="Enemies"]
-script = ExtResource("10_encounter")
-data = ExtResource("11_encounter_data")
-auto_start = true
-
-[node name="North" type="Marker3D" parent="Enemies/Encounter"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16)
-
-[node name="NorthEast" type="Marker3D" parent="Enemies/Encounter"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, -12)
-
-[node name="East" type="Marker3D" parent="Enemies/Encounter"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 6)
-
-[node name="South" type="Marker3D" parent="Enemies/Encounter"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 16)
-
-[node name="West" type="Marker3D" parent="Enemies/Encounter"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, 4)
-
-[node name="NorthWest" type="Marker3D" parent="Enemies/Encounter"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -14)
 
 [node name="CameraRig" parent="." node_paths=PackedStringArray("target") instance=ExtResource("5_camera")]
 target = NodePath("../Player")
@@ -73,7 +35,6 @@ visible = false
 [node name="PauseMenu" parent="." instance=ExtResource("7_menu")]
 visible = false
 
-[node name="Run" type="Node" parent="." node_paths=PackedStringArray("player_health", "encounters")]
+[node name="Run" type="Node" parent="." node_paths=PackedStringArray("player_health")]
 script = ExtResource("13_run")
 player_health = NodePath("../Player/Health")
-encounters = [NodePath("../Enemies/Encounter")]

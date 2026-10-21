@@ -172,8 +172,10 @@ checklist below is the full manual pass.
       player slows down while attacking.
 - [ ] Pausing while holding **ATTACK** stops the attacks; after **Resume** the
       player does not keep attacking.
-- [ ] About 1.5 s after the start, three Skeleton Warriors climb out of the
-      ground and come for you. Before one strikes, a red sector appears on the ground;
+- [ ] The game starts in the Gatehouse with two stone training statues and an
+      open door to the north. Walking through the corridor into the Ossuary
+      shuts the doors; three Skeleton Warriors climb out of the ground and come
+      for you. Before one strikes, a red sector appears on the ground;
       stepping out of it in time avoids the hit.
 - [ ] Tapping **DODGE** dashes the player a few meters toward the stick (or
       forward when the stick is idle). The button darkens and refills over
@@ -192,8 +194,13 @@ checklist below is the full manual pass.
 - [ ] Standing with a pillar between you and a chasing Skeleton Warrior: it walks around
       the pillar instead of pushing into it.
 - [ ] Three hits kill a Skeleton Warrior; it sinks into the floor. When all
-      three are dead, three more rise; when those are dead, "The hall is
-      cleared" appears and **Play again** starts over.
+      three are dead, three more rise; when those are dead, both doors open
+      and the health bar rises by 30.
+- [ ] Walking behind a tall wall (in each corridor) the Warden stays visible
+      through a small see-through patch in the wall.
+- [ ] The Chapel and the Throne seal and open the same way. Clearing the
+      Throne shows "The crypt is cleared"; **Play again** starts over in the
+      Gatehouse.
 - [ ] The health bar drops when you are hit. At zero the player falls,
       "You have fallen" appears, and **Rise again** restarts with full health.
 

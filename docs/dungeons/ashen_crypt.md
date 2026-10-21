@@ -6,8 +6,8 @@ reset and replay. The content was decided by the owner on 2026-10-21: Skeleton
 Warriors and Dark Cultists in the waves, a Fallen Knight elite, and the Ashen
 Lord as the boss.
 
-**Status:** specification. Nothing below is implemented unless the build
-order says so. Numbers are first-pass tuning to be adjusted in playtests.
+**Status:** specification, being built. Steps 1 and 2 of the build order are
+done; the rest is not implemented yet. Numbers are first-pass tuning to be adjusted in playtests.
 
 **Gate (charter):** multiple consecutive runs complete correctly with no stale
 state or duplicate rewards.
@@ -37,13 +37,18 @@ Sizes are interior floor space.
 | Ashen Throne | 28 × 28 m | Boss arena, open floor, four braziers. Entry door only. |
 
 - **Corridors:** 4 m wide, 8 m long, between each pair of rooms.
-- **Doors:** a portcullis gate at each room exit. While closed it blocks movement
-  and the navigation mesh. It drops when the player enters a combat room
-  (2 m past the doorway) and lifts when that room's encounter is cleared.
+- **Doors:** a gate in the north wall of every room but the Throne: the KayKit
+  doorway with a 2 m door (the pack has no portcullis). While closed it blocks
+  movement and the navigation mesh. Entering a combat room (2 m past the
+  doorway) shuts the door behind the player (the previous room's gate) and
+  the room's own exit; both open when the room's encounter is cleared. The
+  Gatehouse door starts open.
 - **Navigation:** one navigation mesh for the whole crypt. A closed gate splits
   it, so enemies cannot path through, and it is rebaked when the gate opens.
 - **Camera:** unchanged (fixed orthographic, size 16 m). The near walls of every
-  room stay low, as in the current arena, so they never hide the player.
+  room stay low, as in the current arena. The far north walls are tall, and
+  the hero walks behind them in each corridor, so they (and the gates and tall
+  pillars) turn see-through in a small dithered circle around the hero.
 
 ## Enemies
 
@@ -154,10 +159,13 @@ Loot is parked until Milestone 4, so the first reward is a currency: **Ash**.
 
 Each step is its own branch and PR, tested, and published to the web preview.
 
-1. **Encounters:** rename the Hollow to Skeleton Warrior; data-driven
+1. *(Done.)* **Encounters:** rename the Hollow to Skeleton Warrior; data-driven
    encounters and waves; rising spawns; the encounter in the current arena
    replaces the endless spawner; a placeholder victory screen and replay.
-2. **The crypt:** the four rooms, corridors, gates and room triggers.
+2. **The crypt:** the four rooms, corridors, gates and room triggers. *Done.*
+   Until steps 3 to 5 land, the rooms hold Skeleton Warriors only: the Chapel
+   fights two waves of four, and the Throne two waves (four, then six) in place
+   of the Ashen Lord.
 3. **Dark Cultist:** ranged attack, projectile, keep-away movement.
 4. **Fallen Knight:** heavy attacks, shield bash, frontal guard, elite bar.
 5. **Ashen Lord:** the boss, three phases, summons, Ember Ring, boss bar.

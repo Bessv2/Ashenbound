@@ -107,7 +107,7 @@ func test_path_following_is_frame_rate_independent() -> void:
 
 func test_walks_around_a_pillar_in_the_arena() -> void:
 	var main := _add_main()
-	check(await wait_for_navigation(main.get_node("TestArena/Navigation")), "navigation ready")
+	check(await wait_for_navigation(main.get_node("Level/Navigation")), "navigation ready")
 	player = main.get_node("Player")
 	# PillarNorth stands at (0, 0, -10), right between the two.
 	_teleport_player(Vector3(0, 0, -7.5))
@@ -117,14 +117,14 @@ func test_walks_around_a_pillar_in_the_arena() -> void:
 
 func test_arena_navigation_mesh_keeps_bodies_clear_of_the_pillars() -> void:
 	var main := _add_main()
-	var region: NavigationRegion3D = main.get_node("TestArena/Navigation")
+	var region: NavigationRegion3D = main.get_node("Level/Navigation")
 	check(await wait_for_navigation(region), "the arena bakes its navigation mesh at load")
 	var probe: EnemyController = SkeletonScene.instantiate()
 	var body_radius := (probe.get_node("CollisionShape3D").shape as CapsuleShape3D).radius
 	probe.free()
 	check(region.navigation_mesh.agent_radius >= body_radius, "baked for bodies as wide as a Skeleton")
 	var map := region.get_navigation_map()
-	for pillar: Node3D in main.get_node("TestArena/Navigation/Pillars").get_children():
+	for pillar: Node3D in main.get_node("Level/Navigation/Pillars").get_children():
 		var pillar_radius := (pillar.get_node("CollisionShape3D").shape as CylinderShape3D).radius
 		var center := Vector3(pillar.global_position.x, 0.0, pillar.global_position.z)
 		var nearest := NavigationServer3D.map_get_closest_point(map, center)
@@ -139,7 +139,7 @@ func test_arena_navigation_mesh_is_one_floor_at_the_hollows_path_height() -> voi
 	# its waypoint distance checks expect them. Walkable islands on pillar or
 	# wall tops would also show up here.
 	var main := _add_main()
-	var region: NavigationRegion3D = main.get_node("TestArena/Navigation")
+	var region: NavigationRegion3D = main.get_node("Level/Navigation")
 	var probe: EnemyController = SkeletonScene.instantiate()
 	var height_offset := probe.navigation.path_height_offset
 	probe.free()

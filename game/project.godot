@@ -103,3 +103,10 @@ common/physics_jitter_fix=0.0
 
 renderer/rendering_method="mobile"
 textures/vram_compression/import_etc2_astc=true
+
+[shader_globals]
+
+occlusion_focus={
+"type": "vec3",
+"value": Vector3(0, 0, 0)
+}

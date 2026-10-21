@@ -23,7 +23,17 @@ var kills: int = 0
 func _ready() -> void:
 	if player_health:
 		player_health.died.connect(_finish.bind(Result.DEFEAT))
-	for encounter in encounters:
+	var listed := encounters.duplicate()
+	encounters.clear()
+	watch(listed)
+
+
+## Adds `list` to the encounters that must be cleared to win.
+func watch(list: Array[EncounterController]) -> void:
+	for encounter in list:
+		if encounters.has(encounter):
+			continue
+		encounters.append(encounter)
 		encounter.cleared.connect(_on_encounter_cleared)
 		encounter.enemy_killed.connect(_on_enemy_killed.unbind(1))
 

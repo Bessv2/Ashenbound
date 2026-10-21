@@ -2,8 +2,6 @@ extends "res://tests/framework/test_case.gd"
 ## Tests for the arena's visual dressing: the TileGrid builder and the
 ## per-renderer lighting. Collision and navigation are covered elsewhere.
 
-const ArenaScene := preload("res://scenes/arena/test_arena.tscn")
-
 var arena: Node3D
 
 
