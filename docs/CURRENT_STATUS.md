@@ -25,6 +25,8 @@ Status labels follow the charter:
 | 2026-10-21 | **Loot is parked** until Milestone 4. Draft PR #6 holds the early loot work, which predates the charter: five tiers and three slots, against the charter's six tiers and nine slots. |
 | 2026-10-21 | The charter is committed as `CLAUDE.md`. |
 | 2026-10-21 | **The Warden's starter abilities are Cleave, Bulwark Guard and Ember Brand**, one per specialization direction. Skill trees for each class come later and are designed per class. |
+| 2026-10-21 | **Milestone 3 content:** the first boss is **the Ashen Lord**, with distinct phases. **Skeleton Warriors** are the basic enemy and replace the placeholder Hollow; a **Dark Cultist** is the ranged second type; a **Fallen Knight** is the elite. |
+| 2026-10-21 | Test a demo build on an Android device before Milestone 3 work starts. |
 
 ## Milestones
 
@@ -46,13 +48,12 @@ Status labels follow the charter:
 | Basic attack | Validated, verified in runtime |
 | Dodge with cooldown and an invulnerable window | Validated, verified in runtime (PR #5) |
 | Three abilities | Validated, verified in runtime: Cleave, Bulwark Guard, Ember Brand |
-| Enemy states (idle, approach, telegraph, attack, recovery, death) | Behavior implemented, see below |
+| Enemy states (idle, approach, telegraph, attack, recovery, death) | Validated: separate states with tested order and timing |
 | Hit feedback, HUD, pause and lifecycle handling | Validated, verified in runtime |
 | Manual checks on a device | Blocked |
 
-The Hollow has the behaviors the charter lists, but folds telegraph, attack
-and recovery into one attack state: telegraph during the windup, then the hit,
-then recovery. Splitting them into separate states is open work.
+Milestone 2 is complete apart from its device check, which stays blocked
+until a phone is available.
 
 ## Open pull requests
 
@@ -67,7 +68,8 @@ Each PR is stacked on the one before it. Merge them in order.
 | #5 | `feature/dodge-skills` | Dodge | Green |
 | #6 | `feature/loot` | Loot (**parked, do not merge**) | |
 | #7 | `docs/project-charter` | This file and `CLAUDE.md` | |
-| next | `feature/warden-abilities` | The Warden and its three starter abilities | |
+| #8 | `feature/warden-abilities` | The Warden and its three starter abilities | |
+| next | `feature/enemy-states` | The Hollow's states split to match the charter | |
 
 ## Deviations from the charter
 
@@ -82,7 +84,18 @@ Each PR is stacked on the one before it. Merge them in order.
 
 ## Next task
 
-Close out Milestone 2 by splitting the Hollow's attack state into the
-charter's telegraph, attack and recovery states. That makes enemy states
-testable one by one, ahead of Milestone 3's elite and boss. Milestone 2's
-device check stays blocked until a phone is available.
+Start Milestone 3, the first dungeon, with a specification before any code,
+as for the Warden. The spec covers:
+
+- the encounter controller and its waves;
+- one elite;
+- the first boss, with distinct phases;
+- victory and defeat;
+- a reward summary;
+- reset and replay.
+
+The content is decided (see Owner decisions): Skeleton Warriors and Dark
+Cultists in the waves, a Fallen Knight elite, and the Ashen Lord as the boss.
+
+Before that, the owner tests a demo build on an Android device. Its results
+close the device checks for Milestones 1 and 2.

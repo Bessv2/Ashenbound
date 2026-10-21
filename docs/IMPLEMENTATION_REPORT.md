@@ -454,3 +454,26 @@ Two of these first passed, which showed two tests were too weak:
 
 Both tests were strengthened, and both probes now fail. Every probe was
 reverted, and the restored files were compared byte for byte with backups.
+
+## 11. Enemy states (branch `feature/enemy-states`)
+
+The Hollow's attack state is split into the charter's states: IDLE, APPROACH,
+TELEGRAPH, ATTACK, RECOVERY and DEAD. ATTACK is the one physics tick on
+which the hit resolves. `state_changed` reports every change.
+
+Checks:
+
+- **Tests:** `tools/test.sh` gives 144 passed, 0 failed on 3 runs. Four tests
+  are new:
+  - the order of the states;
+  - each state's length against the attack data, with the hit landing on
+    the ATTACK tick;
+  - the telegraph being visible exactly during TELEGRAPH;
+  - death during TELEGRAPH going straight to DEAD.
+- **Probes:**
+  - with the ATTACK state removed, the order and timing tests fail;
+  - with the telegraph left visible after the hit, both telegraph tests fail;
+  - both changes were reverted and the restored files compared byte for byte
+    with backups.
+
+Milestone 2 is now complete apart from its device check, which is blocked.
