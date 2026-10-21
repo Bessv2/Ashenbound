@@ -10,19 +10,32 @@ device** (charter section 7).
 
 ## Without a phone: the CI emulator
 
-Every CI run also plays the same script on an Android emulator (x86_64, API 34)
-inside GitHub Actions, using `tools/device-test.sh` with `ALLOW_EMULATOR=1` and
-an x86_64 build of the game (the preset **Android x86_64 (CI emulator)**). The
-screenshots, `summary.md`, `errors.txt` and `logcat.txt` are uploaded as the
-**emulator-device-test** artifact on the run.
+Every CI run also plays the same script on an Android emulator (x86_64, Pixel 6
+profile, API 34) inside GitHub Actions, using `tools/device-test.sh` with
+`ALLOW_EMULATOR=1` and an x86_64 build of the game (the preset **Android x86_64
+(CI emulator)**, which uses the Compatibility renderer). The screenshots,
+`summary.md`, `errors.txt` and `logcat.txt` are uploaded as the
+**emulator-device-test** artifact on the run, and the job log prints a summary.
 
-It catches crashes, a game that will not start, and controls that miss their
-buttons. It cannot tell you anything about **feel** or **frame rate**: an
-emulator runs on a desktop CPU with software graphics. Those still need a real
-phone, yours or a spare. The emulator step is experimental and is allowed to
-fail without failing the run, so check its summary in the job log.
+**What it proves:** the APK installs, the game starts, its main loop keeps
+running through the scripted session (PERF lines appear), and it does not crash
+or stop responding. Script errors that only happen on Android show up in
+`errors.txt`.
 
-To run the same thing locally against an emulator you started yourself:
+**What it cannot prove:**
+
+- **Rendering.** The CI emulator draws with software graphics. With the Mobile
+  renderer (Vulkan) the screen never updated; with the Compatibility renderer
+  the emulator's OpenGL ES rejects the 3D scene shader (`active uniforms exceed
+  GL_MAX_FRAGMENT_UNIFORM_VECTORS (261)`), so nothing is drawn (0 draw calls).
+  The screenshots stay identical, which `tools/screenshot_stats.py` shows as
+  0.0% change. That limit is the emulator's, not evidence of a bug on a phone,
+  but it also means the screenshots cannot confirm that the controls sit where
+  the script taps.
+- **Feel and frame rate.** Those need a real phone.
+
+The step is experimental and is allowed to fail without failing the run. To
+run it against an emulator you started yourself:
 
 ```bash
 PRESET="Android x86_64 (CI emulator)" APK="$PWD/build/android/ashenbound-debug-x86_64.apk" \
