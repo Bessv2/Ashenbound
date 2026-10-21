@@ -1,0 +1,101 @@
+class_name EncounterController
+extends Node3D
+## Runs one encounter. Spawns its waves in order at the Marker3D children the
+## data names, starts the next wave `wave_delay` after every enemy of the
+## current one has died, and reports when the last wave is dead.
+##
+## Spawned enemies become its children, hunt the player wherever it is, and
+## rise out of the ground first (see EnemyController.rise()). A wave counts an
+## enemy as gone when its Health dies, not when its corpse is removed.
+
+signal started
+signal wave_started(index: int)
+signal enemy_killed(enemy: Node3D)
+signal cleared
+
+enum Phase { WAITING, ACTIVE, CLEARED }
+
+@export var data: EncounterData
+## Starts by itself `start_delay` seconds after entering the tree. When false,
+## something else calls start() (a room trigger).
+@export var auto_start: bool = false
+@export_range(0.0, 30.0, 0.1, "suffix:s") var start_delay: float = 1.5
+
+var phase: Phase = Phase.WAITING
+## The wave being fought (0-based), or -1 before the first.
+var wave: int = -1
+
+var _living: Array[Node3D] = []
+var _start_left: float = 0.0
+var _next_wave_left: float = -1.0
+
+
+func _ready() -> void:
+	_start_left = start_delay
+
+
+func _physics_process(delta: float) -> void:
+	if phase == Phase.WAITING and auto_start:
+		_start_left -= delta
+		if _start_left <= 0.0:
+			start()
+	elif phase == Phase.ACTIVE and _next_wave_left >= 0.0:
+		_next_wave_left -= delta
+		if _next_wave_left < 0.0:
+			_begin_wave(wave + 1)
+
+
+func start() -> void:
+	if phase != Phase.WAITING or data == null or data.waves.is_empty():
+		return
+	phase = Phase.ACTIVE
+	started.emit()
+	_begin_wave(0)
+
+
+## The enemies of the current wave that are still alive.
+func living_enemies() -> Array[Node3D]:
+	return _living.duplicate()
+
+
+func _begin_wave(index: int) -> void:
+	wave = index
+	_next_wave_left = -1.0
+	var wave_data := data.waves[index]
+	for i in wave_data.enemies.size():
+		var marker_name := wave_data.markers[i] if i < wave_data.markers.size() else ""
+		_spawn(wave_data.enemies[i], marker_name)
+	wave_started.emit(index)
+
+
+func _spawn(scene: PackedScene, marker_name: String) -> void:
+	var marker := get_node_or_null(marker_name) as Marker3D
+	if marker == null:
+		push_error("%s: no spawn marker named '%s'." % [name, marker_name])
+		return
+	var enemy := scene.instantiate() as Node3D
+	# Positioned before entering the tree so physics interpolation starts there.
+	enemy.position = marker.position
+	if enemy is EnemyController:
+		(enemy as EnemyController).hunting = true
+	add_child(enemy)
+	if enemy is EnemyController:
+		(enemy as EnemyController).rise(data.rise_time)
+	var health := Health.of(enemy)
+	if health == null:
+		push_error("%s: %s has no Health and could never be defeated." % [name, enemy.name])
+		return
+	health.died.connect(_on_enemy_died.bind(enemy), CONNECT_ONE_SHOT)
+	_living.append(enemy)
+
+
+func _on_enemy_died(enemy: Node3D) -> void:
+	_living.erase(enemy)
+	enemy_killed.emit(enemy)
+	if not _living.is_empty():
+		return
+	if wave + 1 < data.waves.size():
+		_next_wave_left = data.wave_delay
+	else:
+		phase = Phase.CLEARED
+		cleared.emit()

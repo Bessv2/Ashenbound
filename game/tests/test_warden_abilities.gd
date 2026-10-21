@@ -4,7 +4,7 @@ extends "res://tests/framework/test_case.gd"
 
 const WardenScene := preload("res://scenes/player/warden.tscn")
 const DummyScene := preload("res://scenes/enemies/training_dummy.tscn")
-const HollowScene := preload("res://scenes/enemies/hollow.tscn")
+const SkeletonScene := preload("res://scenes/enemies/skeleton_warrior.tscn")
 
 var warden: PlayerController
 var cleave: CleaveAbility
@@ -33,11 +33,11 @@ func _dummy(at: Vector3) -> TrainingDummy:
 	return dummy
 
 
-func _hollow(at: Vector3) -> EnemyController:
-	var hollow: EnemyController = HollowScene.instantiate()
-	hollow.position = at
-	add_child(hollow)
-	return hollow
+func _skeleton(at: Vector3) -> EnemyController:
+	var skeleton: EnemyController = SkeletonScene.instantiate()
+	skeleton.position = at
+	add_child(skeleton)
+	return skeleton
 
 
 func _flat_position() -> Vector3:
@@ -120,17 +120,17 @@ func test_cleave_cancels_the_basic_attack_and_holds_it_off() -> void:
 
 func test_guard_reduces_a_hit_and_counters_once() -> void:
 	await wait_physics_frames(2)
-	var hollow := _hollow(Vector3(0, 0, -1.3))
-	check(await wait_until(func() -> bool: return hollow.attack.is_busy(), 10), "the Hollow winds up")
+	var skeleton := _skeleton(Vector3(0, 0, -1.3))
+	check(await wait_until(func() -> bool: return skeleton.attack.is_busy(), 10), "the Skeleton winds up")
 	_tap(GameplayActions.ABILITY_2)
 	await wait_until(func() -> bool: return warden.health.current < 100, 40)
 	check(warden.health.current == 98, "the 12 damage hit is cut to 2, health %d" % warden.health.current)
 	await wait_physics_frames(3)
-	check(hollow.health.current == 15, "the counter hits the Hollow for 15, it has %d" % hollow.health.current)
-	# The Hollow's next hit lands 1.2 s after the first, after the 1 s guard.
+	check(skeleton.health.current == 15, "the counter hits the Skeleton for 15, it has %d" % skeleton.health.current)
+	# The Skeleton's next hit lands 1.2 s after the first, after the 1 s guard.
 	await wait_until(func() -> bool: return warden.health.current < 98, 120)
 	check(warden.health.current == 86, "full damage once the guard is down, health %d" % warden.health.current)
-	check(hollow.health.current == 15, "only one counter per guard")
+	check(skeleton.health.current == 15, "only one counter per guard")
 
 
 func test_guard_counters_only_the_first_hit() -> void:
@@ -242,13 +242,13 @@ func test_rebranding_restarts_instead_of_stacking() -> void:
 
 
 func test_a_dead_target_stops_burning() -> void:
-	var hollow := _hollow(Vector3(0, 0, -12))  # Beyond aggro range.
+	var skeleton := _skeleton(Vector3(0, 0, -12))  # Beyond aggro range.
 	await wait_physics_frames(1)
-	Burning.apply(hollow.health, 4, 0.5, 8)
+	Burning.apply(skeleton.health, 4, 0.5, 8)
 	await wait_physics_frames(31)
-	hollow.health.apply_damage(hollow.health.max_health)
+	skeleton.health.apply_damage(skeleton.health.max_health)
 	await wait_physics_frames(2)
-	check(not hollow.has_node("Burning"), "the burn is gone with the target's life")
+	check(not skeleton.has_node("Burning"), "the burn is gone with the target's life")
 
 
 # --- Shared ---------------------------------------------------------------

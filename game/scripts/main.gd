@@ -7,6 +7,7 @@ extends Node3D
 @onready var _hud: Hud = $HUD
 @onready var _pause_menu: PauseMenu = $PauseMenu
 @onready var _death_screen: DeathScreen = $DeathScreen
+@onready var _run: RunController = $Run
 
 
 func _ready() -> void:
@@ -17,7 +18,7 @@ func _ready() -> void:
 	_hud.track_health(_player.health)
 	_hud.track_dodge(_player.dodge)
 	_hud.track_abilities(_player.abilities)
-	_player.health.died.connect(_on_player_died)
+	_run.ended.connect(_on_run_ended)
 	_death_screen.restart_requested.connect(restart)
 
 
@@ -27,6 +28,12 @@ func restart() -> void:
 	get_tree().reload_current_scene()
 
 
-func _on_player_died() -> void:
+func _on_run_ended(victory: bool) -> void:
 	GameplayActions.release_all()
-	_death_screen.open()
+	if not victory:
+		_death_screen.open()
+		return
+	# The run is won: nothing can hurt or move the Warden any more.
+	_player.input_enabled = false
+	_player.health.invulnerable = true
+	_death_screen.open("The hall is cleared", "The ash settles, for now.", "Play again")

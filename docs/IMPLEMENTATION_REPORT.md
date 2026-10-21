@@ -547,3 +547,56 @@ Acceptance criteria:
 - [x] The project imports, runs and exports (desktop, web)
 - [ ] Verified on a phone
 ```
+
+## 13. Milestone 3, step 1: encounters (branch `feature/m3-encounters`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: 3 (first dungeon), step 1 of 6: encounters
+Status: Validated, verified in runtime (desktop software Vulkan); not verified on device
+
+Changes:
+- docs/dungeons/ashen_crypt.md: the Milestone 3 specification (layout,
+  enemies, encounters, the Ashen Lord's phases, victory and defeat, Ash
+  rewards, replay, acceptance checks, build order).
+- The Hollow is renamed Skeleton Warrior (scene, data, material, tests, docs).
+- EncounterData / WaveData resources and EncounterController: waves in order,
+  the next one 1.5 s after the last enemy of the current one dies.
+- EnemyController: RISING state (inert and invulnerable for 0.8 s, with the
+  skeleton spawn clip) and `hunting` (no aggro or leash limits).
+- RunController: victory when every encounter is cleared, defeat on death,
+  first result stands; kills and play time.
+- The main scene's endless spawner is replaced by a two-wave Ossuary Hall
+  encounter (3 + 3 Skeleton Warriors). Victory reuses the death screen with
+  "The hall is cleared" and Play again. EnemySpawner removed.
+- Training dummies render as stone statues, so they no longer look like
+  enemies.
+
+Commands run:
+- Command: tools/test.sh (twice)
+  Exit code: 0
+  Result: 157 passed, 0 failed (7 new; the 6 spawner tests were removed with it)
+- Command: probes: waves advancing with survivors; rising without
+  invulnerability; a second result overriding the first
+  Exit code: 1
+  Result: the matching tests failed; files restored and compared byte for byte
+- Command: rendered run under Xvfb (software Vulkan)
+  Exit code: 0
+  Result: skeletons rise, wave 2 follows wave 1, victory screen after 6 kills
+
+Not tested:
+- On a phone.
+
+Known risks:
+- The arena is still the open test arena; rooms and gates come in step 2.
+
+Recommended next task:
+- Step 2: the crypt (rooms, corridors, gates, room triggers).
+
+Acceptance criteria (spec, so far):
+- [x] 1. Waves advance in order, only when the current wave is fully dead
+- [x] 3. Rising enemies cannot deal or take damage
+- [x] 8. Victory and defeat are mutually exclusive
+- [ ] The rest: later steps
+```

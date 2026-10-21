@@ -1,9 +1,9 @@
 extends "res://tests/framework/test_case.gd"
 ## Tests for the player's dodge: the dash, its cooldown and input buffer, its
-## invulnerable window against a real Hollow, and the HUD button.
+## invulnerable window against a real Skeleton, and the HUD button.
 
 const PlayerScene := preload("res://scenes/player/warden.tscn")
-const HollowScene := preload("res://scenes/enemies/hollow.tscn")
+const SkeletonScene := preload("res://scenes/enemies/skeleton_warrior.tscn")
 ## A wall west of the start: its east face is at x = -2.
 const WALL := AABB(Vector3(-3.0, 0.0, -3.0), Vector3(1.0, 3.0, 6.0))
 ## Where the player stands with its back to the wall.
@@ -139,15 +139,15 @@ func test_a_press_just_before_ready_is_buffered() -> void:
 
 func _hollow_beside_player() -> EnemyController:
 	await _place_player(AGAINST_WALL)
-	var hollow: EnemyController = HollowScene.instantiate()
-	hollow.position = AGAINST_WALL + Vector3(1.3, 0, 0)
-	add_child(hollow)
-	check(await wait_until(func() -> bool: return hollow.attack.is_busy(), 10), "the Hollow winds up")
-	return hollow
+	var skeleton: EnemyController = SkeletonScene.instantiate()
+	skeleton.position = AGAINST_WALL + Vector3(1.3, 0, 0)
+	add_child(skeleton)
+	check(await wait_until(func() -> bool: return skeleton.attack.is_busy(), 10), "the Skeleton winds up")
+	return skeleton
 
 
 func test_a_hit_inside_the_invulnerable_window_does_nothing() -> void:
-	var hollow := await _hollow_beside_player()
+	var skeleton := await _hollow_beside_player()
 	# The hit lands 0.5 s into the windup; dodging at 0.3 s puts it 0.2 s into
 	# the dodge, inside the 0.25 s window. Dodging into the wall keeps the
 	# player in reach.
@@ -155,23 +155,23 @@ func test_a_hit_inside_the_invulnerable_window_does_nothing() -> void:
 	Input.action_press(MovementInput.LEFT)
 	_tap_dodge()
 	var hits: Array = []
-	hollow.attack.struck.connect(func(targets: Array[Health]) -> void: hits.append(targets.size()))
+	skeleton.attack.struck.connect(func(targets: Array[Health]) -> void: hits.append(targets.size()))
 	await wait_until(func() -> bool: return not hits.is_empty(), 30)
 	Input.action_release(MovementInput.LEFT)
 	check(hits == [0], "the hit resolved and found nobody to damage: %s" % [hits])
 	check(player.health.current == player.health.max_health, "no damage, health %d" % player.health.current)
-	check(player.global_position.distance_to(hollow.global_position) < hollow.attack.data.reach,
+	check(player.global_position.distance_to(skeleton.global_position) < skeleton.attack.data.reach,
 			"the player was in reach the whole time")
 
 
 func test_a_hit_after_the_invulnerable_window_lands() -> void:
-	var hollow := await _hollow_beside_player()
+	var skeleton := await _hollow_beside_player()
 	# Dodging right away: the window has closed by the time the hit lands.
 	Input.action_press(MovementInput.LEFT)
 	_tap_dodge()
-	await wait_until(func() -> bool: return not hollow.attack.is_busy() or player.health.current < 100, 40)
+	await wait_until(func() -> bool: return not skeleton.attack.is_busy() or player.health.current < 100, 40)
 	Input.action_release(MovementInput.LEFT)
-	check(player.health.current == player.health.max_health - hollow.attack.data.damage,
+	check(player.health.current == player.health.max_health - skeleton.attack.data.damage,
 			"the hit lands after the window, health %d" % player.health.current)
 
 

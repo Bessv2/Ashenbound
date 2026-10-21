@@ -172,27 +172,28 @@ checklist below is the full manual pass.
       player slows down while attacking.
 - [ ] Pausing while holding **ATTACK** stops the attacks; after **Resume** the
       player does not keep attacking.
-- [ ] Walking toward a Hollow (about 15 m from the start, in any direction)
-      makes it chase you. Before it strikes, a red sector appears on the ground;
+- [ ] About 1.5 s after the start, three Skeleton Warriors climb out of the
+      ground and come for you. Before one strikes, a red sector appears on the ground;
       stepping out of it in time avoids the hit.
 - [ ] Tapping **DODGE** dashes the player a few meters toward the stick (or
       forward when the stick is idle). The button darkens and refills over
       about a second, and tapping it again before then does nothing.
-- [ ] Dodging just before a Hollow's hit lands avoids it: no damage number
+- [ ] Dodging just before a Skeleton Warrior's hit lands avoids it: no damage number
       appears and the health bar does not drop.
-- [ ] **CLEAVE** sweeps the greatsword and hits every Hollow in front and to
+- [ ] **CLEAVE** sweeps the greatsword and hits every Skeleton Warrior in front and to
       the sides (each shows 25); its button darkens for 4 s.
-- [ ] **GUARD** shows an ember ring and the Warden stops moving. A Hollow's
-      hit during it shows 2 instead of 12, and the Hollow takes 15 back.
-- [ ] **BRAND** with a Hollow or dummy within about 7 m shows small ember
+- [ ] **GUARD** shows an ember ring and the Warden stops moving. A Skeleton Warrior's
+      hit during it shows 2 instead of 12, and the Skeleton Warrior takes 15 back.
+- [ ] **BRAND** with a skeleton or statue within about 7 m shows small ember
       damage numbers (4) every half second. With nothing nearby, the button
       does nothing and does not darken.
 - [ ] The five buttons around **ATTACK** are easy to hit with a thumb and do
       not cover anything important.
-- [ ] Standing with a pillar between you and a chasing Hollow: it walks around
+- [ ] Standing with a pillar between you and a chasing Skeleton Warrior: it walks around
       the pillar instead of pushing into it.
-- [ ] Three hits kill a Hollow; it sinks into the floor and another appears
-      a few seconds later at a spawn point away from you.
+- [ ] Three hits kill a Skeleton Warrior; it sinks into the floor. When all
+      three are dead, three more rise; when those are dead, "The hall is
+      cleared" appears and **Play again** starts over.
 - [ ] The health bar drops when you are hit. At zero the player falls,
       "You have fallen" appears, and **Rise again** restarts with full health.
 

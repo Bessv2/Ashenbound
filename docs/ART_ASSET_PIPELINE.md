@@ -30,7 +30,7 @@ appreciated but not required. The licence texts are in
 | Pack | Source | Commit | Files used | Used for |
 |---|---|---|---|---|
 | KayKit Character Pack: Adventurers 1.0 | github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0 | `672074b` | `Characters/gltf/Knight.glb`, `knight_texture.png` (as the recolour source) | The Warden |
-| KayKit Character Pack: Skeletons 1.0 | github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0 | `15b62b9` | `Characters/gltf/Skeleton_Warrior.glb`, `Assets/gltf/Skeleton_Blade.gltf` + `.bin` + `skeleton_texture.png` | The Hollow (to be renamed Skeleton Warrior in Milestone 3) and the dormant training targets |
+| KayKit Character Pack: Skeletons 1.0 | github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0 | `15b62b9` | `Characters/gltf/Skeleton_Warrior.glb`, `Assets/gltf/Skeleton_Blade.gltf` + `.bin` + `skeleton_texture.png` | The Skeleton Warrior enemy, and the training targets (as stone statues) |
 | KayKit Dungeon Remastered 1.0 | github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0 | `b0ca9bd` | 8 pieces in `game/assets/third_party/kaykit/dungeon/`: floor_tile_large, wall, wall_cracked, column, pillar_decorated, torch_mounted, banner_red, barrel_large | The arena |
 
 The dungeon files were renamed from `<name>.gltf.glb` to `<name>.glb`.
@@ -52,7 +52,7 @@ Both character models come rigged, with 76 clips (Knight) and 95 (Skeleton Warri
 one- and two-handed attacks, dodges, block, spellcasts, hits, deaths, and
 skeleton spawn and dormant poses. `CharacterAnimator` plays them from gameplay
 signals; which clip each action uses is set on the Animator node in
-`warden.tscn` and `hollow.tscn`.
+`warden.tscn` and `skeleton_warrior.tscn`.
 
 ## Measured cost
 

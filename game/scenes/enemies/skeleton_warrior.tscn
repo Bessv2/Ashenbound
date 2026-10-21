@@ -1,15 +1,15 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/enemies/enemy_controller.gd" id="1_controller"]
-[ext_resource type="Resource" path="res://resources/enemies/hollow_movement.tres" id="2_movement"]
-[ext_resource type="Resource" path="res://resources/enemies/hollow_behavior.tres" id="3_behavior"]
+[ext_resource type="Resource" path="res://resources/enemies/skeleton_warrior_movement.tres" id="2_movement"]
+[ext_resource type="Resource" path="res://resources/enemies/skeleton_warrior_behavior.tres" id="3_behavior"]
 [ext_resource type="Script" path="res://scripts/combat/health.gd" id="4_health"]
 [ext_resource type="Script" path="res://scripts/combat/hit_feedback.gd" id="5_feedback"]
 [ext_resource type="Material" path="res://resources/materials/hit_flash.tres" id="6_flash"]
 [ext_resource type="Script" path="res://scripts/combat/melee_attack.gd" id="7_attack"]
-[ext_resource type="Resource" path="res://resources/enemies/hollow_attack.tres" id="8_attack_data"]
+[ext_resource type="Resource" path="res://resources/enemies/skeleton_warrior_attack.tres" id="8_attack_data"]
 [ext_resource type="Script" path="res://scripts/combat/attack_telegraph.gd" id="10_telegraph"]
-[ext_resource type="Material" path="res://resources/materials/hollow_eyes.tres" id="12_eyes"]
+[ext_resource type="Material" path="res://resources/materials/skeleton_eyes.tres" id="12_eyes"]
 [ext_resource type="Material" path="res://resources/materials/telegraph.tres" id="14_telegraph"]
 [ext_resource type="PackedScene" path="res://assets/third_party/kaykit/characters/Skeleton_Warrior.glb" id="15_model"]
 [ext_resource type="PackedScene" path="res://assets/third_party/kaykit/weapons/Skeleton_Blade.gltf" id="16_blade"]
@@ -20,7 +20,7 @@
 radius = 0.4
 height = 1.8
 
-[node name="Hollow" type="CharacterBody3D" node_paths=PackedStringArray("attack", "health", "visual", "navigation")]
+[node name="SkeletonWarrior" type="CharacterBody3D" node_paths=PackedStringArray("attack", "health", "visual", "navigation")]
 collision_layer = 4
 collision_mask = 7
 script = ExtResource("1_controller")
@@ -78,9 +78,10 @@ part_materials = Dictionary[String, Material]({
 "Skeleton_Warrior_Eyes": ExtResource("12_eyes")
 })
 
-[node name="Animator" type="Node" parent="." node_paths=PackedStringArray("body", "animation_player", "health", "attacks")]
+[node name="Animator" type="Node" parent="." node_paths=PackedStringArray("body", "enemy", "animation_player", "health", "attacks")]
 script = ExtResource("18_animator")
 body = NodePath("..")
+enemy = NodePath("..")
 animation_player = NodePath("../Visual/Model/AnimationPlayer")
 health = NodePath("../Health")
 attacks = [NodePath("../MeleeAttack")]

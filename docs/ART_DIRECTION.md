@@ -91,7 +91,7 @@ Further elements of the sheet:
   - a mana bar (teal);
   - a minimap in the top-right corner.
 - **Enemies:** Skeleton Warrior, Ghoul, Dark Cultist, Fallen Knight, Demon, and
-  a boss, the Ashen Lord. The current Hollow is a placeholder.
+  a boss, the Ashen Lord. The current Skeleton Warrior is a placeholder.
 - **Playable classes:** the sheet shows a Warrior, Rogue, Mage and Barbarian.
   The charter's roster supersedes them: Warden, Reaver, Hexbinder,
   Dreadhunter, Reliquary and Gravecaller, starting with the Warden.

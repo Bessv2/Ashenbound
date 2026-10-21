@@ -3,7 +3,7 @@ extends "res://tests/framework/test_case.gd"
 ## CharacterAnimator that plays their clips from gameplay signals.
 
 const WardenScene := preload("res://scenes/player/warden.tscn")
-const HollowScene := preload("res://scenes/enemies/hollow.tscn")
+const SkeletonScene := preload("res://scenes/enemies/skeleton_warrior.tscn")
 
 var warden: PlayerController
 var player: AnimationPlayer
@@ -74,23 +74,23 @@ func test_animations_stop_while_paused() -> void:
 
 
 func test_the_hollow_dies_with_its_death_clip() -> void:
-	var hollow: EnemyController = HollowScene.instantiate()
-	hollow.position = Vector3(0, 0, -12)
-	add_child(hollow)
-	var hollow_player: AnimationPlayer = hollow.get_node("Visual/Model/AnimationPlayer")
+	var skeleton: EnemyController = SkeletonScene.instantiate()
+	skeleton.position = Vector3(0, 0, -12)
+	add_child(skeleton)
+	var skeleton_player: AnimationPlayer = skeleton.get_node("Visual/Model/AnimationPlayer")
 	await wait_process_frames(2)
-	hollow.health.apply_damage(hollow.health.max_health)
+	skeleton.health.apply_damage(skeleton.health.max_health)
 	await wait_process_frames(2)
-	check(hollow_player.current_animation == "Death_C_Skeletons", "death clip, got %s" % hollow_player.current_animation)
-	check(hollow.health.is_dead() and hollow.state == EnemyController.State.DEAD, "the animator leaves gameplay state alone")
+	check(skeleton_player.current_animation == "Death_C_Skeletons", "death clip, got %s" % skeleton_player.current_animation)
+	check(skeleton.health.is_dead() and skeleton.state == EnemyController.State.DEAD, "the animator leaves gameplay state alone")
 
 
 func test_the_hollow_swings_its_blade_when_it_attacks() -> void:
-	var hollow: EnemyController = HollowScene.instantiate()
-	hollow.position = Vector3(0, 0, -1.3)
-	add_child(hollow)
-	var hollow_player: AnimationPlayer = hollow.get_node("Visual/Model/AnimationPlayer")
-	check(await wait_until(func() -> bool: return hollow.is_attacking(), 20), "attacking")
+	var skeleton: EnemyController = SkeletonScene.instantiate()
+	skeleton.position = Vector3(0, 0, -1.3)
+	add_child(skeleton)
+	var skeleton_player: AnimationPlayer = skeleton.get_node("Visual/Model/AnimationPlayer")
+	check(await wait_until(func() -> bool: return skeleton.is_attacking(), 20), "attacking")
 	await wait_process_frames(2)
-	check(hollow_player.current_animation == "1H_Melee_Attack_Chop", "attack clip, got %s" % hollow_player.current_animation)
-	check(hollow.get_node("Visual/Model/Rig/Skeleton3D/RightHand/Blade") != null, "the blade rides the right hand")
+	check(skeleton_player.current_animation == "1H_Melee_Attack_Chop", "attack clip, got %s" % skeleton_player.current_animation)
+	check(skeleton.get_node("Visual/Model/Rig/Skeleton3D/RightHand/Blade") != null, "the blade rides the right hand")
