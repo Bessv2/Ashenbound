@@ -56,24 +56,14 @@ Status labels follow the charter:
 Milestone 2 is complete apart from its device check, which stays blocked
 until a phone is available.
 
-## Open pull requests
+## Pull requests
 
-Each PR is stacked on the one before it. Merge them in order.
+PRs #1 to #5 and #7 to #12 were merged into `main` on 2026-10-21, at the
+owner's request, so the web preview could be published from `main`.
 
-| PR | Branch | Content | CI |
-|---|---|---|---|
-| #1 | `ccr-f0dcdd15-eok91q` | Foundation, movement, camera, HUD, pause, CI, basic attack | Green |
-| #2 | `feature/enemy-ai` | Player health and death, Hollow, spawner | Green |
-| #3 | `feature/enemy-navigation` | Navigation mesh and path following | Green |
-| #4 | `feature/art-reference` | Concept sheet and art direction (docs) | Green |
-| #5 | `feature/dodge-skills` | Dodge | Green |
-| #6 | `feature/loot` | Loot (**parked, do not merge**) | |
-| #7 | `docs/project-charter` | This file and `CLAUDE.md` | |
-| #8 | `feature/warden-abilities` | The Warden and its three starter abilities | |
-| #9 | `feature/enemy-states` | The Hollow's states split to match the charter | Green |
-| #10 | `feature/device-testing` | PerfLog, `tools/device-test.sh`, device-test procedure | Green |
-| #11 | `feature/ci-emulator` | Device test on a CI emulator (start-up and stability only) | Green |
-| next | `feature/web-preview` | Browser build for playtesting on a phone | | |
+| PR | Branch | State |
+|---|---|---|
+| #6 | `feature/loot` | Open draft, **parked** until Milestone 4. It is based on `feature/dodge-skills` and predates the charter's six rarities and nine slots. |
 
 ## Deviations from the charter
 
