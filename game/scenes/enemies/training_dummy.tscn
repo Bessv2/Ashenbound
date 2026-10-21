@@ -2,10 +2,11 @@
 
 [ext_resource type="Script" path="res://scripts/enemies/training_dummy.gd" id="1_dummy"]
 [ext_resource type="Script" path="res://scripts/combat/health.gd" id="2_health"]
-[ext_resource type="Material" path="res://resources/materials/dummy_straw.tres" id="3_straw"]
 [ext_resource type="Material" path="res://resources/materials/hit_flash.tres" id="4_flash"]
 [ext_resource type="Material" path="res://resources/materials/pillar_stone.tres" id="5_stone"]
 [ext_resource type="Script" path="res://scripts/combat/hit_feedback.gd" id="6_feedback"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/characters/Skeleton_Warrior.glb" id="7_model"]
+[ext_resource type="Script" path="res://scripts/presentation/model_dressing.gd" id="8_dressing"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_dummy"]
 height = 1.9
@@ -18,18 +19,6 @@ bottom_radius = 0.55
 height = 0.15
 radial_segments = 12
 rings = 1
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_body"]
-material = ExtResource("3_straw")
-radius = 0.38
-height = 1.4
-
-[sub_resource type="SphereMesh" id="SphereMesh_head"]
-material = ExtResource("3_straw")
-radius = 0.24
-height = 0.48
-radial_segments = 16
-rings = 8
 
 [node name="TrainingDummy" type="StaticBody3D"]
 collision_layer = 4
@@ -56,13 +45,14 @@ flash_material = ExtResource("4_flash")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.075, 0)
 mesh = SubResource("CylinderMesh_base")
 
-[node name="Body" type="MeshInstance3D" parent="Visual"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
-mesh = SubResource("CapsuleMesh_body")
+[node name="Model" parent="Visual" instance=ExtResource("7_model")]
+transform = Transform3D(-0.8, 0, 0, 0, 0.8, 0, 0, 0, -0.8, 0, 0.15, 0)
 
-[node name="Head" type="MeshInstance3D" parent="Visual"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
-mesh = SubResource("SphereMesh_head")
+[node name="ModelDressing" type="Node" parent="." node_paths=PackedStringArray("model")]
+script = ExtResource("8_dressing")
+model = NodePath("../Visual/Model")
+hidden_parts = PackedStringArray("Skeleton_Warrior_Helmet")
+pose_animation = &"Skeleton_Inactive_Standing_Pose"
 
 [node name="HealthLabel" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0)

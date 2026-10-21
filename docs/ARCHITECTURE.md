@@ -12,23 +12,32 @@ Main (Node3D)                         scenes/main.tscn, scripts/main.gd
 ├── TestArena (Node3D)                scenes/arena/test_arena.tscn
 │   ├── WorldEnvironment              resources/environment/arena_environment.tres
 │   ├── Moonlight (DirectionalLight3D, shadows)
-│   └── Navigation (NavigationRegion3D) scripts/world/baked_navigation_region.gd, baked at load
-│       ├── Floor (StaticBody3D)      44×44 m, top at y = 0, procedural flagstone shader
-│       ├── Walls/{North,West}Wall    3 m tall (far side from the camera)
-│       ├── Walls/{South,East}Wall    1 m tall (camera side, so they never hide the player)
-│       └── Pillars/Pillar{N,S,E,W}   obstacles with an ember light on top
+│   ├── RendererLighting (Node)       scripts/world/renderer_lighting.gd, darker lighting for the web preview
+│   ├── Navigation (NavigationRegion3D) scripts/world/baked_navigation_region.gd, baked at load
+│   │   ├── Floor (StaticBody3D)      44×44 m collider, top at y = 0
+│   │   ├── Walls/{North,West}Wall    3 m tall colliders (far side from the camera)
+│   │   ├── Walls/{South,East}Wall    1 m tall colliders (camera side, so they never hide the player)
+│   │   ├── Pillars/Pillar{N,S,E,W}   KayKit pillars with an ember brazier and light
+│   │   └── Props/Barrel{NorthWest,NorthEast} obstacles in the north corners
+│   └── Dressing (Node3D)             visual only: no collision, not read by the navigation bake
+│       ├── Floor, NorthWall, WestWall, SouthColonnade, EastColonnade
+│       │                             scripts/world/tile_grid.gd, KayKit pieces as MultiMesh chunks
+│       └── CornerPillar, Torches (with lights), Banners
 ├── Player (CharacterBody3D)          the Warden: scenes/player/warden.tscn, scripts/player/player_controller.gd
 │   ├── CollisionShape3D              capsule, radius 0.4 m, height 1.8 m
-│   ├── Visual (Node3D)               turned to face movement or the attack; topples on death
-│   │   └── WeaponPivot/Blade         scripts/player/weapon_swing.gd, placeholder swing
+│   ├── Visual (Node3D)               turned to face movement or the attack
+│   │   ├── Model                     KayKit Knight (Knight.glb), 0.8 scale, turned to face −Z
+│   │   ├── EmberLight (OmniLight3D)  keeps the Warden readable on dark floors
+│   │   └── GuardRing                 shown while Bulwark Guard is up
 │   ├── MeleeAttack (Node)            scripts/combat/melee_attack.gd + resources/combat/player_basic_attack.tres
 │   ├── Health (Node)                 100 HP
 │   ├── HitFeedback (Node)            scripts/combat/hit_feedback.gd, red damage numbers
 │   ├── Dodge (Node)                  scripts/combat/dodge.gd + resources/combat/player_dodge.tres
-│   ├── DodgeLean (Node)              scripts/player/dodge_lean.gd, placeholder lean and squash
 │   ├── CleaveAttack, Cleave          MeleeAttack (warden_cleave.tres) + CleaveAbility
 │   ├── CounterAttack, Guard          MeleeAttack (warden_guard_counter.tres) + GuardAbility
-│   └── Brand (Node)                  BrandAbility; puts a Burning node on its target
+│   ├── Brand (Node)                  BrandAbility; puts a Burning node on its target
+│   ├── ModelDressing (Node)          scripts/presentation/model_dressing.gd, Warden material, hides spare weapons
+│   └── Animator (Node)               scripts/presentation/character_animator.gd
 ├── Enemies (Node3D)
 │   ├── TrainingDummy{East,North,West} scenes/enemies/training_dummy.tscn, 5 m from the start
 │   │   ├── Health (Node)             scripts/combat/health.gd, 50 HP
@@ -39,7 +48,9 @@ Main (Node3D)                         scenes/main.tscn, scripts/main.gd
 │       └── Hollow (CharacterBody3D)  scenes/enemies/hollow.tscn, spawned at runtime
 │           ├── Health (30 HP), HitFeedback, MeleeAttack (targets layer 2)
 │           ├── NavigationAgent (NavigationAgent3D) plans the chase
-│           └── Visual/{WeaponPivot, Telegraph}
+│           ├── Visual/Model           KayKit Skeleton Warrior, blade on the right hand bone
+│           ├── Visual/Telegraph       red attack warning
+│           └── ModelDressing, Animator glowing eyes; chop, run, death clips
 ├── CameraRig (Node3D)                scenes/camera/isometric_camera_rig.tscn
 │   └── Camera3D                      orthographic, size 16 m
 ├── HUD (CanvasLayer)                 ui/hud/hud.tscn
@@ -207,7 +218,7 @@ enemies and the dodge came after it, and are described below.
 - **`HitFeedback`** (Node): on damage, flashes every mesh under a visual root
   with an overlay material, and spawns a floating `DamageNumber` in a
   configurable color (ember for enemies, red for the player).
-- **Feedback** (`WeaponSwing`, `DamageNumber`, `HitFeedback`) uses tweens on
+- **Feedback** (`DamageNumber`, `HitFeedback`) uses tweens on
   the physics clock, so it pauses with the game and works with physics
   interpolation.
 - **`MeleeAttack.cancel()`** abandons an attack in progress without resolving
@@ -243,9 +254,8 @@ enemies and the dodge came after it, and are described below.
   - When the dash ends, horizontal speed is capped to running speed, so the
     body slides about 0.2 m rather than carrying dash speed.
   - Death cancels a dash and its invulnerability.
-- **`DodgeLean`:** leans the visual 30° forward and squashes it while the dash
-  runs, then straightens it. On `canceled` it straightens at once, so the death
-  topple starts from rest.
+- **Animation:** the Warden's `CharacterAnimator` plays `Dodge_Forward`, sped
+  up so the clip fits the dash.
 
 Known simplifications: the dash is blocked by enemies like any movement (it
 does not pass through them), and there is no visual cue yet for an evaded hit
@@ -289,8 +299,9 @@ The design, numbers and acceptance checks are in
   - While an ability is busy, the controller uses that ability's movement
     multiplier and facing.
   - Death cancels all abilities.
-- **`WeaponSwing.attacks`:** a list of attacks, so the basic attack and Cleave
-  sweep the same greatsword.
+- **Animation:** the basic attack plays `2H_Melee_Attack_Slice`, Cleave
+  `2H_Melee_Attack_Spin`, Guard `Block`, Brand `Spellcast_Shoot` (set on the
+  Warden's Animator node).
 - **`Hud.track_abilities()`** labels each ability button after the ability
   bound to its action, and wires its cooldown sweep.
 
@@ -482,3 +493,28 @@ counted in the summary, but do not fail it. Run them with `tools/test.sh`.
 - One responsibility per script; UI scripts live next to their scenes in `ui/`.
 - Add folders when a system's implementation begins. Do not create empty module
   folders ahead of time.
+
+## Presentation: models and animation
+
+Art arrives as imported glTF models from the KayKit packs
+([ART_ASSET_PIPELINE.md](ART_ASSET_PIPELINE.md)). Gameplay never reads them.
+
+- **`ModelDressing`** (Node): on ready, overrides the model's material, gives
+  named parts their own material (the skeleton's glowing eyes), hides named
+  parts, and can hold one clip as a pose (the dormant training targets).
+- **`CharacterAnimator`** (Node): plays the model's clips from gameplay
+  signals. Locomotion (idle or run) follows the body's horizontal speed.
+  `MeleeAttack.started`, `Ability.activated` and `Dodge.started` play one-shot
+  clips, sped up to fit the action (an attack's windup plus recovery, a dodge's
+  duration) up to 3×. `Health.hit` plays a flinch unless an action is playing;
+  `Health.died` plays the death clip and holds it. It reads state and never
+  changes it, so combat timing, hit detection and telegraphs stay with the
+  gameplay nodes. Clips pause with the game.
+- **`TileGrid`** (Node3D): lays out repeated level pieces as MultiMesh chunks
+  (5 × 5 cells by default), so the floor is 4 draw calls instead of 100. Chunks
+  stay small because a mesh instance on mobile is lit by at most 8 lights.
+  `placed` records every placement for tests, since headless runs do not keep
+  MultiMesh transforms.
+- **`RendererLighting`** (Node): when the Compatibility renderer runs (the web
+  preview), swaps in `arena_environment_compatibility.tres` and dims the
+  moonlight, because that renderer lights the same scene brighter and flatter.

@@ -27,6 +27,7 @@ Status labels follow the charter:
 | 2026-10-21 | **The Warden's starter abilities are Cleave, Bulwark Guard and Ember Brand**, one per specialization direction. Skill trees for each class come later and are designed per class. |
 | 2026-10-21 | **Milestone 3 content:** the first boss is **the Ashen Lord**, with distinct phases. **Skeleton Warriors** are the basic enemy and replace the placeholder Hollow; a **Dark Cultist** is the ranged second type; a **Fallen Knight** is the elite. |
 | 2026-10-21 | Test a demo build on an Android device before Milestone 3 work starts. The owner's phone is their daily driver, so cloud options were explored: the CI emulator proves the game starts without crashing but cannot draw it. |
+| 2026-10-21 | **Art pass now**, ahead of Milestone 3, with free CC0 assets (KayKit), keeping Godot. |
 | 2026-10-21 | **A browser build is a playtest preview** ([WEB_PREVIEW.md](WEB_PREVIEW.md)), not a platform change: Android stays the target. |
 
 ## Milestones
@@ -69,8 +70,11 @@ owner's request, so the web preview could be published from `main`.
 
 - **Names:** the hero is the Warden. The main scene's slot for it is still
   called `Player`, because that slot will hold any class. The arena is not yet
-  framed as the Fallen Marches. The
-  Hollow is a placeholder enemy that is not on the charter's list.
+  framed as the Fallen Marches. The enemy now looks like a Skeleton Warrior but
+  is still called the Hollow in code; the rename comes with Milestone 3.
+- **Art ahead of schedule:** the owner asked for a first art pass before
+  Milestone 3. It uses third-party CC0 models
+  ([ART_ASSET_PIPELINE.md](ART_ASSET_PIPELINE.md)), not final art.
 - **Docs:** there is no `GAME_DESIGN.md` or `TEST_PLAN.md` yet. The test
   approach is described in [ARCHITECTURE.md](ARCHITECTURE.md#tests).
 - **Concept art location:** the art is in `docs/art/`. That is outside the

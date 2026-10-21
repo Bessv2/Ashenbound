@@ -121,9 +121,17 @@ jobs:
       - name: Show the emulator test summary
         if: always()
         run: |
+          # The emulator step may have failed before writing anything (it is
+          # allowed to); there is then nothing to show, and that is not an error.
+          shopt -s nullglob
+          echo "emulator step outcome: ${{ steps.emulator.outcome }}"
+          results=(build/device-test/*/)
+          if (( ${#results[@]} == 0 )); then
+            echo "No emulator test results."
+            exit 0
+          fi
           for summary in build/device-test/*/summary.md; do cat "$summary"; done
           for errors in build/device-test/*/errors.txt; do echo "--- $errors"; head -40 "$errors"; done
-          echo "emulator step outcome: ${{ steps.emulator.outcome }}"
           for dir in build/device-test/*/; do
             echo "--- Godot lines in the log (${dir})"
             grep -E "[IWE]/godot" "${dir}logcat.txt" | head -30 || true

@@ -3,7 +3,7 @@ extends CharacterBody3D
 ## Moves a character across the ground from MovementInput, relative to a camera,
 ## starts its attack while the attack action is held, starts its abilities on
 ## their actions, and dodges when the dodge action is pressed. When its Health
-## runs out it topples over and stops taking input.
+## runs out it stops taking input (its CharacterAnimator plays the death clip).
 ##
 ## Priority: a dodge cancels any ability or attack in progress; an ability
 ## cancels the basic attack; nothing else starts while an ability plays out.
@@ -116,11 +116,6 @@ func _on_died() -> void:
 		dodge.cancel()
 	for ability in abilities:
 		ability.cancel()
-	if visual:
-		# The visual's origin is at the feet, so this topples it forward.
-		var tween := create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
-		tween.tween_property(visual, "rotation:x", -PI * 0.5, 0.4) \
-				.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 
 
 func _start_abilities() -> void:

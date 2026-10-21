@@ -116,15 +116,6 @@ func test_cleave_cancels_the_basic_attack_and_holds_it_off() -> void:
 	check(basic_starts[0] == 2, "basic attacks resume afterwards")
 
 
-func test_the_greatsword_swings_for_both_attacks() -> void:
-	await wait_physics_frames(2)
-	var pivot: WeaponSwing = warden.get_node("Visual/WeaponPivot")
-	var rest := pivot.rotation.y
-	_tap(GameplayActions.ABILITY_1)
-	await wait_physics_frames(3)
-	check(not is_equal_approx(pivot.rotation.y, rest), "the cleave moves the blade")
-
-
 # --- Bulwark Guard --------------------------------------------------------
 
 func test_guard_reduces_a_hit_and_counters_once() -> void:

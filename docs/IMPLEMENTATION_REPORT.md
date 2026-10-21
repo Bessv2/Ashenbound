@@ -477,3 +477,73 @@ Checks:
     with backups.
 
 Milestone 2 is now complete apart from its device check, which is blocked.
+
+## 12. First art pass (branch `feature/art-pass`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: Art pass (owner request, ahead of Milestone 3)
+Status: Validated, verified in runtime (desktop software Vulkan and headless Chromium); not verified on device
+
+Changes:
+- The Warden is the KayKit Knight with its greatsword, recoloured to
+  blackened iron, ember and crimson (tools/art/make_warden_texture.py), with
+  an ember light that follows it.
+- The Hollow is a KayKit Skeleton Warrior with a blade on its hand bone and
+  glowing eyes. Training targets are dormant skeletons.
+- CharacterAnimator plays idle, run, attack, Cleave, Guard, Brand, dodge,
+  hit and death clips from gameplay signals; ModelDressing applies materials,
+  hides spare parts and holds poses.
+- The arena: KayKit floor tiles, walls, colonnades, pillars, torches, banners
+  and barrels; TileGrid lays repeated pieces out as MultiMesh chunks. Fog,
+  stronger moonlight and ambient light.
+- RendererLighting gives the web preview's Compatibility renderer darker
+  lighting.
+- Removed the placeholder WeaponSwing, DodgeLean and death topple, and the
+  materials only they used.
+- docs/ART_ASSET_PIPELINE.md records sources, commits, licences and changes.
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 156 passed, 0 failed (11 new tests: 7 animation, 4 dressing)
+- Command: probe, Cleave mapped to the wrong clip and the west wall moved 2 m
+  Exit code: 1
+  Result: the animation and wall tests failed; files restored and compared byte for byte
+- Command: rendered main scene under Xvfb, software Vulkan, PerfLog
+  Exit code: 0
+  Result: draw_calls about 192 (was about 106); screenshots inspected
+- Command: tools/export-web.sh, then node tools/web/smoke.js build/web
+  Exit code: 0
+  Result: web smoke test passed; index.pck 4.2 MB (4.1 MB gzipped)
+
+Manual checks:
+- Screenshots: the Warden, skeletons and dummies face the right way, the
+  greatsword and blade sit in the hands, walls stand on their colliders,
+  torches and banners hang on the walls, the web build is no longer washed out.
+
+Not tested:
+- Any physical phone: frame rate with skinned characters, readability at
+  arm's length.
+- The Android APK with the new art (CI builds it).
+
+Blockers:
+- None.
+
+Known risks:
+- Draw calls nearly doubled. Each character is 6 to 10 skinned meshes plus
+  shadows. Merge meshes or drop small-part shadows if a phone struggles.
+- Clips are sped up to fit fast actions (up to 3×), so some read as hurried.
+- Desktop Compatibility rendering crashes in the sandbox, so the web look was
+  tuned in headless Chromium only.
+
+Recommended next task:
+- Owner playtest of the web preview; then the Milestone 3 specification.
+
+Acceptance criteria:
+- [x] Third-party assets are CC0, with licence files and provenance
+- [x] Gameplay unchanged: all previous tests pass; animation is presentation only
+- [x] The project imports, runs and exports (desktop, web)
+- [ ] Verified on a phone
+```
