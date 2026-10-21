@@ -418,6 +418,16 @@ Milestone 3, step 1 ([dungeons/ashen_crypt.md](dungeons/ashen_crypt.md)).
   its `seal_gates` close and its encounter starts; when the encounter is
   cleared, `seal_gates` and `exit_gates` open and the player heals
   `heal_on_clear` (30) through `Health.heal()`. Each happens once.
+- **Ranged enemies (step 3).** `RangedAttack` extends `MeleeAttack`: the same
+  windup, release and recovery, but the release spawns a `Projectile` (data in
+  `ProjectileAttackData`: speed, range = `reach`, width, height). The
+  projectile sweeps a ray each physics tick, damages the first Health it
+  touches on the target layer, and stops at walls or at its range. A dodging
+  (invulnerable) target takes nothing; the shot is spent either way.
+  `AttackTelegraph` draws a strip along the flight path for projectile
+  attacks. `EnemyBehavior.retreat_distance` makes an enemy back away from a
+  close player (unless it is against a wall), and `needs_line_of_sight` keeps
+  it walking until no wall is in the way. The Dark Cultist uses all three.
 - **See-through walls.** North walls, gates and tall pillars use
   `resources/materials/dungeon_cutout.tres`, a shader that draws the KayKit
   texture but cuts a dithered hole wherever the surface is between the camera

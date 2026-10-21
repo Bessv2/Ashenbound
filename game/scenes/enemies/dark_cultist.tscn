@@ -1,0 +1,96 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/enemy_controller.gd" id="1_controller"]
+[ext_resource type="Resource" path="res://resources/enemies/dark_cultist_movement.tres" id="2_movement"]
+[ext_resource type="Resource" path="res://resources/enemies/dark_cultist_behavior.tres" id="3_behavior"]
+[ext_resource type="Script" path="res://scripts/combat/health.gd" id="4_health"]
+[ext_resource type="Script" path="res://scripts/combat/hit_feedback.gd" id="5_feedback"]
+[ext_resource type="Material" path="res://resources/materials/hit_flash.tres" id="6_flash"]
+[ext_resource type="Script" path="res://scripts/combat/ranged_attack.gd" id="7_attack"]
+[ext_resource type="Resource" path="res://resources/enemies/dark_cultist_bolt.tres" id="8_attack_data"]
+[ext_resource type="Script" path="res://scripts/combat/attack_telegraph.gd" id="10_telegraph"]
+[ext_resource type="Material" path="res://resources/materials/cultist_eyes.tres" id="12_eyes"]
+[ext_resource type="Material" path="res://resources/materials/telegraph.tres" id="14_telegraph"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/characters/Skeleton_Mage.glb" id="15_model"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/weapons/Skeleton_Staff.gltf" id="16_staff"]
+[ext_resource type="Script" path="res://scripts/presentation/model_dressing.gd" id="17_dressing"]
+[ext_resource type="Script" path="res://scripts/presentation/character_animator.gd" id="18_animator"]
+[ext_resource type="PackedScene" path="res://scenes/combat/shadow_bolt.tscn" id="19_bolt"]
+[ext_resource type="Material" path="res://resources/materials/cultist_model.tres" id="20_model_material"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.4
+height = 1.8
+
+[node name="DarkCultist" type="CharacterBody3D" node_paths=PackedStringArray("attack", "health", "visual", "navigation")]
+collision_layer = 4
+collision_mask = 7
+script = ExtResource("1_controller")
+movement = ExtResource("2_movement")
+behavior = ExtResource("3_behavior")
+attack = NodePath("ShadowBolt")
+health = NodePath("Health")
+visual = NodePath("Visual")
+navigation = NodePath("NavigationAgent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("4_health")
+max_health = 24
+
+[node name="HitFeedback" type="Node" parent="." node_paths=PackedStringArray("health", "visual")]
+script = ExtResource("5_feedback")
+health = NodePath("../Health")
+visual = NodePath("../Visual")
+flash_material = ExtResource("6_flash")
+number_height = 2.3
+
+[node name="ShadowBolt" type="Node" parent="."]
+script = ExtResource("7_attack")
+data = ExtResource("8_attack_data")
+target_mask = 2
+projectile_scene = ExtResource("19_bolt")
+
+[node name="NavigationAgent" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.5
+path_height_offset = 0.5
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Model" parent="Visual" instance=ExtResource("15_model")]
+transform = Transform3D(-0.8, 0, 0, 0, 0.8, 0, 0, 0, -0.8, 0, 0, 0)
+
+[node name="RightHand" type="BoneAttachment3D" parent="Visual/Model/Rig/Skeleton3D"]
+bone_name = "handslot.r"
+
+[node name="Staff" parent="Visual/Model/Rig/Skeleton3D/RightHand" instance=ExtResource("16_staff")]
+
+[node name="Telegraph" type="MeshInstance3D" parent="Visual" node_paths=PackedStringArray("attack")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
+material_override = ExtResource("14_telegraph")
+script = ExtResource("10_telegraph")
+attack = NodePath("../../ShadowBolt")
+
+[node name="ModelDressing" type="Node" parent="." node_paths=PackedStringArray("model")]
+script = ExtResource("17_dressing")
+model = NodePath("../Visual/Model")
+material = ExtResource("20_model_material")
+part_materials = Dictionary[String, Material]({
+"Skeleton_Mage_Eyes": ExtResource("12_eyes")
+})
+
+[node name="Animator" type="Node" parent="." node_paths=PackedStringArray("body", "enemy", "animation_player", "health", "attacks")]
+script = ExtResource("18_animator")
+body = NodePath("..")
+enemy = NodePath("..")
+animation_player = NodePath("../Visual/Model/AnimationPlayer")
+health = NodePath("../Health")
+attacks = [NodePath("../ShadowBolt")]
+attack_animations = Array[StringName]([&"Spellcast_Shoot"])
+idle_animation = &"Idle_Combat"
+run_animation = &"Running_B"
+death_animation = &"Death_C_Skeletons"
+run_reference_speed = 3.0

@@ -6,7 +6,7 @@ reset and replay. The content was decided by the owner on 2026-10-21: Skeleton
 Warriors and Dark Cultists in the waves, a Fallen Knight elite, and the Ashen
 Lord as the boss.
 
-**Status:** specification, being built. Steps 1 and 2 of the build order are
+**Status:** specification, being built. Steps 1 to 3 of the build order are
 done; the rest is not implemented yet. Numbers are first-pass tuning to be adjusted in playtests.
 
 **Gate (charter):** multiple consecutive runs complete correctly with no stale
@@ -60,7 +60,7 @@ KayKit placeholders.
 | Enemy | HP | Attack | Movement | Model |
 |---|---|---|---|---|
 | **Skeleton Warrior** (today's Hollow, renamed) | 30 | Chop, 12 damage, 0.5 s windup, 1.4 m reach | 3.4 m/s | Skeleton Warrior with blade |
-| **Dark Cultist** | 24 | Shadow bolt: 0.7 s windup with a line telegraph, a projectile at 10 m/s, 10 damage, 12 m range, blocked by walls, dodgeable | Keeps 6 to 9 m away, backs off if the player is closer than 4 m | KayKit Mage, recoloured to black and violet |
+| **Dark Cultist** | 24 | Shadow bolt: 0.7 s windup with a line telegraph, a projectile at 10 m/s, 10 damage, 12 m range, blocked by walls, dodgeable | 3.0 m/s. Walks to within 9 m and a clear line of sight, then casts; backs away if the player is closer than 5 m, unless its back is to a wall | KayKit Skeleton Mage with its skull staff, robe recoloured to black and violet, violet eyes |
 | **Fallen Knight** (elite) | 140 | Overhead cleave, 26 damage, 0.9 s windup, 2 m reach, 100° arc. Every third attack is a shield bash: 1.2 m reach, 8 damage, pushes the player back 3 m | 2.6 m/s. Takes half damage from the front while not attacking | Skeleton Warrior at 1.25× with a large shield and axe, darker material |
 
 The elite gets a health bar above it and a name label, so the player knows
@@ -163,10 +163,11 @@ Each step is its own branch and PR, tested, and published to the web preview.
    encounters and waves; rising spawns; the encounter in the current arena
    replaces the endless spawner; a placeholder victory screen and replay.
 2. **The crypt:** the four rooms, corridors, gates and room triggers. *Done.*
-   Until steps 3 to 5 land, the rooms hold Skeleton Warriors only: the Chapel
-   fights two waves of four, and the Throne two waves (four, then six) in place
-   of the Ashen Lord.
-3. **Dark Cultist:** ranged attack, projectile, keep-away movement.
+   Until steps 4 and 5 land, the Chapel's second wave is four Skeleton
+   Warriors (for the Fallen Knight and two), and the Throne holds two waves of
+   Skeleton Warriors (four, then six) in place of the Ashen Lord.
+3. **Dark Cultist:** ranged attack, projectile, keep-away movement. *Done.*
+   One joins the Ossuary's second wave and two the Chapel's first.
 4. **Fallen Knight:** heavy attacks, shield bash, frontal guard, elite bar.
 5. **Ashen Lord:** the boss, three phases, summons, Ember Ring, boss bar.
 6. **Run summary and Ash:** result screen, stats, reward granted once,

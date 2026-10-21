@@ -1,0 +1,46 @@
+"""Makes the Dark Cultist's texture from the KayKit skeleton palette texture:
+the Skeleton Mage's maroon robe and hat become a black-violet, the occult
+colour of the cultists (docs/dungeons/ashen_crypt.md). Other colours are left
+alone. Colours blend by how close each pixel's hue is to the robe's, so the
+palette's gradients stay smooth.
+
+Usage: python3 tools/art/make_cultist_texture.py skeleton_texture.png cultist_texture.png
+Needs Pillow. The source is in KayKit Character Pack: Skeletons 1.0 (CC0),
+Characters/gltf/skeleton_texture.png (embedded in Skeleton_Mage.glb).
+"""
+import colorsys
+import sys
+
+from PIL import Image
+
+
+def clamp(x):
+    return max(0.0, min(1.0, x))
+
+
+def mix(a, b, t):
+    return tuple(a[i] + (b[i] - a[i]) * t for i in range(3))
+
+
+def recolor(rgb):
+    h, s, v = colorsys.rgb_to_hsv(*rgb)
+    deg = h * 360
+    violet = colorsys.hsv_to_rgb(272 / 360, 0.5, 0.08 + v * 0.55)
+    # The robe sits between about 315° and 345°, well saturated.
+    w_robe = clamp(1 - abs(deg - 332) / 22) * clamp((s - 0.35) / 0.1)
+    return mix(rgb, violet, w_robe)
+
+
+def main(source, destination):
+    image = Image.open(source).convert("RGBA")
+    pixels = image.load()
+    for y in range(image.height):
+        for x in range(image.width):
+            r, g, b, a = pixels[x, y]
+            out = recolor((r / 255, g / 255, b / 255))
+            pixels[x, y] = tuple(round(c * 255) for c in out) + (a,)
+    image.save(destination)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1], sys.argv[2])
