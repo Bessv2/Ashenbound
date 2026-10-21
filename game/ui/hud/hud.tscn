@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://ui/hud/hud.gd" id="1_hud"]
 [ext_resource type="Script" path="res://ui/hud/touch_joystick.gd" id="2_joystick"]
+[ext_resource type="Script" path="res://ui/hud/touch_action_button.gd" id="3_action_button"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -65,7 +66,7 @@ offset_right = 560.0
 grow_vertical = 0
 script = ExtResource("2_joystick")
 
-[node name="ControlsHint" type="Label" parent="Root"]
+[node name="AttackButton" type="Control" parent="Root"]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 3
@@ -73,12 +74,28 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -560.0
-offset_top = -56.0
-offset_right = -32.0
-offset_bottom = -24.0
+offset_left = -268.0
+offset_top = -268.0
+offset_right = -48.0
+offset_bottom = -48.0
 grow_horizontal = 0
 grow_vertical = 0
+script = ExtResource("3_action_button")
+
+[node name="ControlsHint" type="Label" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -340.0
+offset_top = -56.0
+offset_right = 340.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
 theme_type_variation = &"DimLabel"
-text = "WASD / Arrows: move     Esc / P: pause"
-horizontal_alignment = 2
+text = "WASD / Arrows: move     J / Space: attack     Esc / P: pause"
+horizontal_alignment = 1

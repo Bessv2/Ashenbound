@@ -36,10 +36,10 @@ func toggle() -> void:
 
 
 func set_paused(paused: bool) -> void:
-	# Drop held movement on every transition. Input that ends while the game is
-	# paused or unfocused (a lifted finger, a released key) is never delivered
-	# to gameplay, so anything still held would otherwise stay held.
-	MovementInput.release_all()
+	# Drop held gameplay input on every transition. Input that ends while the
+	# game is paused or unfocused (a lifted finger, a released key) is never
+	# delivered to gameplay, so anything still held would otherwise stay held.
+	GameplayActions.release_all()
 	if get_tree().paused == paused:
 		return
 	get_tree().paused = paused

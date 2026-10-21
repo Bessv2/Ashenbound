@@ -66,7 +66,7 @@ func _run_test(suite_script: GDScript, test_name: StringName) -> PackedStringArr
 func _reset_global_state() -> void:
 	paused = false
 	Engine.physics_ticks_per_second = 60
-	MovementInput.release_all()
+	GameplayActions.release_all()
 
 
 func _suite_files() -> PackedStringArray:

@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://scenes/camera/isometric_camera_rig.tscn" id="5_camera"]
 [ext_resource type="PackedScene" path="res://ui/hud/hud.tscn" id="6_hud"]
 [ext_resource type="PackedScene" path="res://ui/pause_menu/pause_menu.tscn" id="7_menu"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/training_dummy.tscn" id="8_dummy"]
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
@@ -18,6 +19,17 @@ script = ExtResource("2_pause")
 
 [node name="Player" parent="." node_paths=PackedStringArray("camera") instance=ExtResource("4_player")]
 camera = NodePath("../CameraRig/Camera3D")
+
+[node name="Enemies" type="Node3D" parent="."]
+
+[node name="TrainingDummyEast" parent="Enemies" instance=ExtResource("8_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 0)
+
+[node name="TrainingDummyNorth" parent="Enemies" instance=ExtResource("8_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
+
+[node name="TrainingDummyWest" parent="Enemies" instance=ExtResource("8_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 0)
 
 [node name="CameraRig" parent="." node_paths=PackedStringArray("target") instance=ExtResource("5_camera")]
 target = NodePath("../Player")
