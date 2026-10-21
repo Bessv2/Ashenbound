@@ -42,6 +42,19 @@ func track_dodge(dodge: Dodge) -> void:
 	_dodge_button.cooldown = dodge.cooldown_fraction
 
 
+## Labels each ability button after the ability on its action and shows that
+## ability's cooldown. Buttons whose action has no ability are hidden.
+func track_abilities(abilities: Array[Ability]) -> void:
+	for button: TouchActionButton in [%CleaveButton, %GuardButton, %BrandButton]:
+		var match_index := abilities.find_custom(func(a: Ability) -> bool: return a.action == button.action)
+		button.visible = match_index >= 0
+		if match_index >= 0:
+			var ability := abilities[match_index]
+			button.label = ability.display_name
+			button.cooldown = ability.cooldown_fraction
+			button.queue_redraw()
+
+
 func _update_health() -> void:
 	_health_bar.max_value = _health.max_health
 	_health_bar.value = _health.current

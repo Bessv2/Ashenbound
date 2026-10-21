@@ -14,6 +14,12 @@
 [ext_resource type="Resource" path="res://resources/combat/player_dodge.tres" id="13_dodge_data"]
 [ext_resource type="Script" path="res://scripts/player/dodge_lean.gd" id="14_lean"]
 [ext_resource type="Material" path="res://resources/materials/hit_flash.tres" id="11_flash"]
+[ext_resource type="Script" path="res://scripts/abilities/cleave_ability.gd" id="15_cleave"]
+[ext_resource type="Resource" path="res://resources/combat/warden_cleave.tres" id="16_cleave_data"]
+[ext_resource type="Script" path="res://scripts/abilities/guard_ability.gd" id="17_guard"]
+[ext_resource type="Resource" path="res://resources/combat/warden_guard_counter.tres" id="18_counter_data"]
+[ext_resource type="Script" path="res://scripts/abilities/brand_ability.gd" id="19_brand"]
+[ext_resource type="Material" path="res://resources/materials/guard_ring.tres" id="20_guard_ring"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
@@ -30,9 +36,20 @@ size = Vector3(0.36, 0.14, 0.3)
 
 [sub_resource type="BoxMesh" id="BoxMesh_blade"]
 material = ExtResource("8_blade")
-size = Vector3(0.08, 0.04, 1.1)
+size = Vector3(0.16, 0.05, 1.6)
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("visual", "attack", "health", "dodge")]
+[sub_resource type="BoxMesh" id="BoxMesh_crossguard"]
+material = ExtResource("4_accent")
+size = Vector3(0.42, 0.07, 0.08)
+
+[sub_resource type="TorusMesh" id="TorusMesh_guard"]
+material = ExtResource("20_guard_ring")
+inner_radius = 0.75
+outer_radius = 0.9
+rings = 32
+ring_segments = 8
+
+[node name="Warden" type="CharacterBody3D" node_paths=PackedStringArray("visual", "attack", "health", "dodge", "abilities")]
 collision_layer = 2
 collision_mask = 5
 script = ExtResource("1_controller")
@@ -41,6 +58,7 @@ visual = NodePath("Visual")
 attack = NodePath("MeleeAttack")
 health = NodePath("Health")
 dodge = NodePath("Dodge")
+abilities = [NodePath("Cleave"), NodePath("Guard"), NodePath("Brand")]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -56,14 +74,23 @@ mesh = SubResource("CapsuleMesh_body")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, -0.4)
 mesh = SubResource("BoxMesh_facing")
 
-[node name="WeaponPivot" type="Node3D" parent="Visual" node_paths=PackedStringArray("attack")]
+[node name="WeaponPivot" type="Node3D" parent="Visual" node_paths=PackedStringArray("attacks")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 script = ExtResource("7_swing")
-attack = NodePath("../../MeleeAttack")
+attacks = [NodePath("../../MeleeAttack"), NodePath("../../CleaveAttack")]
 
 [node name="Blade" type="MeshInstance3D" parent="Visual/WeaponPivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.85)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.05)
 mesh = SubResource("BoxMesh_blade")
+
+[node name="Crossguard" type="MeshInstance3D" parent="Visual/WeaponPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
+mesh = SubResource("BoxMesh_crossguard")
+
+[node name="GuardRing" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+cast_shadow = 0
+mesh = SubResource("TorusMesh_guard")
 
 [node name="MeleeAttack" type="Node" parent="."]
 script = ExtResource("5_attack")
@@ -90,3 +117,33 @@ health = NodePath("../Health")
 script = ExtResource("14_lean")
 dodge = NodePath("../Dodge")
 visual = NodePath("../Visual")
+
+[node name="CleaveAttack" type="Node" parent="."]
+script = ExtResource("5_attack")
+data = ExtResource("16_cleave_data")
+
+[node name="Cleave" type="Node" parent="." node_paths=PackedStringArray("attack")]
+script = ExtResource("15_cleave")
+display_name = "CLEAVE"
+action = &"ability_1"
+cooldown = 4.0
+attack = NodePath("../CleaveAttack")
+
+[node name="CounterAttack" type="Node" parent="."]
+script = ExtResource("5_attack")
+data = ExtResource("18_counter_data")
+
+[node name="Guard" type="Node" parent="." node_paths=PackedStringArray("counter", "health", "visual")]
+script = ExtResource("17_guard")
+display_name = "GUARD"
+action = &"ability_2"
+cooldown = 6.0
+counter = NodePath("../CounterAttack")
+health = NodePath("../Health")
+visual = NodePath("../Visual/GuardRing")
+
+[node name="Brand" type="Node" parent="."]
+script = ExtResource("19_brand")
+display_name = "BRAND"
+action = &"ability_3"
+cooldown = 7.0

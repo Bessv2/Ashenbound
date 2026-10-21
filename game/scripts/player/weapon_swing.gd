@@ -1,9 +1,11 @@
 class_name WeaponSwing
 extends Node3D
-## Placeholder weapon animation: sweeps this pivot across the attack arc
-## during the windup and returns it to rest during recovery. Visual only.
+## Placeholder weapon animation: sweeps this pivot across an attack's arc
+## during its windup and returns it to rest during its recovery. Visual only.
+## Several attacks can share one weapon (the Warden's basic attack and Cleave);
+## the one that started last drives the swing.
 
-@export var attack: MeleeAttack
+@export var attacks: Array[MeleeAttack] = []
 ## Yaw at rest, relative to the facing. Positive is to the character's left.
 @export_range(-180.0, 180.0, 1.0, "degrees") var rest_degrees: float = 70.0
 
@@ -12,11 +14,11 @@ var _tween: Tween
 
 func _ready() -> void:
 	rotation.y = deg_to_rad(rest_degrees)
-	if attack:
-		attack.started.connect(_on_attack_started)
+	for attack in attacks:
+		attack.started.connect(_on_attack_started.bind(attack).unbind(1))
 
 
-func _on_attack_started(_direction: Vector3) -> void:
+func _on_attack_started(attack: MeleeAttack) -> void:
 	if _tween:
 		_tween.kill()
 	# Sweep left to right across the hit arc, landing as the hit resolves.

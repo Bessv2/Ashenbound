@@ -2,7 +2,7 @@ extends "res://tests/framework/test_case.gd"
 ## Tests for the Hollow's AI against the real player, on an open, navigable
 ## floor. Finding a way around obstacles is in test_enemy_navigation.gd.
 
-const PlayerScene := preload("res://scenes/player/player.tscn")
+const PlayerScene := preload("res://scenes/player/warden.tscn")
 const HollowScene := preload("res://scenes/enemies/hollow.tscn")
 
 var player: PlayerController

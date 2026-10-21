@@ -61,6 +61,18 @@ dodge={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"device":-1,"physical_keycode":4194325), Object(InputEventKey,"device":-1,"physical_keycode":75,"unicode":107)]
 }
+ability_1={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"device":-1,"physical_keycode":81,"unicode":113), Object(InputEventKey,"device":-1,"physical_keycode":49,"unicode":49)]
+}
+ability_2={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"device":-1,"physical_keycode":69,"unicode":101), Object(InputEventKey,"device":-1,"physical_keycode":50,"unicode":50)]
+}
+ability_3={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"device":-1,"physical_keycode":82,"unicode":114), Object(InputEventKey,"device":-1,"physical_keycode":51,"unicode":51)]
+}
 toggle_pause={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"device":-1,"physical_keycode":4194305), Object(InputEventKey,"device":-1,"physical_keycode":80,"unicode":112)]

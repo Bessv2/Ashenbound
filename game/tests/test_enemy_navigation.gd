@@ -2,7 +2,7 @@ extends "res://tests/framework/test_case.gd"
 ## Tests for how the Hollow finds its way to the player around obstacles, and
 ## for the navigation mesh the arena bakes at load.
 
-const PlayerScene := preload("res://scenes/player/player.tscn")
+const PlayerScene := preload("res://scenes/player/warden.tscn")
 const HollowScene := preload("res://scenes/enemies/hollow.tscn")
 
 ## A wall across the middle of the level: 8 m wide, 1 m thick and 3 m tall.
