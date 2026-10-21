@@ -11,8 +11,8 @@ a settings structure, plus a first combat loop:
 
 - a melee attack with aim assist;
 - training dummies;
-- Hollows, enemies that chase you, telegraph their attacks with a red ground
-  marker, and respawn;
+- Hollows, enemies that find their way to you around walls and pillars,
+  telegraph their attacks with a red ground marker, and respawn;
 - player health, death and restart.
 
 Loot, inventory, accounts and the backend have not been started.
@@ -24,9 +24,9 @@ Loot, inventory, accounts and the backend have not been started.
 ```
 game/             Godot project (open this folder in the editor)
   scenes/         Gameplay scenes: main entry scene, arena, player, camera rig
-  scripts/        Gameplay scripts: input, player, camera, combat, enemies, core
+  scripts/        Gameplay scripts: input, player, camera, combat, enemies, world, core
   ui/             HUD, touch joystick and buttons, pause menu, death screen, theme
-  resources/      Materials, environment, movement, attack and enemy data
+  resources/      Materials, environment, navigation, movement, attack and enemy data
   tests/          Headless test runner and suites (excluded from exports)
 docs/             Build guide, architecture notes, implementation report
 tools/            test.sh and export-android-debug.sh

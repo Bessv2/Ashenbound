@@ -5,6 +5,7 @@ extends Node
 ## suite, after the instance has been added to the scene tree. Tests may await.
 
 const MainScene := preload("res://scenes/main.tscn")
+const GroundNavigationMesh := preload("res://resources/navigation/ground_navigation_mesh.tres")
 
 var failures: PackedStringArray = []
 
@@ -19,6 +20,43 @@ func instantiate_main(with_enemies: bool = false) -> Node3D:
 			if node is EnemySpawner:
 				node.enabled = false
 	return main
+
+
+## Adds a square floor of `floor_size` metres with its top at y = 0, plus a box
+## for each of `obstacles`, all on the world physics layer, under a navigation
+## region baked the way the game's levels are.
+func add_level(floor_size: float, obstacles: Array[AABB] = []) -> BakedNavigationRegion:
+	var region := BakedNavigationRegion.new()
+	region.navigation_mesh = GroundNavigationMesh
+	var half := floor_size * 0.5
+	region.add_child(_box_body(AABB(Vector3(-half, -1.0, -half), Vector3(floor_size, 1.0, floor_size))))
+	for box in obstacles:
+		region.add_child(_box_body(box))
+	add_child(region)
+	return region
+
+
+func _box_body(box: AABB) -> StaticBody3D:
+	var shape := BoxShape3D.new()
+	shape.size = box.size
+	var collision := CollisionShape3D.new()
+	collision.shape = shape
+	var body := StaticBody3D.new()
+	body.position = box.get_center()
+	body.add_child(collision)
+	return body
+
+
+## Waits until the navigation map holding `region` can plan paths over it.
+## Maps synchronize at the end of a physics frame, on a background thread.
+func wait_for_navigation(region: NavigationRegion3D, max_frames: int = 30) -> bool:
+	var map := region.get_navigation_map()
+	var probe := region.global_position
+	return await wait_until(func() -> bool:
+		return NavigationServer3D.map_get_iteration_id(map) > 0 \
+				and NavigationServer3D.region_get_iteration_id(region.get_rid()) > 0 \
+				and NavigationServer3D.map_get_closest_point_owner(map, probe) == region.get_rid(),
+			max_frames)
 
 
 func check(condition: bool, message: String) -> void:

@@ -171,6 +171,8 @@ step.
 - [ ] Walking toward a Hollow (about 15 m from the start, in any direction)
       makes it chase you. Before it strikes, a red sector appears on the ground;
       stepping out of it in time avoids the hit.
+- [ ] Standing with a pillar between you and a chasing Hollow: it walks around
+      the pillar instead of pushing into it.
 - [ ] Three hits kill a Hollow; it sinks into the floor and another appears
       a few seconds later at a spawn point away from you.
 - [ ] The health bar drops when you are hit. At zero the player falls,
