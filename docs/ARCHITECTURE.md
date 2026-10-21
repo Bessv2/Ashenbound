@@ -428,6 +428,16 @@ Milestone 3, step 1 ([dungeons/ashen_crypt.md](dungeons/ashen_crypt.md)).
   attacks. `EnemyBehavior.retreat_distance` makes an enemy back away from a
   close player (unless it is against a wall), and `needs_line_of_sight` keeps
   it walking until no wall is in the way. The Dark Cultist uses all three.
+- **Elites (step 4).** `EnemyController.special_attack` replaces the normal
+  attack every `EnemyBehavior.special_every`-th time (the Fallen Knight: cleave,
+  cleave, shield bash). `AttackData.knockback` pushes each damaged target away
+  through `PlayerController.push()`, a timed shove that walls stop and a dodge
+  overrides. `Health.apply_damage(amount, from)` takes the position a hit comes
+  from (melee: the attacker; projectile: its path), and
+  `Health.direction_multiplier` lets a `FrontalGuard` halve hits from the
+  front while its body is not attacking. Burning has no direction and is never
+  reduced. `EliteBar` floats a name and health bar over the elite, turned to
+  the camera each frame.
 - **See-through walls.** North walls, gates and tall pillars use
   `resources/materials/dungeon_cutout.tres`, a shader that draws the KayKit
   texture but cuts a dithered hole wherever the surface is between the camera

@@ -16,3 +16,5 @@ extends Resource
 ## Attacks only with a clear line to the player (no wall between), and walks
 ## closer otherwise.
 @export var needs_line_of_sight: bool = false
+## Every this-many-th attack uses the controller's special_attack; 0 never.
+@export_range(0, 20, 1) var special_every: int = 0

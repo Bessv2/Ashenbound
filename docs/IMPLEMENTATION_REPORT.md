@@ -721,3 +721,48 @@ Acceptance criteria (spec, so far):
 - [x] 8. Victory and defeat are mutually exclusive
 - [ ] The rest: later steps
 ```
+
+## 16. Milestone 3, step 4: the Fallen Knight (branch `feature/m3-knight`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: 3 (first dungeon), step 4 of 6: the Fallen Knight elite
+Status: Validated, verified in runtime (desktop software Vulkan); not verified on device
+
+Changes:
+- EnemyController.special_attack, used every EnemyBehavior.special_every-th
+  attack.
+- AttackData.knockback and PlayerController.push(): a timed shove, exact at
+  any tick rate, stopped by walls, overridden by a dodge.
+- Health.apply_damage(amount, from) and direction_multiplier; FrontalGuard
+  halves hits from the front (120°) while the body is not attacking.
+- EliteBar: name and health bar over an elite, facing the camera.
+- The Fallen Knight: 140 HP, 2.6 m/s, cleave 26 (0.9 s), shield bash 8 with a
+  3 m push every third attack, shield-up idle; the KayKit Skeleton Warrior at
+  1.25× with axe and large shield, darkened, ember eyes. Leads the Chapel's
+  second wave.
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 174 passed, 0 failed (6 new in test_fallen_knight.gd)
+- Command: probes: guard up mid-swing; no knockback; no special attack
+  Exit code: 1
+  Result: the matching tests failed; files restored and compared byte for byte
+- Command: rendered Chapel second wave under Xvfb (software Vulkan)
+  Exit code: 0
+  Result: the Knight with shield and axe, its cleave sector, name and bar
+
+Not tested:
+- On a phone.
+
+Recommended next task:
+- Step 5: the Ashen Lord.
+
+Acceptance criteria (spec, so far):
+- [x] 1, 2, 3, 4, 8 (see step 3)
+- [x] 5. The Fallen Knight's front damage reduction applies only from the
+      front and only while it is not attacking
+- [ ] The rest: later steps
+```

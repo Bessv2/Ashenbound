@@ -16,3 +16,5 @@ extends Resource
 ## The attack turns toward the nearest living target within this radius.
 ## 0 disables aim assist.
 @export_range(0.0, 20.0, 0.1, "suffix:m") var aim_assist_radius: float = 4.0
+## Pushes each target that took damage this far away from the attacker.
+@export_range(0.0, 10.0, 0.1, "suffix:m") var knockback: float = 0.0

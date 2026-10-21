@@ -200,6 +200,11 @@ checklist below is the full manual pass.
       Before each bolt a red line on the ground shows its path; stepping off
       the line or dodging through the bolt avoids the 10 damage. Bolts stop at
       walls and pillars. Walking up to a Cultist makes it back away.
+- [ ] In the Chapel's second wave the Fallen Knight (bigger, dark, shield up,
+      a name and health bar over it) swings a slow cleave with a wide red
+      sector, and every third attack bashes with its shield, pushing you back.
+      Hitting its shield from the front does half damage (5 from a basic
+      attack); from behind or mid-swing, full damage.
 - [ ] Walking behind a tall wall (in each corridor) the Warden stays visible
       through a small see-through patch in the wall.
 - [ ] The Chapel and the Throne seal and open the same way. Clearing the

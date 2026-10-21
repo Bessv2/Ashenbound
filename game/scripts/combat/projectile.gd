@@ -49,6 +49,6 @@ func _impact(collider: Object) -> void:
 	if collider is CollisionObject3D and (collider as CollisionObject3D).collision_layer & target_mask:
 		var health := Health.of(collider as Node)
 		if health:
-			health.apply_damage(damage)
+			health.apply_damage(damage, global_position - direction)
 	impacted.emit(collider)
 	queue_free()

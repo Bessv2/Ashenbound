@@ -41,6 +41,9 @@ const REPATH_DISTANCE := 0.5
 @export var movement: MovementStats
 @export var behavior: EnemyBehavior
 @export var attack: MeleeAttack
+## Optional: used instead of `attack` for every EnemyBehavior.special_every-th
+## attack (the Fallen Knight's shield bash).
+@export var special_attack: MeleeAttack
 @export var health: Health
 ## Turned to face movement or the attack. Sinks when the enemy dies.
 @export var visual: Node3D
@@ -52,6 +55,10 @@ const REPATH_DISTANCE := 0.5
 @export var hunting: bool = false
 
 var state: State = State.IDLE
+## The attack playing out, or the last one.
+var current_attack: MeleeAttack
+## Attacks started so far.
+var attacks_started: int = 0
 
 ## Where the current path leads; INF when no path has been requested.
 var _path_target: Vector3 = Vector3.INF
@@ -66,7 +73,10 @@ func _ready() -> void:
 	if behavior == null:
 		behavior = EnemyBehavior.new()
 	health.died.connect(_on_died)
+	current_attack = attack
 	attack.struck.connect(_on_attack_struck.unbind(1))
+	if special_attack:
+		special_attack.struck.connect(_on_attack_struck.unbind(1))
 
 
 func _physics_process(delta: float) -> void:
@@ -80,7 +90,7 @@ func _physics_process(delta: float) -> void:
 		desired = -_direction_to(target) * movement.move_speed
 		_path_target = Vector3.INF
 	elif state == State.APPROACH and target:
-		desired = _chase_direction(target) * movement.move_speed * attack.movement_multiplier()
+		desired = _chase_direction(target) * movement.move_speed * current_attack.movement_multiplier()
 	else:
 		# The next chase plans a fresh path.
 		_path_target = Vector3.INF
@@ -93,7 +103,7 @@ func _physics_process(delta: float) -> void:
 
 	if visual:
 		if is_attacking():
-			visual.rotation.y = MovementStats.yaw_of(attack.direction)
+			visual.rotation.y = MovementStats.yaw_of(current_attack.direction)
 		else:
 			movement.turn_toward(visual, desired, delta)
 
@@ -134,14 +144,24 @@ func _update_state(target: Node3D, delta: float) -> void:
 			elif _is_too_close(target):
 				pass  # Backing away; see _physics_process.
 			elif _distance_to(target) <= behavior.attack_range and _has_line_to(target) \
-					and attack.try_start(_direction_to(target)):
+					and _next_attack().try_start(_direction_to(target)):
+				current_attack = _next_attack()
+				attacks_started += 1
 				_set_state(State.TELEGRAPH)
 		State.ATTACK:
 			# The hit resolved on the previous tick.
-			_set_state(State.RECOVERY if attack.is_busy() else _after_attack(target))
+			_set_state(State.RECOVERY if current_attack.is_busy() else _after_attack(target))
 		State.RECOVERY:
-			if not attack.is_busy():
+			if not current_attack.is_busy():
 				_set_state(_after_attack(target))
+
+
+## The attack to use next: the special one every `special_every`-th time.
+func _next_attack() -> MeleeAttack:
+	var every := behavior.special_every
+	if special_attack and every > 0 and (attacks_started + 1) % every == 0:
+		return special_attack
+	return attack
 
 
 func _after_attack(target: Node3D) -> State:
@@ -222,6 +242,8 @@ func _chase_direction(target: Node3D) -> Vector3:
 func _on_died() -> void:
 	_set_state(State.DEAD)
 	attack.cancel()
+	if special_attack:
+		special_attack.cancel()
 	velocity = Vector3.ZERO
 	# Collision changes are not allowed while physics queries run.
 	_collision.set_deferred("disabled", true)
