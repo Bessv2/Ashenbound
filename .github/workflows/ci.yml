@@ -113,6 +113,7 @@ jobs:
           api-level: 34
           arch: x86_64
           target: google_apis
+          profile: pixel_6
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none
           script: env ALLOW_EMULATOR=1 SOAK_SECONDS=20 tools/device-test.sh build/android/ashenbound-debug-x86_64.apk
@@ -123,6 +124,14 @@ jobs:
           for summary in build/device-test/*/summary.md; do cat "$summary"; done
           for errors in build/device-test/*/errors.txt; do echo "--- $errors"; head -40 "$errors"; done
           echo "emulator step outcome: ${{ steps.emulator.outcome }}"
+          for dir in build/device-test/*/; do
+            echo "--- Godot lines in the log (${dir})"
+            grep -c " godot " "${dir}logcat.txt" || true
+            grep -E "PERF|Godot Engine|OpenGL|Vulkan|SCRIPT|WARNING" "${dir}logcat.txt" | head -25 || true
+            echo "--- Screenshot statistics (${dir})"
+            python3 -m pip install --quiet pillow
+            python3 tools/screenshot_stats.py "$dir"
+          done
 
       - name: Upload emulator test results
         if: always()
