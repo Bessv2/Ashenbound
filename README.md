@@ -7,9 +7,15 @@ built with Godot 4 and GDScript.
 
 **Status:** early prototype. A test arena with a placeholder player, a fixed
 isometric camera, keyboard and touch-joystick movement, a HUD, pause/resume and
-a settings structure, plus a first combat slice: a melee attack with aim assist
-against training dummies that take damage, die and respawn. Loot, inventory,
-real enemies, accounts and the backend have not been started.
+a settings structure, plus a first combat loop:
+
+- a melee attack with aim assist;
+- training dummies;
+- Hollows, enemies that chase you, telegraph their attacks with a red ground
+  marker, and respawn;
+- player health, death and restart.
+
+Loot, inventory, accounts and the backend have not been started.
 
 ![Attacking a training dummy: damage number, health label and the touch controls](docs/images/prototype-combat.png)
 
@@ -19,8 +25,8 @@ real enemies, accounts and the backend have not been started.
 game/             Godot project (open this folder in the editor)
   scenes/         Gameplay scenes: main entry scene, arena, player, camera rig
   scripts/        Gameplay scripts: input, player, camera, combat, enemies, core
-  ui/             HUD, touch joystick and buttons, pause menu, UI theme
-  resources/      Materials, environment, movement and attack data
+  ui/             HUD, touch joystick and buttons, pause menu, death screen, theme
+  resources/      Materials, environment, movement, attack and enemy data
   tests/          Headless test runner and suites (excluded from exports)
 docs/             Build guide, architecture notes, implementation report
 tools/            test.sh and export-android-debug.sh

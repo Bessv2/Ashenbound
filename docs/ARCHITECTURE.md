@@ -1,8 +1,8 @@
 # Architecture
 
 This document covers the current foundation (scenes, input, movement, camera,
-pause and settings) and the first combat slice. It will grow as systems are
-added.
+pause and settings), combat, player health and death, and the first enemy. It
+will grow as systems are added.
 
 ## Scene structure
 
@@ -18,22 +18,30 @@ Main (Node3D)                         scenes/main.tscn, scripts/main.gd
 │   └── Pillars/Pillar{N,S,E,W}       obstacles with an ember light on top
 ├── Player (CharacterBody3D)          scenes/player/player.tscn, scripts/player/player_controller.gd
 │   ├── CollisionShape3D              capsule, radius 0.4 m, height 1.8 m
-│   ├── Visual (Node3D)               turned to face movement or the attack; holds the meshes
+│   ├── Visual (Node3D)               turned to face movement or the attack; topples on death
 │   │   └── WeaponPivot/Blade         scripts/player/weapon_swing.gd, placeholder swing
-│   └── MeleeAttack (Node)            scripts/combat/melee_attack.gd + resources/combat/player_basic_attack.tres
+│   ├── MeleeAttack (Node)            scripts/combat/melee_attack.gd + resources/combat/player_basic_attack.tres
+│   ├── Health (Node)                 100 HP
+│   └── HitFeedback (Node)            scripts/combat/hit_feedback.gd, red damage numbers
 ├── Enemies (Node3D)
-│   └── TrainingDummy{East,North,West} scenes/enemies/training_dummy.tscn, 5 m from the start
-│       ├── Health (Node)             scripts/combat/health.gd, 50 HP
-│       ├── Visual, HealthLabel (Label3D)
-│       └── CollisionShape3D          layer 3 "enemy"
+│   ├── TrainingDummy{East,North,West} scenes/enemies/training_dummy.tscn, 5 m from the start
+│   │   ├── Health (Node)             scripts/combat/health.gd, 50 HP
+│   │   ├── HitFeedback, Visual, HealthLabel (Label3D)
+│   │   └── CollisionShape3D          layer 3 "enemy"
+│   └── HollowSpawner (Node3D)        scripts/enemies/enemy_spawner.gd, max 3 alive
+│       ├── Spawn{NorthWest,NorthEast,SouthWest,SouthEast} (Marker3D)
+│       └── Hollow (CharacterBody3D)  scenes/enemies/hollow.tscn, spawned at runtime
+│           ├── Health (30 HP), HitFeedback, MeleeAttack (targets layer 2)
+│           └── Visual/{WeaponPivot, Telegraph}
 ├── CameraRig (Node3D)                scenes/camera/isometric_camera_rig.tscn
 │   └── Camera3D                      orthographic, size 16 m
 ├── HUD (CanvasLayer)                 ui/hud/hud.tscn
 │   └── Root
-│       ├── TopBar: Title, DebugLabel (debug builds only), PauseButton
+│       ├── TopBar: Title, HealthBar + HealthText, DebugLabel (debug builds only), PauseButton
 │       ├── TouchJoystick             ui/hud/touch_joystick.gd, lower-left 560×420 px zone
 │       ├── AttackButton              ui/hud/touch_action_button.gd, lower-right, holds `attack`
 │       └── ControlsHint              keyboard hint, hidden on mobile
+├── DeathScreen (CanvasLayer)         ui/death_screen/death_screen.tscn, "Rise again"
 └── PauseMenu (CanvasLayer)           ui/pause_menu/pause_menu.tscn  [process: when paused]
 ```
 
@@ -45,6 +53,11 @@ Main (Node3D)                         scenes/main.tscn, scripts/main.gd
   `PauseMenu.resume_requested` are connected in `main.gd` to
   `PauseController.set_paused()`. The UI never pauses the tree itself.
 - `PauseController.paused_changed` opens and closes the pause menu.
+- `main.gd` shows the player's `Health` in the HUD (`Hud.track_health()`),
+  opens the `DeathScreen` when the player dies, and reloads the scene when the
+  death screen asks for a restart.
+- Enemies find the player through the `PlayerController.GROUP` ("player")
+  group rather than a stored reference.
 - Gameplay never references the HUD. The joystick and the player communicate
   only through InputMap actions (see below).
 - `PlayerController.camera` and `IsometricCameraRig.target` are node references
@@ -133,7 +146,10 @@ and it resets on pause, focus loss and when hidden.
 - Only the `Visual` child turns to face the movement direction (or the attack
   direction while attacking). The collision capsule never rotates.
 - Collision layers: 1 `world` (floor, walls, pillars), 2 `player` and 3
-  `enemy`. The player is on layer 2 and collides with layers 1 and 3.
+  `enemy`. The player is on layer 2 and collides with layers 1 and 3. Enemies
+  are on layer 3 and collide with all three.
+- `MovementStats` also holds the helpers that apply it (`step_velocity()`,
+  `turn_toward()`, `yaw_of()`), so the player and enemies move the same way.
 - 3D physics uses Jolt (`physics/3d/physics_engine = "Jolt Physics"`).
 
 ## Combat
@@ -163,15 +179,69 @@ deliberately small: no enemy AI, no player health, no loot.
 - **`TrainingDummy`** (StaticBody3D, layer 3): flashes white, spawns a floating
   `DamageNumber` and updates its health label when hit. When destroyed it hides,
   stops colliding and respawns with full health after `respawn_delay` (2.5 s).
-- **Feedback** (`WeaponSwing`, `DamageNumber`, hit flash) uses tweens on the
-  physics clock, so it pauses with the game and works with physics
+- **`HitFeedback`** (Node): on damage, flashes every mesh under a visual root
+  with an overlay material, and spawns a floating `DamageNumber` in a
+  configurable color (ember for enemies, red for the player).
+- **Feedback** (`WeaponSwing`, `DamageNumber`, `HitFeedback`) uses tweens on
+  the physics clock, so it pauses with the game and works with physics
   interpolation.
+- **`MeleeAttack.cancel()`** abandons an attack in progress without resolving
+  its hit. Enemies call it when they die mid-windup.
 
 Known simplifications: the arc check uses target *centers*, so a large enemy
 whose edge overlaps the arc but whose center is outside it is missed. Attacks
 can only start on a physics tick, so each attack cycle can last up to one tick
 longer than its data says: at most 33 ms at 30 Hz and 17 ms at 60 Hz. The test
 suite checks that the number of attacks in 2 s is the same at 30, 60 and 120 Hz.
+
+## Player health and death
+
+- The player has a `Health` (100 HP) and a `HitFeedback`. The HUD shows it as
+  a bar and "current / max" text.
+- On death, `PlayerController` stops taking input and the visual topples
+  forward over 0.4 s. `main.gd` releases held gameplay input and opens the
+  `DeathScreen`.
+- `DeathScreen` fades in after 0.8 s, so the fall plays first. Its
+  **Rise again** button stays disabled until the screen is visible, so a stray
+  tap during the fall cannot restart. It emits `restart_requested`, and
+  `main.gd` reloads the scene.
+
+## Enemies
+
+The first enemy is the **Hollow**, a slow melee chaser. It is meant to read
+clearly on a phone: a long, visible windup that the player can step out of.
+
+- **`EnemyBehavior`** (Resource): aggro radius 9 m, leash radius 15 m, attack
+  range 1.4 m (center to center), corpse time 1.2 s.
+- **`EnemyController`** (CharacterBody3D) runs a small state machine in
+  `_physics_process`:
+  - **IDLE:** waits until a living player is within aggro range.
+  - **CHASE:** steers straight at the player with `MovementStats` (3.4 m/s,
+    slower than the player's 6 m/s). It gives up beyond the leash range or when
+    the player dies.
+  - **ATTACK:** stands still, faces the target, and lets its `MeleeAttack` run
+    (12 damage, 1.6 m reach, 100° arc, 0.5 s windup, 0.7 s recovery).
+  - **DEAD:** cancels any pending hit, stops colliding, sinks into the floor
+    and frees itself, emitting `despawned`.
+- **`AttackTelegraph`** (MeshInstance3D under the enemy's visual): a red
+  ground sector built from the attack's reach and arc. It shows only during the
+  windup and grows more opaque as the hit approaches.
+- **`EnemySpawner`** (Node3D): keeps `max_alive` enemies alive, spawning at
+  its `Marker3D` children. It picks the free point (no living enemy within
+  1.5 m) farthest from the player, and replaces each enemy `respawn_delay`
+  (4 s) after its corpse is removed. Give it at least `max_alive` points:
+  enemies spawned on top of each other get pushed apart violently by the
+  physics engine, which is exactly the bug the regression test guards against.
+- Balance: three player hits kill a Hollow. A Hollow standing next to the
+  player deals 12 about every 1.2 s.
+
+Known simplifications:
+
+- Movement is direct steering, not navigation, so an enemy can get stuck
+  behind a pillar on the way to the player. A `NavigationRegion3D` is the next
+  step once levels have real layouts.
+- Player hits do not interrupt an enemy's windup (no stagger).
+- Idle enemies stand still rather than wander.
 
 ## Camera
 
@@ -227,7 +297,11 @@ suite checks that the number of attacks in 2 s is the same at 30, 60 and 120 Hz.
 
 `game/tests/` contains a small headless runner (`run_tests.gd`) and suites
 named `test_*.gd`. Each test method runs on a fresh suite instance in the scene
-tree. Integration tests instantiate the real `main.tscn`. A test fails on a
+tree. Integration tests instantiate the real `main.tscn` through
+`instantiate_main()`, which switches enemy spawners off unless asked
+(`instantiate_main(true)`), so movement and UI tests run in a quiet arena.
+`wait_until(condition, max_frames)` waits for a state without hard-coding
+frame counts. A test fails on a
 failed `check` or on any engine or script error logged during it, captured with
 a custom `Logger`. Warnings are printed under the test that logged them, and
 counted in the summary, but do not fail it. Run them with `tools/test.sh`.

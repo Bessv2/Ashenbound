@@ -196,3 +196,63 @@ New tests cover:
 4. **Release setup:** settle the application ID, create an upload keystore
    outside the repository, and switch to a Gradle build for AAB when Play
    distribution is needed.
+
+## 7. Enemy AI (branch `feature/enemy-ai`)
+
+Requested after PR #1: "keep going, open a new branch for the enemy AI". The
+branch starts from PR #1's head and its PR targets PR #1's branch, so the diff
+shows only this work.
+
+| Commit | Change |
+|---|---|
+| Shared helpers | `MovementStats.step_velocity()`, `turn_toward()` and `yaw_of()` shared by the player and enemies. `HitFeedback` component (flash plus colored damage number) replaces the dummy's own copy. |
+| Player health | `Health` (100 HP) and red `HitFeedback` on the player; HUD health bar; topple on death; `DeathScreen` with **Rise again** (scene reload); held input released on death. |
+| Hollow | `EnemyController` (IDLE / CHASE / ATTACK / DEAD), `EnemyBehavior` data, `AttackTelegraph` ground sector, `MeleeAttack.cancel()`, `EnemySpawner`, and the Hollow scene with three spawn slots in the arena. |
+
+### Bugs found while building it
+
+1. **Hollows stacked on one spawn point and were flung out of the arena.** The
+   rendered smoke test showed a Hollow 274 m away. A trace showed all three
+   spawning at (−15, 0, −8) and being pushed apart through the walls. The cause
+   was in the spawner: with a player present, every spawn chose the same
+   "farthest from the player" point. Spawning now skips points that have a
+   living enemy within 1.5 m.
+   - The existing spawner tests had missed this because they ran without a
+     player.
+   - Two regression tests were added. Both fail with the old logic, reproducing
+     the out-of-arena positions, and pass with the fix.
+2. **DamageNumber lingered for 0.84 s instead of 0.6 s.** This came from PR #1:
+   the fade ran for the full duration after its delay. The new `HitFeedback`
+   test caught it.
+3. **A test assumed a newly added enemy acts on the same physics tick.** It
+   doesn't, so the test now waits for the state with a bounded `wait_until()`
+   instead of a fixed frame count.
+
+### Checks
+
+| Check | Result |
+|---|---|
+| `tools/test.sh` | **98 passed, 0 failed** on 3 consecutive runs (+27 tests: AI 13, spawner 6, player health 5, hit feedback 3). The only warning is the known fast-forward Jolt message (section 4). |
+| Rendered smoke test (Xvfb, Mobile renderer, lavapipe) | A Hollow chased for 83 frames, stopped at 1.34 m and telegraphed; its hit took the player to 88. The player killed it while taking one more hit (76). On death the death screen opened with Rise again enabled, and pressing it reloaded the scene: new player at 100 HP, death screen hidden. Screenshots: `docs/images/prototype-hollow-telegraph.png`, `prototype-death-screen.png`. |
+| `tools/export-android-debug.sh` | Exit 0, APK verified; enemy scenes and scripts packaged |
+| `--check-only` on all 42 scripts | No errors besides the known `Settings` autoload limitation |
+
+### Known issues
+
+- **No navigation:** enemies steer straight at the player and can get stuck
+  behind a pillar.
+- **No stagger:** player hits do not interrupt a Hollow's windup.
+- **Readability:** the Hollow's dark body is hard to see when it is behind
+  the player from this camera angle. The glowing eyes and the telegraph help;
+  a silhouette outline or a camera-facing occlusion effect would help more.
+- **Untested on a phone**, like everything else.
+
+### Next steps
+
+1. Validate on a phone: the extended checklist in
+   [BUILD_ANDROID.md](BUILD_ANDROID.md#manual-device-checklist) now covers
+   enemies, death and restart.
+2. Navigation (`NavigationRegion3D` baked from the arena) once layouts get
+   walls that block line of sight.
+3. Combat feel: hit-stop, a short stagger on the enemy, a clearer swing effect.
+4. A second enemy type (ranged or charging) to exercise `EnemyBehavior` reuse.
