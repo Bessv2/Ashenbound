@@ -615,3 +615,20 @@ Art arrives as imported glTF models from the KayKit packs
 - **`RendererLighting`** (Node): when the Compatibility renderer runs (the web
   preview), swaps in `arena_environment_compatibility.tres` and dims the
   moonlight, because that renderer lights the same scene brighter and flatter.
+
+## Items (Milestone 4)
+
+Design: [LOOT.md](LOOT.md). Code in `game/scripts/items/`.
+
+- **`ItemBase`** (Resource): a kind of item, with a stable `id`, a slot and
+  base stat ranges at item level 1. **`AffixDef`**: a stat, its range and the
+  slots it fits. Both live in one **`ItemCatalog`**
+  (`resources/items/catalog.tres`), which validates itself and rolls items.
+- **`ItemInstance`** (RefCounted): one owned item. It keeps every rolled
+  number, so rebalancing a base never changes owned items. `to_dict()` /
+  `from_dict()` are the save format; `from_dict()` refuses unknown stats and
+  missing fields instead of guessing.
+- **`Rarity`**: the six tiers with colours, affix counts, drop weights and a
+  base-stat bonus. **`ItemStats`**: the stat keys and how they are shown.
+- Ranges grow 15% per item level. Each stat appears at most once per item;
+  Mythic items roll the top of every affix range.
