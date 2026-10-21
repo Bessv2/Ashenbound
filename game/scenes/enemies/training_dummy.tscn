@@ -5,6 +5,7 @@
 [ext_resource type="Material" path="res://resources/materials/dummy_straw.tres" id="3_straw"]
 [ext_resource type="Material" path="res://resources/materials/hit_flash.tres" id="4_flash"]
 [ext_resource type="Material" path="res://resources/materials/pillar_stone.tres" id="5_stone"]
+[ext_resource type="Script" path="res://scripts/combat/hit_feedback.gd" id="6_feedback"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_dummy"]
 height = 1.9
@@ -34,7 +35,6 @@ rings = 8
 collision_layer = 4
 collision_mask = 0
 script = ExtResource("1_dummy")
-hit_flash = ExtResource("4_flash")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
@@ -43,6 +43,12 @@ shape = SubResource("CylinderShape3D_dummy")
 [node name="Health" type="Node" parent="."]
 script = ExtResource("2_health")
 max_health = 50
+
+[node name="HitFeedback" type="Node" parent="." node_paths=PackedStringArray("health", "visual")]
+script = ExtResource("6_feedback")
+health = NodePath("../Health")
+visual = NodePath("../Visual")
+flash_material = ExtResource("4_flash")
 
 [node name="Visual" type="Node3D" parent="."]
 
