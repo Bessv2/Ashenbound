@@ -8,6 +8,28 @@ handle what a script cannot judge: how it feels in the hand.
 This is what moves milestones from **verified in runtime** to **verified on
 device** (charter section 7).
 
+## Without a phone: the CI emulator
+
+Every CI run also plays the same script on an Android emulator (x86_64, API 34)
+inside GitHub Actions, using `tools/device-test.sh` with `ALLOW_EMULATOR=1` and
+an x86_64 build of the game (the preset **Android x86_64 (CI emulator)**). The
+screenshots, `summary.md`, `errors.txt` and `logcat.txt` are uploaded as the
+**emulator-device-test** artifact on the run.
+
+It catches crashes, a game that will not start, and controls that miss their
+buttons. It cannot tell you anything about **feel** or **frame rate**: an
+emulator runs on a desktop CPU with software graphics. Those still need a real
+phone, yours or a spare. The emulator step is experimental and is allowed to
+fail without failing the run, so check its summary in the job log.
+
+To run the same thing locally against an emulator you started yourself:
+
+```bash
+PRESET="Android x86_64 (CI emulator)" APK="$PWD/build/android/ashenbound-debug-x86_64.apk" \
+  tools/export-android-debug.sh
+ALLOW_EMULATOR=1 tools/device-test.sh build/android/ashenbound-debug-x86_64.apk
+```
+
 ## One-time setup (owner)
 
 1. **Phone:**
