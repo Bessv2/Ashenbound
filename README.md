@@ -1,5 +1,7 @@
 # Ashenbound
 
+[![CI](https://github.com/Bessv2/Ashenbound/actions/workflows/ci.yml/badge.svg)](https://github.com/Bessv2/Ashenbound/actions/workflows/ci.yml)
+
 A stylized 2.5D isometric dark fantasy action RPG for Android phones (landscape),
 built with Godot 4 and GDScript.
 
@@ -110,6 +112,15 @@ tools/export-android-debug.sh
 # writes build/android/ashenbound-debug.apk
 adb install -r build/android/ashenbound-debug.apk
 ```
+
+## Continuous integration
+
+`.github/workflows/ci.yml` runs on every pull request and on pushes to `main`.
+It uses the official Godot 4.7.2 Linux editor, the Android export templates,
+JDK 17 and build-tools 36.1.0. It runs `tools/test.sh`, exports the debug APK
+with `tools/export-android-debug.sh`, and uploads `ashenbound-debug.apk` as a
+build artifact, kept for 14 days. Download it from the run's **Artifacts**
+section.
 
 ## Notes
 
