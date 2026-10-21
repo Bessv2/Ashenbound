@@ -13,6 +13,11 @@
 #                    camera cutout (default 0). Check the first screenshot.
 #   SOAK_SECONDS     length of the final walk-around for frame statistics
 #                    (default 40).
+#   RELAUNCH_WAIT    seconds to wait after relaunching from Home (default 2;
+#                    a slow emulator needs more).
+#   ALLOW_EMULATOR=1 accept an x86_64 device (the CI emulator, with the x86_64
+#                    APK) instead of requiring an arm64 phone. Frame statistics
+#                    from an emulator say nothing about a real phone.
 #
 # Exit code: 0 when the game ran to the end without crashing, 1 otherwise.
 # Logged errors are listed in the summary but do not fail the run.
@@ -25,6 +30,7 @@ OUT="$ROOT_DIR/build/device-test/$(date +%Y%m%d-%H%M%S)"
 SAFE_LEFT="${SAFE_LEFT:-0}"
 SAFE_RIGHT="${SAFE_RIGHT:-0}"
 SOAK_SECONDS="${SOAK_SECONDS:-40}"
+RELAUNCH_WAIT="${RELAUNCH_WAIT:-2}"
 
 # The HUD is laid out on a 1280×720 canvas, stretched with "expand": the
 # canvas scales by the smaller of the two ratios and grows along the other
@@ -59,7 +65,11 @@ prop() { adb shell getprop "$1" | tr -d '\r'; }
 
 # --- Device ------------------------------------------------------------------
 ABIS="$(prop ro.product.cpu.abilist)"
-[[ "$ABIS" == *arm64-v8a* ]] || fail "this device does not run 64-bit ARM apps (ABIs: $ABIS); the APK is arm64-v8a only."
+if [[ "${ALLOW_EMULATOR:-0}" == 1 ]]; then
+	[[ "$ABIS" == *x86_64* ]] || fail "ALLOW_EMULATOR=1 expects an x86_64 emulator (ABIs: $ABIS)."
+else
+	[[ "$ABIS" == *arm64-v8a* ]] || fail "this device does not run 64-bit ARM apps (ABIs: $ABIS); the APK is arm64-v8a only."
+fi
 SIZE="$(adb shell wm size | tr -d '\r' | awk -F': ' '/Override size/ {o=$2} /Physical size/ {p=$2} END {print (o != "" ? o : p)}')"
 SIZE_A="${SIZE%x*}"
 SIZE_B="${SIZE#*x}"
@@ -172,7 +182,7 @@ adb shell input keyevent KEYCODE_HOME
 sleep 2
 step "relaunching"
 adb shell monkey -p "$PACKAGE" -c android.intent.category.LAUNCHER 1 > /dev/null
-sleep 2
+sleep "$RELAUNCH_WAIT"
 shot 10-after-home
 step "key BACK (resume)"
 adb shell input keyevent KEYCODE_BACK
