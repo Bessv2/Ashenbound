@@ -328,11 +328,19 @@ clearly on a phone: a long, visible windup that the player can step out of.
 - **`EnemyController`** (CharacterBody3D) runs a small state machine in
   `_physics_process`:
   - **IDLE:** waits until a living player is within aggro range.
-  - **CHASE:** walks to the player along a navigation path (see below) with
+  - **APPROACH:** walks to the player along a navigation path (see below) with
     `MovementStats` (3.4 m/s, slower than the player's 6 m/s). It gives up
     beyond the leash range or when the player dies.
-  - **ATTACK:** stands still, faces the target, and lets its `MeleeAttack` run
-    (12 damage, 1.6 m reach, 100° arc, 0.5 s windup, 0.7 s recovery).
+  - **TELEGRAPH:** the windup of its `MeleeAttack` (0.5 s). It stands still
+    and faces the target while the ground sector shows where the hit will
+    land.
+  - **ATTACK:** the single physics tick on which the hit resolves: 12 damage,
+    1.6 m reach, 100° arc.
+  - **RECOVERY:** the attack's 0.7 s recovery, standing still. Then the
+    Hollow approaches again, or goes idle if the player is gone.
+  - These follow the charter's enemy states. Each change emits
+    `state_changed(previous, current)`, which tests use to check the sequence
+    and timing, and which animation can use later.
   - **DEAD:** cancels any pending hit, stops colliding, sinks into the floor
     and frees itself, emitting `despawned`.
 - **`AttackTelegraph`** (MeshInstance3D under the enemy's visual): a red

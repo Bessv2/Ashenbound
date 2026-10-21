@@ -43,7 +43,7 @@ func test_idles_while_the_player_is_far() -> void:
 func test_chases_a_player_in_range() -> void:
 	_spawn_hollow(Vector3(0, 0, -6))
 	await wait_physics_frames(30)
-	check(hollow.state == EnemyController.State.CHASE, "within aggro range the Hollow chases")
+	check(hollow.state == EnemyController.State.APPROACH, "within aggro range the Hollow chases")
 	check(_flat_distance() < 5.0, "and closes in, now %.2f m away" % _flat_distance())
 
 
@@ -57,7 +57,7 @@ func test_stops_at_attack_range_and_hits() -> void:
 
 
 func _attacking() -> bool:
-	return hollow.state == EnemyController.State.ATTACK
+	return hollow.is_attacking()
 
 
 func test_telegraph_shows_during_the_windup_only() -> void:
@@ -161,3 +161,70 @@ func test_chase_speed_is_frame_rate_independent() -> void:
 		check_near(distance, distances[1], distances[1] * 0.03,
 				"distance closed per second matches across tick rates %s" % [distances])
 	check(distances[1] > 2.8, "about 3.2 m closed per second, got %.2f" % distances[1])
+
+
+## Records (frame, state) for every state change of the current Hollow.
+func _record_states() -> Array:
+	var log: Array = []
+	hollow.state_changed.connect(func(_previous: EnemyController.State, current: EnemyController.State) -> void:
+		log.append([Engine.get_physics_frames(), current]))
+	return log
+
+
+func test_states_follow_the_charter_sequence() -> void:
+	_spawn_hollow(Vector3(0, 0, -6))
+	var log := _record_states()
+	# About 1.4 s to close in, then a 0.5 s windup and a 0.7 s recovery.
+	await wait_physics_frames(240)
+	var S := EnemyController.State
+	var states: Array = log.map(func(entry: Array) -> EnemyController.State: return entry[1])
+	check(states.slice(0, 6) == [S.APPROACH, S.TELEGRAPH, S.ATTACK, S.RECOVERY, S.APPROACH, S.TELEGRAPH],
+			"idle, approach, telegraph, attack, recovery, then again: %s" % [states])
+
+
+func test_state_timing_matches_the_attack() -> void:
+	_spawn_hollow(Vector3(0, 0, -1.3))
+	var log := _record_states()
+	var hit_frames: Array[int] = []
+	player.health.damaged.connect(func(_a: int, _r: int) -> void: hit_frames.append(Engine.get_physics_frames()))
+	await wait_physics_frames(100)
+	var S := EnemyController.State
+	# The first time `state` is entered after `from_frame`.
+	var frame_of := func(state: EnemyController.State, from_frame: int) -> int:
+		for entry in log:
+			if entry[1] == state and entry[0] > from_frame:
+				return entry[0]
+		return -1
+	var telegraph: int = frame_of.call(S.TELEGRAPH, -1)
+	var attack: int = frame_of.call(S.ATTACK, telegraph)
+	var recovery: int = frame_of.call(S.RECOVERY, attack)
+	var after: int = frame_of.call(S.APPROACH, recovery)
+	var data := hollow.attack.data
+	check(telegraph >= 0 and attack >= 0 and recovery >= 0 and after >= 0, "every state reached: %s" % [log])
+	check(absi(attack - telegraph - roundi(data.windup * 60)) <= 1, "telegraph lasts the windup: %d frames" % (attack - telegraph))
+	check(recovery - attack == 1, "the attack state lasts one tick, got %d" % (recovery - attack))
+	check(absi(after - attack - roundi(data.recovery * 60)) <= 1, "recovery lasts the recovery time: %d frames" % (after - attack))
+	check(not hit_frames.is_empty() and hit_frames[0] == attack, "the hit lands on the attack tick")
+
+
+func test_telegraph_shows_exactly_while_telegraphing() -> void:
+	_spawn_hollow(Vector3(0, 0, -1.3))
+	var mismatches: Array[String] = []
+	for i in 100:
+		await get_tree().physics_frame
+		var telegraphing := hollow.state == EnemyController.State.TELEGRAPH
+		if telegraph.visible != telegraphing:
+			mismatches.append("frame %d: state %s, telegraph %s" % [i, hollow.state, telegraph.visible])
+	check(mismatches.is_empty(), "telegraph and state agree: %s" % [mismatches.slice(0, 3)])
+
+
+func test_death_while_telegraphing_never_attacks() -> void:
+	_spawn_hollow(Vector3(0, 0, -1.3))
+	var log := _record_states()
+	check(await wait_until(func() -> bool: return hollow.state == EnemyController.State.TELEGRAPH, 10), "telegraphing")
+	hollow.health.apply_damage(hollow.health.max_health)
+	await wait_physics_frames(40)
+	var S := EnemyController.State
+	var states: Array = log.map(func(entry: Array) -> EnemyController.State: return entry[1])
+	check(states == [S.APPROACH, S.TELEGRAPH, S.DEAD] or states == [S.TELEGRAPH, S.DEAD],
+			"straight from telegraph to dead: %s" % [states])

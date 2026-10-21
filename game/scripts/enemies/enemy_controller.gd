@@ -1,14 +1,20 @@
 class_name EnemyController
 extends CharacterBody3D
-## A melee enemy that chases the player and attacks when in range.
+## A melee enemy that approaches the player and attacks when in range.
 ##
-## States:
+## States, matching the charter's enemy states:
 ## - IDLE: waits until a living player comes within aggro range.
-## - CHASE: walks to the player along a navigation path; gives up beyond the
-##   leash range.
-## - ATTACK: stands still while its MeleeAttack plays out, facing the target.
+## - APPROACH: walks to the player along a navigation path; gives up beyond
+##   the leash range.
+## - TELEGRAPH: the attack's windup. The enemy stands still, facing the
+##   target, while its AttackTelegraph shows where the hit will land.
+## - ATTACK: the physics tick on which the hit resolves.
+## - RECOVERY: the attack's recovery; the enemy stays put, then approaches
+##   again or goes idle.
 ## - DEAD: cancels any pending hit, stops colliding, sinks into the floor and
 ##   frees itself.
+##
+## Every change emits `state_changed`, for tests now and animation later.
 ##
 ## The chase follows the `navigation` agent's path around walls and pillars.
 ## Where there is no path to follow (no navigation mesh in the level, the
@@ -19,8 +25,9 @@ extends CharacterBody3D
 
 ## Emitted just before the body is removed, after the death animation.
 signal despawned
+signal state_changed(previous: State, current: State)
 
-enum State { IDLE, CHASE, ATTACK, DEAD }
+enum State { IDLE, APPROACH, TELEGRAPH, ATTACK, RECOVERY, DEAD }
 
 ## How far the player may move from the end of the current path before a new
 ## path is planned. Planning every physics frame would work too, but wastes
@@ -51,6 +58,7 @@ func _ready() -> void:
 	if behavior == null:
 		behavior = EnemyBehavior.new()
 	health.died.connect(_on_died)
+	attack.struck.connect(_on_attack_struck.unbind(1))
 
 
 func _physics_process(delta: float) -> void:
@@ -60,7 +68,7 @@ func _physics_process(delta: float) -> void:
 	_update_state(target)
 
 	var desired := Vector3.ZERO
-	if state == State.CHASE and target:
+	if state == State.APPROACH and target:
 		desired = _chase_direction(target) * movement.move_speed * attack.movement_multiplier()
 	else:
 		# The next chase plans a fresh path.
@@ -73,25 +81,50 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 	if visual:
-		if state == State.ATTACK:
+		if is_attacking():
 			visual.rotation.y = MovementStats.yaw_of(attack.direction)
 		else:
 			movement.turn_toward(visual, desired, delta)
+
+
+## Whether an attack is playing out: telegraph, hit or recovery.
+func is_attacking() -> bool:
+	return state == State.TELEGRAPH or state == State.ATTACK or state == State.RECOVERY
 
 
 func _update_state(target: Node3D) -> void:
 	match state:
 		State.IDLE:
 			if target and _distance_to(target) <= behavior.aggro_radius:
-				state = State.CHASE
-		State.CHASE:
+				_set_state(State.APPROACH)
+		State.APPROACH:
 			if target == null or _distance_to(target) > behavior.leash_radius:
-				state = State.IDLE
+				_set_state(State.IDLE)
 			elif _distance_to(target) <= behavior.attack_range and attack.try_start(_direction_to(target)):
-				state = State.ATTACK
+				_set_state(State.TELEGRAPH)
 		State.ATTACK:
+			# The hit resolved on the previous tick.
+			_set_state(State.RECOVERY if attack.is_busy() else _after_attack(target))
+		State.RECOVERY:
 			if not attack.is_busy():
-				state = State.CHASE if target else State.IDLE
+				_set_state(_after_attack(target))
+
+
+func _after_attack(target: Node3D) -> State:
+	return State.APPROACH if target else State.IDLE
+
+
+func _set_state(next: State) -> void:
+	if next == state:
+		return
+	var previous := state
+	state = next
+	state_changed.emit(previous, next)
+
+
+func _on_attack_struck() -> void:
+	if state == State.TELEGRAPH:
+		_set_state(State.ATTACK)
 
 
 ## The player, or null when there is none or it is dead.
@@ -136,7 +169,7 @@ func _chase_direction(target: Node3D) -> Vector3:
 
 
 func _on_died() -> void:
-	state = State.DEAD
+	_set_state(State.DEAD)
 	attack.cancel()
 	velocity = Vector3.ZERO
 	# Collision changes are not allowed while physics queries run.

@@ -37,7 +37,7 @@ func _player_hurt() -> bool:
 
 
 func _attacking() -> bool:
-	return hollow.state == EnemyController.State.ATTACK
+	return hollow.is_attacking()
 
 
 func _add_main() -> Node3D:
@@ -59,7 +59,7 @@ func test_without_navigation_the_wall_blocks_the_chase() -> void:
 	_spawn_player(Vector3(0, 0, 3))
 	_spawn_hollow(Vector3(0, 0, -3), false)
 	await wait_physics_frames(300)
-	check(hollow.state == EnemyController.State.CHASE, "still chasing")
+	check(hollow.state == EnemyController.State.APPROACH, "still chasing")
 	check(not _player_hurt(), "but never reached the player")
 	check(hollow.global_position.z < WALL.position.z,
 			"stuck on its own side of the wall, at %s" % hollow.global_position)
@@ -70,7 +70,7 @@ func test_replans_when_the_player_moves_behind_the_wall() -> void:
 	_spawn_player(Vector3(0, 0, -2))
 	_spawn_hollow(Vector3(0, 0, -8))
 	await wait_physics_frames(20)
-	check(hollow.state == EnemyController.State.CHASE, "chasing on the near side")
+	check(hollow.state == EnemyController.State.APPROACH, "chasing on the near side")
 	_teleport_player(Vector3(0, 0, 3))
 	check(await wait_until(_player_hurt, 360), "followed the player around the wall and hit")
 
@@ -80,7 +80,7 @@ func test_without_a_navigation_mesh_steers_straight_at_the_player() -> void:
 	_spawn_player(Vector3.ZERO)
 	_spawn_hollow(Vector3(0, 0, -8))
 	await wait_physics_frames(60)
-	check(hollow.state == EnemyController.State.CHASE, "chasing")
+	check(hollow.state == EnemyController.State.APPROACH, "chasing")
 	check(hollow.global_position.z > -5.5, "closed in, now at %s" % hollow.global_position)
 
 
