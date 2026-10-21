@@ -205,10 +205,16 @@ checklist below is the full manual pass.
       sector, and every third attack bashes with its shield, pushing you back.
       Hitting its shield from the front does half damage (5 from a basic
       attack); from behind or mid-swing, full damage.
+- [ ] In the Throne the Ashen Lord stands up from his seat; his name and a
+      health bar appear at the top. A red circle under him before a slam, a
+      wide sector before a cleave. Under 60 % he roars, three skeletons rise
+      by the braziers and a ring of fire starts to expand from him (step out
+      past 10 m or dodge through it). Under 30 % he is faster. Killing him
+      kills the skeletons and wins the run.
 - [ ] Walking behind a tall wall (in each corridor) the Warden stays visible
       through a small see-through patch in the wall.
-- [ ] The Chapel and the Throne seal and open the same way. Clearing the
-      Throne shows "The crypt is cleared"; **Play again** starts over in the
+- [ ] The Chapel and the Throne seal and open the same way. Killing the Lord
+      shows "The crypt is cleared"; **Play again** starts over in the
       Gatehouse.
 - [ ] The health bar drops when you are hit. At zero the player falls,
       "You have fallen" appears, and **Rise again** restarts with full health.

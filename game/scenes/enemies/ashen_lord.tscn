@@ -1,0 +1,120 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/ashen_lord.gd" id="1_controller"]
+[ext_resource type="Resource" path="res://resources/enemies/ashen_lord_movement.tres" id="2_movement"]
+[ext_resource type="Resource" path="res://resources/enemies/ashen_lord_behavior.tres" id="3_behavior"]
+[ext_resource type="Script" path="res://scripts/combat/health.gd" id="4_health"]
+[ext_resource type="Script" path="res://scripts/combat/hit_feedback.gd" id="5_feedback"]
+[ext_resource type="Material" path="res://resources/materials/hit_flash.tres" id="6_flash"]
+[ext_resource type="Script" path="res://scripts/combat/melee_attack.gd" id="7_attack"]
+[ext_resource type="Resource" path="res://resources/enemies/ashen_lord_cinder_cleave.tres" id="8_attack_data"]
+[ext_resource type="Script" path="res://scripts/combat/attack_telegraph.gd" id="10_telegraph"]
+[ext_resource type="Material" path="res://resources/materials/telegraph.tres" id="14_telegraph"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/characters/Knight.glb" id="15_model"]
+[ext_resource type="Resource" path="res://resources/enemies/ashen_lord_ash_slam.tres" id="19_slam_data"]
+[ext_resource type="Resource" path="res://resources/enemies/ashen_lord_ember_ring.tres" id="20_ring_data"]
+[ext_resource type="Script" path="res://scripts/combat/ring_attack.gd" id="21_ring_attack"]
+[ext_resource type="PackedScene" path="res://scenes/combat/ember_ring.tscn" id="22_ring"]
+[ext_resource type="Material" path="res://resources/materials/ashen_lord_model.tres" id="23_model_material"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/skeleton_warrior.tscn" id="24_add"]
+[ext_resource type="Script" path="res://scripts/presentation/model_dressing.gd" id="17_dressing"]
+[ext_resource type="Script" path="res://scripts/presentation/character_animator.gd" id="18_animator"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.7
+height = 3.0
+
+[node name="AshenLord" type="CharacterBody3D" node_paths=PackedStringArray("attack", "special_attack", "health", "visual", "navigation", "slam_attack", "animator")]
+collision_layer = 4
+collision_mask = 7
+script = ExtResource("1_controller")
+movement = ExtResource("2_movement")
+behavior = ExtResource("3_behavior")
+attack = NodePath("CinderCleave")
+special_attack = NodePath("EmberRing")
+health = NodePath("Health")
+visual = NodePath("Visual")
+navigation = NodePath("NavigationAgent")
+slam_attack = NodePath("AshSlam")
+add_scene = ExtResource("24_add")
+animator = NodePath("Animator")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("4_health")
+max_health = 600
+
+[node name="HitFeedback" type="Node" parent="." node_paths=PackedStringArray("health", "visual")]
+script = ExtResource("5_feedback")
+health = NodePath("../Health")
+visual = NodePath("../Visual")
+flash_material = ExtResource("6_flash")
+number_height = 3.6
+
+[node name="CinderCleave" type="Node" parent="."]
+script = ExtResource("7_attack")
+data = ExtResource("8_attack_data")
+target_mask = 2
+
+[node name="AshSlam" type="Node" parent="."]
+script = ExtResource("7_attack")
+data = ExtResource("19_slam_data")
+target_mask = 2
+
+[node name="EmberRing" type="Node" parent="."]
+script = ExtResource("21_ring_attack")
+data = ExtResource("20_ring_data")
+target_mask = 2
+ring_scene = ExtResource("22_ring")
+
+[node name="NavigationAgent" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.5
+path_height_offset = 0.5
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Model" parent="Visual" instance=ExtResource("15_model")]
+transform = Transform3D(-1.7, 0, 0, 0, 1.7, 0, 0, 0, -1.7, 0, 0, 0)
+
+[node name="CleaveTelegraph" type="MeshInstance3D" parent="Visual" node_paths=PackedStringArray("attack")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
+material_override = ExtResource("14_telegraph")
+script = ExtResource("10_telegraph")
+attack = NodePath("../../CinderCleave")
+
+[node name="SlamTelegraph" type="MeshInstance3D" parent="Visual" node_paths=PackedStringArray("attack")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0)
+material_override = ExtResource("14_telegraph")
+script = ExtResource("10_telegraph")
+attack = NodePath("../../AshSlam")
+segments = 40
+
+[node name="RingTelegraph" type="MeshInstance3D" parent="Visual" node_paths=PackedStringArray("attack")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+material_override = ExtResource("14_telegraph")
+script = ExtResource("10_telegraph")
+attack = NodePath("../../EmberRing")
+segments = 48
+
+[node name="ModelDressing" type="Node" parent="." node_paths=PackedStringArray("model")]
+script = ExtResource("17_dressing")
+model = NodePath("../Visual/Model")
+material = ExtResource("23_model_material")
+hidden_parts = PackedStringArray("1H_Sword", "1H_Sword_Offhand", "Badge_Shield", "Rectangle_Shield", "Round_Shield", "Spike_Shield")
+
+[node name="Animator" type="Node" parent="." node_paths=PackedStringArray("body", "enemy", "animation_player", "health", "attacks")]
+script = ExtResource("18_animator")
+body = NodePath("..")
+enemy = NodePath("..")
+animation_player = NodePath("../Visual/Model/AnimationPlayer")
+health = NodePath("../Health")
+attacks = [NodePath("../CinderCleave"), NodePath("../AshSlam"), NodePath("../EmberRing")]
+attack_animations = Array[StringName]([&"2H_Melee_Attack_Slice", &"2H_Melee_Attack_Chop", &"Spellcast_Long"])
+idle_animation = &"2H_Melee_Idle"
+run_animation = &"Walking_A"
+death_animation = &"Death_A"
+rise_animation = &"Sit_Chair_StandUp"
+run_reference_speed = 2.0

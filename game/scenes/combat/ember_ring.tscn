@@ -1,0 +1,18 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/ember_ring.gd" id="1_ring"]
+[ext_resource type="Material" path="res://resources/materials/ember_ring.tres" id="2_material"]
+
+[sub_resource type="TorusMesh" id="TorusMesh_ring"]
+material = ExtResource("2_material")
+inner_radius = 0.93
+outer_radius = 1.0
+rings = 48
+ring_segments = 6
+
+[node name="EmberRing" type="Node3D"]
+script = ExtResource("1_ring")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("TorusMesh_ring")

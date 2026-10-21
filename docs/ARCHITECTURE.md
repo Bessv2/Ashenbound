@@ -438,6 +438,20 @@ Milestone 3, step 1 ([dungeons/ashen_crypt.md](dungeons/ashen_crypt.md)).
   front while its body is not attacking. Burning has no direction and is never
   reduced. `EliteBar` floats a name and health bar over the elite, turned to
   the camera each frame.
+- **The boss (step 5).** `AshenLord` extends `EnemyController`. It overrides
+  `_next_attack()` (called once per attack): slam when the player is within
+  3 m and the last attack was not a slam, otherwise cleave; the Ember Ring
+  every third attack in phase 2 and every other in phase 3. Phase changes
+  watch `Health.damaged` and run in order, one per roar, so a hit past both
+  thresholds plays phase 2 and then 3. A roar is `rise()`: inert and
+  invulnerable. Phase 2 summons adds at the encounter's `Summon*` markers and
+  hands them to `EncounterController.adopt()`, so the encounter only clears
+  when they are dead; they die with the Lord. Phase 3 sets
+  `MeleeAttack.windup_scale` and `EnemyController.speed_multiplier` (the
+  shared data resources stay untouched). `RingAttack` spawns an `EmberRing`
+  that hits each target once as its edge passes; a dodge at that moment
+  avoids it. `BossBar` in the HUD shows the first living node of the `boss`
+  group.
 - **See-through walls.** North walls, gates and tall pillars use
   `resources/materials/dungeon_cutout.tres`, a shader that draws the KayKit
   texture but cuts a dithered hole wherever the surface is between the camera

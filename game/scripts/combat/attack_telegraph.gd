@@ -68,7 +68,7 @@ func _on_started() -> void:
 		_tween.kill()
 	transparency = 0.7
 	_tween = create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
-	_tween.tween_property(self, "transparency", 0.1, maxf(attack.data.windup, 0.01))
+	_tween.tween_property(self, "transparency", 0.1, maxf(attack.windup_time(), 0.01))
 
 
 func _on_finished() -> void:

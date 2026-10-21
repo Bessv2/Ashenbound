@@ -26,6 +26,9 @@ enum Phase { READY, WINDUP, RECOVERY }
 
 ## Flat world direction of the current or last attack.
 var direction: Vector3 = Vector3.FORWARD
+## Scales the windup of attacks started from now on (a boss's last phase
+## winds up faster). The data resource is shared, so it is never changed.
+var windup_scale: float = 1.0
 
 var _phase: Phase = Phase.READY
 var _time_left: float = 0.0
@@ -54,6 +57,11 @@ func is_busy() -> bool:
 	return _phase != Phase.READY
 
 
+## The windup of the next attack, in seconds.
+func windup_time() -> float:
+	return data.windup * windup_scale
+
+
 ## Speed factor the attacker should apply to its movement right now.
 func movement_multiplier() -> float:
 	return data.movement_multiplier if is_busy() else 1.0
@@ -66,7 +74,7 @@ func try_start(facing: Vector3) -> bool:
 		return false
 	direction = _aim(_flat(facing))
 	_phase = Phase.WINDUP
-	_time_left = data.windup
+	_time_left = windup_time()
 	started.emit(direction)
 	return true
 
