@@ -4,20 +4,28 @@ extends CharacterBody3D
 ##
 ## States:
 ## - IDLE: waits until a living player comes within aggro range.
-## - CHASE: walks straight at the player; gives up beyond the leash range.
+## - CHASE: walks to the player along a navigation path; gives up beyond the
+##   leash range.
 ## - ATTACK: stands still while its MeleeAttack plays out, facing the target.
 ## - DEAD: cancels any pending hit, stops colliding, sinks into the floor and
 ##   frees itself.
 ##
-## Movement is direct steering with move_and_slide, which suits the open test
-## arena: obstacles are slid around, not planned around. The player is found
-## through the PlayerController.GROUP group, so enemies never hold a reference
-## that a scene reload could leave dangling.
+## The chase follows the `navigation` agent's path around walls and pillars.
+## Where there is no path to follow (no navigation mesh in the level, the
+## navigation map not synchronized yet, or the path already walked) the enemy
+## steers straight at the player instead, which is also the last stretch of
+## every chase. The player is found through the PlayerController.GROUP group,
+## so enemies never hold a reference that a scene reload could leave dangling.
 
 ## Emitted just before the body is removed, after the death animation.
 signal despawned
 
 enum State { IDLE, CHASE, ATTACK, DEAD }
+
+## How far the player may move from the end of the current path before a new
+## path is planned. Planning every physics frame would work too, but wastes
+## queries on a target that has barely moved.
+const REPATH_DISTANCE := 0.5
 
 @export var movement: MovementStats
 @export var behavior: EnemyBehavior
@@ -25,8 +33,14 @@ enum State { IDLE, CHASE, ATTACK, DEAD }
 @export var health: Health
 ## Turned to face movement or the attack. Sinks when the enemy dies.
 @export var visual: Node3D
+## Plans the chase around obstacles. Without one the enemy steers straight at
+## its target.
+@export var navigation: NavigationAgent3D
 
 var state: State = State.IDLE
+
+## Where the current path leads; INF when no path has been requested.
+var _path_target: Vector3 = Vector3.INF
 
 @onready var _collision: CollisionShape3D = $CollisionShape3D
 
@@ -47,7 +61,10 @@ func _physics_process(delta: float) -> void:
 
 	var desired := Vector3.ZERO
 	if state == State.CHASE and target:
-		desired = _direction_to(target) * movement.move_speed * attack.movement_multiplier()
+		desired = _chase_direction(target) * movement.move_speed * attack.movement_multiplier()
+	else:
+		# The next chase plans a fresh path.
+		_path_target = Vector3.INF
 	var horizontal := movement.step_velocity(Vector3(velocity.x, 0.0, velocity.z), desired, delta)
 	velocity.x = horizontal.x
 	velocity.z = horizontal.z
@@ -96,6 +113,26 @@ func _distance_to(target: Node3D) -> float:
 func _direction_to(target: Node3D) -> Vector3:
 	var offset := target.global_position - global_position
 	return Vector3(offset.x, 0.0, offset.z).normalized()
+
+
+## The horizontal direction to walk in to reach `target`: toward the next point
+## of the navigation path, or straight at the target when there is no path.
+func _chase_direction(target: Node3D) -> Vector3:
+	if navigation == null:
+		return _direction_to(target)
+	if _path_target.distance_to(target.global_position) > REPATH_DISTANCE:
+		_path_target = target.global_position
+		navigation.target_position = _path_target
+	# The path ends near the player, or as near as the mesh reaches. Cover the
+	# rest, including any move shorter than REPATH_DISTANCE, directly.
+	if navigation.is_navigation_finished():
+		return _direction_to(target)
+	var offset := navigation.get_next_path_position() - global_position
+	offset.y = 0.0
+	# Without a path the agent returns this body's own position.
+	if offset.length_squared() < 0.0001:
+		return _direction_to(target)
+	return offset.normalized()
 
 
 func _on_died() -> void:

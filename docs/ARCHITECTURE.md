@@ -1,8 +1,8 @@
 # Architecture
 
 This document covers the current foundation (scenes, input, movement, camera,
-pause and settings), combat, player health and death, and the first enemy. It
-will grow as systems are added.
+pause and settings), combat, player health and death, and the first enemy and
+how it finds its way around the arena. It will grow as systems are added.
 
 ## Scene structure
 
@@ -12,10 +12,11 @@ Main (Node3D)                         scenes/main.tscn, scripts/main.gd
 ├── TestArena (Node3D)                scenes/arena/test_arena.tscn
 │   ├── WorldEnvironment              resources/environment/arena_environment.tres
 │   ├── Moonlight (DirectionalLight3D, shadows)
-│   ├── Floor (StaticBody3D)          44×44 m, top at y = 0, procedural flagstone shader
-│   ├── Walls/{North,West}Wall        3 m tall (far side from the camera)
-│   ├── Walls/{South,East}Wall        1 m tall (camera side, so they never hide the player)
-│   └── Pillars/Pillar{N,S,E,W}       obstacles with an ember light on top
+│   └── Navigation (NavigationRegion3D) scripts/world/baked_navigation_region.gd, baked at load
+│       ├── Floor (StaticBody3D)      44×44 m, top at y = 0, procedural flagstone shader
+│       ├── Walls/{North,West}Wall    3 m tall (far side from the camera)
+│       ├── Walls/{South,East}Wall    1 m tall (camera side, so they never hide the player)
+│       └── Pillars/Pillar{N,S,E,W}   obstacles with an ember light on top
 ├── Player (CharacterBody3D)          scenes/player/player.tscn, scripts/player/player_controller.gd
 │   ├── CollisionShape3D              capsule, radius 0.4 m, height 1.8 m
 │   ├── Visual (Node3D)               turned to face movement or the attack; topples on death
@@ -32,6 +33,7 @@ Main (Node3D)                         scenes/main.tscn, scripts/main.gd
 │       ├── Spawn{NorthWest,NorthEast,SouthWest,SouthEast} (Marker3D)
 │       └── Hollow (CharacterBody3D)  scenes/enemies/hollow.tscn, spawned at runtime
 │           ├── Health (30 HP), HitFeedback, MeleeAttack (targets layer 2)
+│           ├── NavigationAgent (NavigationAgent3D) plans the chase
 │           └── Visual/{WeaponPivot, Telegraph}
 ├── CameraRig (Node3D)                scenes/camera/isometric_camera_rig.tscn
 │   └── Camera3D                      orthographic, size 16 m
@@ -216,9 +218,9 @@ clearly on a phone: a long, visible windup that the player can step out of.
 - **`EnemyController`** (CharacterBody3D) runs a small state machine in
   `_physics_process`:
   - **IDLE:** waits until a living player is within aggro range.
-  - **CHASE:** steers straight at the player with `MovementStats` (3.4 m/s,
-    slower than the player's 6 m/s). It gives up beyond the leash range or when
-    the player dies.
+  - **CHASE:** walks to the player along a navigation path (see below) with
+    `MovementStats` (3.4 m/s, slower than the player's 6 m/s). It gives up
+    beyond the leash range or when the player dies.
   - **ATTACK:** stands still, faces the target, and lets its `MeleeAttack` run
     (12 damage, 1.6 m reach, 100° arc, 0.5 s windup, 0.7 s recovery).
   - **DEAD:** cancels any pending hit, stops colliding, sinks into the floor
@@ -235,11 +237,53 @@ clearly on a phone: a long, visible windup that the player can step out of.
 - Balance: three player hits kill a Hollow. A Hollow standing next to the
   player deals 12 about every 1.2 s.
 
+### Navigation
+
+![A Hollow walks around a pillar to reach the player (debug path in red)](images/prototype-hollow-navigation.png)
+
+- **Navigation mesh.** The arena's floor, walls and pillars are children of a
+  `BakedNavigationRegion` (a `NavigationRegion3D`), which bakes its navigation
+  mesh when the level loads. The bake settings live in
+  `resources/navigation/ground_navigation_mesh.tres`: static colliders on the
+  *world* physics layer only, agent radius 0.5 m (a Hollow's capsule is
+  0.4 m), agent height 2 m, and islands smaller than 1 m² dropped so the tops
+  of pillars are not walkable. The region bakes into a private copy of that
+  shared resource; baking into the shared one would hand its polygons to every
+  other region using it. The bake takes about 10 ms on a desktop CPU, on the
+  main thread during scene load. Larger levels should be baked in the editor
+  and saved instead.
+- **Path following.** Each Hollow has a `NavigationAgent3D`. While chasing,
+  `EnemyController` sets the agent's target to the player's position whenever
+  the player has moved more than `REPATH_DISTANCE` (0.5 m) from the end of the
+  current path, then walks toward `get_next_path_position()` every physics
+  frame. The walking itself is unchanged: the same acceleration, turning and
+  `move_and_slide`, so speed stays independent of the tick rate.
+- **Fallback.** With no path to follow, the Hollow steers straight at the
+  player. That covers a level without a navigation mesh, the frames before the
+  map first synchronizes, and the last stretch of every chase (the agent
+  reports navigation finished within 1 m of the player).
+- **Path height.** Baking lifts the mesh 0.5 m above the floor (two cells of
+  0.25 m). The agent's `path_height_offset` of 0.5 m brings path points back to
+  the Hollow's feet. Without it, the agent's 0.5 m waypoint-distance check
+  could never pass, because the vertical gap alone is 0.5 m. A test checks that
+  the two still match.
+- **Synchronous map updates.** `navigation/world/map_use_async_iterations` and
+  `region_use_async_iterations` are off. The arena's map is tiny and changes
+  only at load, so updating it on the main thread costs next to nothing, and
+  paths become available on a predictable physics frame (the tests rely on
+  this).
+- **Debugging.** Run from the editor with **Debug > Visible Navigation** to see
+  the mesh. Set `debug_enabled` on a Hollow's `NavigationAgent` to draw its
+  path.
+
 Known simplifications:
 
-- Movement is direct steering, not navigation, so an enemy can get stuck
-  behind a pillar on the way to the player. A `NavigationRegion3D` is the next
-  step once levels have real layouts.
+- Training dummies are not part of the navigation mesh, which only bakes the
+  arena's own geometry. Hollows slide around a dummy rather than plan around
+  it.
+- No avoidance between enemies: Hollows can bunch up behind each other.
+  `NavigationAgent3D` avoidance (RVO) is available when crowds grow.
+- Aggro and leash ranges are straight-line distances, not path lengths.
 - Player hits do not interrupt an enemy's windup (no stagger).
 - Idle enemies stand still rather than wander.
 
@@ -301,7 +345,9 @@ tree. Integration tests instantiate the real `main.tscn` through
 `instantiate_main()`, which switches enemy spawners off unless asked
 (`instantiate_main(true)`), so movement and UI tests run in a quiet arena.
 `wait_until(condition, max_frames)` waits for a state without hard-coding
-frame counts. A test fails on a
+frame counts. `add_level(size, obstacles)` builds a floor with box obstacles
+under a navigation region baked like the arena's, and `wait_for_navigation()`
+waits until the map can plan paths over it. A test fails on a
 failed `check` or on any engine or script error logged during it, captured with
 a custom `Logger`. Warnings are printed under the test that logged them, and
 counted in the summary, but do not fail it. Run them with `tools/test.sh`.

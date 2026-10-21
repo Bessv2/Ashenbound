@@ -5,6 +5,8 @@
 [ext_resource type="Material" path="res://resources/materials/stone_wall.tres" id="3_wall"]
 [ext_resource type="Material" path="res://resources/materials/pillar_stone.tres" id="4_pillar"]
 [ext_resource type="Material" path="res://resources/materials/ember.tres" id="5_ember"]
+[ext_resource type="Script" path="res://scripts/world/baked_navigation_region.gd" id="6_navigation"]
+[ext_resource type="NavigationMesh" path="res://resources/navigation/ground_navigation_mesh.tres" id="7_navmesh"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(44, 1, 44)
@@ -73,130 +75,134 @@ shadow_enabled = true
 directional_shadow_mode = 0
 directional_shadow_max_distance = 60.0
 
-[node name="Floor" type="StaticBody3D" parent="."]
+[node name="Navigation" type="NavigationRegion3D" parent="."]
+navigation_mesh = ExtResource("7_navmesh")
+script = ExtResource("6_navigation")
+
+[node name="Floor" type="StaticBody3D" parent="Navigation"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Floor"]
 shape = SubResource("BoxShape3D_floor")
 
-[node name="Mesh" type="MeshInstance3D" parent="Floor"]
+[node name="Mesh" type="MeshInstance3D" parent="Navigation/Floor"]
 mesh = SubResource("BoxMesh_floor")
 
-[node name="Walls" type="Node3D" parent="."]
+[node name="Walls" type="Node3D" parent="Navigation"]
 
-[node name="NorthWall" type="StaticBody3D" parent="Walls"]
+[node name="NorthWall" type="StaticBody3D" parent="Navigation/Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -20.5)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/NorthWall"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Walls/NorthWall"]
 shape = SubResource("BoxShape3D_far_wall_x")
 
-[node name="Mesh" type="MeshInstance3D" parent="Walls/NorthWall"]
+[node name="Mesh" type="MeshInstance3D" parent="Navigation/Walls/NorthWall"]
 mesh = SubResource("BoxMesh_far_wall_x")
 
-[node name="WestWall" type="StaticBody3D" parent="Walls"]
+[node name="WestWall" type="StaticBody3D" parent="Navigation/Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.5, 1.5, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/WestWall"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Walls/WestWall"]
 shape = SubResource("BoxShape3D_far_wall_z")
 
-[node name="Mesh" type="MeshInstance3D" parent="Walls/WestWall"]
+[node name="Mesh" type="MeshInstance3D" parent="Navigation/Walls/WestWall"]
 mesh = SubResource("BoxMesh_far_wall_z")
 
-[node name="SouthWall" type="StaticBody3D" parent="Walls"]
+[node name="SouthWall" type="StaticBody3D" parent="Navigation/Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 20.5)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/SouthWall"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Walls/SouthWall"]
 shape = SubResource("BoxShape3D_near_wall_x")
 
-[node name="Mesh" type="MeshInstance3D" parent="Walls/SouthWall"]
+[node name="Mesh" type="MeshInstance3D" parent="Navigation/Walls/SouthWall"]
 mesh = SubResource("BoxMesh_near_wall_x")
 
-[node name="EastWall" type="StaticBody3D" parent="Walls"]
+[node name="EastWall" type="StaticBody3D" parent="Navigation/Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.5, 0.5, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Walls/EastWall"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Walls/EastWall"]
 shape = SubResource("BoxShape3D_near_wall_z")
 
-[node name="Mesh" type="MeshInstance3D" parent="Walls/EastWall"]
+[node name="Mesh" type="MeshInstance3D" parent="Navigation/Walls/EastWall"]
 mesh = SubResource("BoxMesh_near_wall_z")
 
-[node name="Pillars" type="Node3D" parent="."]
+[node name="Pillars" type="Node3D" parent="Navigation"]
 
-[node name="PillarNorth" type="StaticBody3D" parent="Pillars"]
+[node name="PillarNorth" type="StaticBody3D" parent="Navigation/Pillars"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -10)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Pillars/PillarNorth"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Pillars/PillarNorth"]
 shape = SubResource("CylinderShape3D_pillar")
 
-[node name="Mesh" type="MeshInstance3D" parent="Pillars/PillarNorth"]
+[node name="Mesh" type="MeshInstance3D" parent="Navigation/Pillars/PillarNorth"]
 mesh = SubResource("CylinderMesh_pillar")
 
-[node name="Ember" type="MeshInstance3D" parent="Pillars/PillarNorth"]
+[node name="Ember" type="MeshInstance3D" parent="Navigation/Pillars/PillarNorth"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 0)
 cast_shadow = 0
 mesh = SubResource("SphereMesh_ember")
 
-[node name="Light" type="OmniLight3D" parent="Pillars/PillarNorth"]
+[node name="Light" type="OmniLight3D" parent="Navigation/Pillars/PillarNorth"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
 light_color = Color(1, 0.55, 0.25, 1)
 light_energy = 1.6
 omni_range = 9.0
 
-[node name="PillarSouth" type="StaticBody3D" parent="Pillars"]
+[node name="PillarSouth" type="StaticBody3D" parent="Navigation/Pillars"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 10)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Pillars/PillarSouth"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Pillars/PillarSouth"]
 shape = SubResource("CylinderShape3D_pillar")
 
-[node name="Mesh" type="MeshInstance3D" parent="Pillars/PillarSouth"]
+[node name="Mesh" type="MeshInstance3D" parent="Navigation/Pillars/PillarSouth"]
 mesh = SubResource("CylinderMesh_pillar")
 
-[node name="Ember" type="MeshInstance3D" parent="Pillars/PillarSouth"]
+[node name="Ember" type="MeshInstance3D" parent="Navigation/Pillars/PillarSouth"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 0)
 cast_shadow = 0
 mesh = SubResource("SphereMesh_ember")
 
-[node name="Light" type="OmniLight3D" parent="Pillars/PillarSouth"]
+[node name="Light" type="OmniLight3D" parent="Navigation/Pillars/PillarSouth"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
 light_color = Color(1, 0.55, 0.25, 1)
 light_energy = 1.6
 omni_range = 9.0
 
-[node name="PillarEast" type="StaticBody3D" parent="Pillars"]
+[node name="PillarEast" type="StaticBody3D" parent="Navigation/Pillars"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 2, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Pillars/PillarEast"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Pillars/PillarEast"]
 shape = SubResource("CylinderShape3D_pillar")
 
-[node name="Mesh" type="MeshInstance3D" parent="Pillars/PillarEast"]
+[node name="Mesh" type="MeshInstance3D" parent="Navigation/Pillars/PillarEast"]
 mesh = SubResource("CylinderMesh_pillar")
 
-[node name="Ember" type="MeshInstance3D" parent="Pillars/PillarEast"]
+[node name="Ember" type="MeshInstance3D" parent="Navigation/Pillars/PillarEast"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 0)
 cast_shadow = 0
 mesh = SubResource("SphereMesh_ember")
 
-[node name="Light" type="OmniLight3D" parent="Pillars/PillarEast"]
+[node name="Light" type="OmniLight3D" parent="Navigation/Pillars/PillarEast"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
 light_color = Color(1, 0.55, 0.25, 1)
 light_energy = 1.6
 omni_range = 9.0
 
-[node name="PillarWest" type="StaticBody3D" parent="Pillars"]
+[node name="PillarWest" type="StaticBody3D" parent="Navigation/Pillars"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 2, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Pillars/PillarWest"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Pillars/PillarWest"]
 shape = SubResource("CylinderShape3D_pillar")
 
-[node name="Mesh" type="MeshInstance3D" parent="Pillars/PillarWest"]
+[node name="Mesh" type="MeshInstance3D" parent="Navigation/Pillars/PillarWest"]
 mesh = SubResource("CylinderMesh_pillar")
 
-[node name="Ember" type="MeshInstance3D" parent="Pillars/PillarWest"]
+[node name="Ember" type="MeshInstance3D" parent="Navigation/Pillars/PillarWest"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 0)
 cast_shadow = 0
 mesh = SubResource("SphereMesh_ember")
 
-[node name="Light" type="OmniLight3D" parent="Pillars/PillarWest"]
+[node name="Light" type="OmniLight3D" parent="Navigation/Pillars/PillarWest"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
 light_color = Color(1, 0.55, 0.25, 1)
 light_energy = 1.6

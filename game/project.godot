@@ -72,6 +72,11 @@ pointing/emulate_touch_from_mouse=true
 3d_physics/layer_2="player"
 3d_physics/layer_3="enemy"
 
+[navigation]
+
+world/map_use_async_iterations=false
+world/region_use_async_iterations=false
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

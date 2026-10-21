@@ -42,7 +42,7 @@ rings = 4
 material = ExtResource("13_iron")
 size = Vector3(0.07, 0.05, 0.8)
 
-[node name="Hollow" type="CharacterBody3D" node_paths=PackedStringArray("attack", "health", "visual")]
+[node name="Hollow" type="CharacterBody3D" node_paths=PackedStringArray("attack", "health", "visual", "navigation")]
 collision_layer = 4
 collision_mask = 7
 script = ExtResource("1_controller")
@@ -51,6 +51,7 @@ behavior = ExtResource("3_behavior")
 attack = NodePath("MeleeAttack")
 health = NodePath("Health")
 visual = NodePath("Visual")
+navigation = NodePath("NavigationAgent")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -71,6 +72,10 @@ number_height = 2.3
 script = ExtResource("7_attack")
 data = ExtResource("8_attack_data")
 target_mask = 2
+
+[node name="NavigationAgent" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.5
+path_height_offset = 0.5
 
 [node name="Visual" type="Node3D" parent="."]
 

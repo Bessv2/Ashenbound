@@ -1,5 +1,6 @@
 extends "res://tests/framework/test_case.gd"
-## Tests for the Hollow's AI against the real player, on a bare floor.
+## Tests for the Hollow's AI against the real player, on an open, navigable
+## floor. Finding a way around obstacles is in test_enemy_navigation.gd.
 
 const PlayerScene := preload("res://scenes/player/player.tscn")
 const HollowScene := preload("res://scenes/enemies/hollow.tscn")
@@ -10,14 +11,7 @@ var telegraph: AttackTelegraph
 
 
 func _ready() -> void:
-	var floor_body := StaticBody3D.new()
-	var floor_shape := CollisionShape3D.new()
-	var box := BoxShape3D.new()
-	box.size = Vector3(80, 1, 80)
-	floor_shape.shape = box
-	floor_body.add_child(floor_shape)
-	floor_body.position = Vector3(0, -0.5, 0)
-	add_child(floor_body)
+	add_level(80.0)
 	player = PlayerScene.instantiate()
 	add_child(player)
 

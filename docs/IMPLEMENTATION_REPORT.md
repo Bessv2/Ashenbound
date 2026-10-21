@@ -240,7 +240,7 @@ shows only this work.
 ### Known issues
 
 - **No navigation:** enemies steer straight at the player and can get stuck
-  behind a pillar.
+  behind a pillar. (Addressed in [section 8](#8-enemy-navigation-branch-featureenemy-navigation).)
 - **No stagger:** player hits do not interrupt a Hollow's windup.
 - **Readability:** the Hollow's dark body is hard to see when it is behind
   the player from this camera angle. The glowing eyes and the telegraph help;
@@ -255,4 +255,71 @@ shows only this work.
 2. Navigation (`NavigationRegion3D` baked from the arena) once layouts get
    walls that block line of sight.
 3. Combat feel: hit-stop, a short stagger on the enemy, a clearer swing effect.
+4. A second enemy type (ranged or charging) to exercise `EnemyBehavior` reuse.
+
+## 8. Enemy navigation (branch `feature/enemy-navigation`)
+
+Requested after PR #2: "keep going, new branch for enemy navigation". The
+branch starts from PR #2's head and its PR targets PR #2's branch.
+
+Before this change, a Hollow chasing the player straight across a pillar
+pressed into it indefinitely. A probe with the player at (0, 0, −7.5) and a
+Hollow at (0, 0, −12.5), with PillarNorth at (0, 0, −10) between them, stopped the
+Hollow at z = −11.10 within half a second (the pillar's surface plus the
+Hollow's radius), and it stayed there for the rest of the 4 s run.
+
+| Change | Details |
+|---|---|
+| Navigation mesh | The arena's floor, walls and pillars moved under `Navigation`, a `BakedNavigationRegion` that bakes at load from static colliders on the world layer. The settings are in `resources/navigation/ground_navigation_mesh.tres`: agent radius 0.5 m, height 2 m, islands under 1 m² dropped. The arena bakes to 39 polygons in about 10 ms on this container's CPU. |
+| Path following | `EnemyController` gets an optional `navigation` agent. While chasing, it replans when the player has moved 0.5 m from the end of the path, and walks toward the next path point with the unchanged movement code. With no path, it steers straight at the player as before. |
+| Hollow scene | A `NavigationAgent3D` with a 0.5 m waypoint distance and a 0.5 m path height offset (the baked mesh sits 0.5 m above the floor). |
+| Project settings | Navigation map and region updates are synchronous (`navigation/world/*_use_async_iterations = false`), so paths become available on a predictable frame. |
+| Tests | `add_level()` and `wait_for_navigation()` helpers. The AI suite now runs on a baked floor. A new `test_enemy_navigation` suite has 8 tests. |
+
+The design notes are in
+[ARCHITECTURE.md](ARCHITECTURE.md#navigation).
+
+### Problems found while building it
+
+1. **Path points float 0.5 m above the floor.** Recast places the baked mesh
+   two cells (2 × 0.25 m) above the surface it was baked from. The agent checks
+   waypoints by 3D distance, so with its 0.5 m waypoint distance it could never
+   reach one. The agent's `path_height_offset` is now 0.5 m, and a test checks
+   that every vertex of the arena's mesh sits exactly that high.
+2. **Walkable islands on the pillar tops.** The first bake had four
+   0.5 × 0.5 m polygons at y = 4.5. Raising `region_min_size` to 4 (16 cells,
+   1 m²) removes them, and the same test would catch them coming back.
+3. **A test waited for navigation by frame count, and the map updated on a
+   background thread.** With `--fixed-fps`, 30 physics frames can pass before
+   the thread finishes, so the wait timed out once in the first run. Making
+   map and region updates synchronous fixed it: the suite then passed on three
+   consecutive runs.
+
+### Checks
+
+| Check | Result |
+|---|---|
+| `tools/test.sh` | **106 passed, 0 failed** on 3 consecutive runs (+8 navigation tests). The only warning is the known fast-forward Jolt message. |
+| Tests fail without the feature | With `_chase_direction()` forced to straight-line steering, 4 navigation tests fail: wall, replan, frame rate and pillar. With replanning disabled (the target set only once per chase), the replan test fails. Both changes were reverted. |
+| Frame-rate independence | Time from spawn to the first attack, walking around the 8 m wall: 3.13 s at 30 Hz, 3.05 s at 60 Hz, 3.06 s at 120 Hz (the test allows ±5 %). |
+| Rendered smoke test (Xvfb, Mobile renderer, lavapipe) | In the real arena, the Hollow walked around the west side of PillarNorth and started its attack 77 frames after spawning, 1.32 m from the player. Screenshot: `docs/images/prototype-hollow-navigation.png`. |
+| `tools/export-android-debug.sh` | Exit 0, APK signature verified; the navigation script and settings are packaged. |
+| `--check-only` on all 44 scripts | The new script passes. Every error traces back to the known `Settings` autoload limitation (same cascade as on the base branch). |
+
+### Known issues
+
+- **Training dummies are not in the navigation mesh.** Hollows slide around a
+  dummy instead of planning around it.
+- **No avoidance between enemies.** Hollows can bunch up and push each other.
+- **Aggro and leash use straight-line distance,** so a Hollow on the far side
+  of a wall still notices the player.
+- **The bake runs on the main thread at load.** That is fine for the test arena
+  but not for large levels, which should be baked in the editor.
+- **Untested on a phone.**
+
+### Next steps
+
+1. Validate on a phone, including the new pillar item in the device checklist.
+2. Combat feel: hit-stop, a short stagger on the enemy, a clearer swing effect.
+3. Navigation avoidance (RVO) once more than a few enemies chase at once.
 4. A second enemy type (ranged or charging) to exercise `EnemyBehavior` reuse.
