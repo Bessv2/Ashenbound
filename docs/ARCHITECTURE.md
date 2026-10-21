@@ -55,6 +55,10 @@ Main (Node3D)                         scenes/main.tscn, scripts/main.gd
 ```
 
 `Settings` (`scripts/core/settings_service.gd`) is the only autoload.
+`Main/PerfLog` (`scripts/core/perf_log.gd`) prints a `PERF` line of frame
+statistics every 5 s in debug builds on a real display. It is used for device
+testing ([DEVICE_TESTING.md](DEVICE_TESTING.md)) and removes itself in release
+builds and headless test runs.
 
 ### Who talks to whom
 

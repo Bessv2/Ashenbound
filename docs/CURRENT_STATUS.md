@@ -98,4 +98,7 @@ The content is decided (see Owner decisions): Skeleton Warriors and Dark
 Cultists in the waves, a Fallen Knight elite, and the Ashen Lord as the boss.
 
 Before that, the owner tests a demo build on an Android device. Its results
-close the device checks for Milestones 1 and 2.
+close the device checks for Milestones 1 and 2. The owner chose to run the
+test with Claude Code on their own computer and a USB-connected phone. The
+procedure is [DEVICE_TESTING.md](DEVICE_TESTING.md): `tools/device-test.sh`
+plus hand checks.

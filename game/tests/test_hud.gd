@@ -36,3 +36,15 @@ func test_hud_fills_the_screen_on_desktop() -> void:
 	var root: Control = hud.get_node("Root")
 	check(root.offset_left == 0.0 and root.offset_top == 0.0 and root.offset_right == 0.0
 			and root.offset_bottom == 0.0, "desktop HUD should not be inset")
+
+
+func test_perf_log_line_format() -> void:
+	var line := PerfLog.format_line(58.64, 0.0213, 42.0, 312.0, 48.0 * 1048576.0)
+	check(line == "PERF fps=58.6 worst_ms=21.3 draw_calls=42 nodes=312 static_mb=48.0", "got '%s'" % line)
+
+
+func test_perf_log_stays_out_of_headless_runs() -> void:
+	var main := instantiate_main()
+	add_child(main)
+	await wait_process_frames(2)
+	check(not main.has_node("PerfLog"), "removed itself in a headless run")

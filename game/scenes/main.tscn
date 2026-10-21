@@ -11,12 +11,16 @@
 [ext_resource type="PackedScene" path="res://ui/death_screen/death_screen.tscn" id="9_death"]
 [ext_resource type="Script" path="res://scripts/enemies/enemy_spawner.gd" id="10_spawner"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/hollow.tscn" id="11_hollow"]
+[ext_resource type="Script" path="res://scripts/core/perf_log.gd" id="12_perf"]
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
 
 [node name="PauseController" type="Node" parent="."]
 script = ExtResource("2_pause")
+
+[node name="PerfLog" type="Node" parent="."]
+script = ExtResource("12_perf")
 
 [node name="TestArena" parent="." instance=ExtResource("3_arena")]
 
