@@ -52,6 +52,12 @@ theme_type_variation = &"DimLabel"
 text = "The ash remembers."
 horizontal_alignment = 1
 
+[node name="Details" type="Label" parent="Root/Center/Panel/Items"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+horizontal_alignment = 1
+
 [node name="RestartButton" type="Button" parent="Root/Center/Panel/Items"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 88)

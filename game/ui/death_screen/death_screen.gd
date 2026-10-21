@@ -1,8 +1,8 @@
 class_name DeathScreen
 extends CanvasLayer
 ## Shown when a run ends: when the player dies, and (with another title) on
-## victory. Fades in after a delay and offers a restart. Emits a request; Main
-## performs the restart.
+## victory, with the run's summary. Fades in after a delay and offers a
+## restart. Emits a request; Main performs the restart.
 
 signal restart_requested
 
@@ -14,6 +14,7 @@ signal restart_requested
 @onready var _restart_button: Button = %RestartButton
 @onready var _title: Label = $Root/Center/Panel/Items/Title
 @onready var _flavor: Label = $Root/Center/Panel/Items/Flavor
+@onready var _details: Label = %Details
 
 
 func _ready() -> void:
@@ -21,8 +22,13 @@ func _ready() -> void:
 	_restart_button.pressed.connect(restart_requested.emit)
 
 
-## Opens the screen. Empty texts keep the defaults (the death texts).
-func open(title: String = "", flavor: String = "", button: String = "") -> void:
+## Opens the screen after `delay` seconds (the fade delay when negative).
+## Empty texts keep the defaults (the death texts); `details` is the summary
+## (hidden when empty).
+func open(title: String = "", flavor: String = "", button: String = "", details: String = "",
+		delay: float = -1.0) -> void:
+	_details.text = details
+	_details.visible = details != ""
 	if title != "":
 		_title.text = title
 	if flavor != "":
@@ -34,7 +40,7 @@ func open(title: String = "", flavor: String = "", button: String = "") -> void:
 	# Disabled until visible, so a stray tap during the fall cannot restart.
 	_restart_button.disabled = true
 	var tween := create_tween()
-	tween.tween_interval(fade_delay)
+	tween.tween_interval(fade_delay if delay < 0.0 else delay)
 	tween.tween_property(_root, "modulate:a", 1.0, fade_duration)
 	tween.tween_callback(_enable_restart)
 

@@ -818,3 +818,55 @@ Acceptance criteria (spec, so far):
 - [x] 7. Phase 2 summons exactly three adds, once; they die with the Lord
 - [ ] 9, 10, 11: step 6
 ```
+
+## 18. Milestone 3, step 6: run summary and Ash (branch `feature/m3-summary`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: 3 (first dungeon), complete
+Status: Validated, verified in runtime (desktop software Vulkan); not verified on device
+
+Changes:
+- EnemyController.ash_value (1 / 2 / 10 / 50).
+- RunController: damage taken, Ash, a run id, claim_reward().
+- Profile autoload: lasting Ash; grant_run_reward() pays each run id once.
+- The end screen shows time, kills, damage taken, Ash earned and held; a
+  victory waits 2 s before it.
+- Fixed: a killing blow on the Ashen Lord crossed his phase thresholds and
+  summoned adds as he died.
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 185 passed, 0 failed (5 new)
+- Command: probes: paying a run twice; phases on a killing blow
+  Exit code: 1
+  Result: the matching tests failed; files restored and compared byte for byte
+- Command: rendered full run under Xvfb (software Vulkan)
+  Exit code: 0
+  Result: summary "The crypt is cleared", 15 enemies, Ash earned 76
+
+Not tested:
+- On a phone. Pause and focus loss were tested in the arena, not per room.
+
+Acceptance criteria (docs/dungeons/ashen_crypt.md):
+- [x] 1. Waves advance in order, only when the current wave is dead
+- [x] 2. Gates close on entry and open only when the room is cleared
+- [x] 3. Rising enemies cannot deal or take damage
+- [x] 4. The Cultist's bolt: telegraphed, travels, dodgeable, stopped by walls
+- [x] 5. The Knight's guard: front only, not while attacking
+- [x] 6. The Lord's phases: once each, in order, even from one hit
+- [x] 7. Phase 2 summons three adds once; they die with him
+- [x] 8. Victory and defeat are mutually exclusive
+- [x] 9. The reward is paid once per run; a new run starts at zero
+- [x] 10. Three consecutive runs in one session, no stale enemies, gates or timers
+- [ ] 11. Pause, focus loss and the death screen in every room: covered in
+      the arena by existing tests; per-room check is in the device checklist
+
+Milestone gate: multiple consecutive runs complete correctly with no stale
+state or duplicate rewards. Passes in automated tests; device check open.
+
+Recommended next task:
+- Milestone 4: loot design doc, then items and equipment.
+```

@@ -22,6 +22,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 Settings="*res://scripts/core/settings_service.gd"
+Profile="*res://scripts/core/profile.gd"
 
 [display]
 

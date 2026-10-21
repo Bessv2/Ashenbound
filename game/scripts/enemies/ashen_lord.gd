@@ -88,6 +88,9 @@ func _phase_for_health() -> int:
 
 
 func _on_damaged() -> void:
+	# A killing blow ends the fight; it starts no phase.
+	if health.is_dead():
+		return
 	if state != State.RISING and state != State.DEAD and phase < _phase_for_health():
 		_enter_phase(phase + 1)
 

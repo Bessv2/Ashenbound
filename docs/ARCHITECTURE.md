@@ -452,6 +452,15 @@ Milestone 3, step 1 ([dungeons/ashen_crypt.md](dungeons/ashen_crypt.md)).
   that hits each target once as its edge passes; a dodge at that moment
   avoids it. `BossBar` in the HUD shows the first living node of the `boss`
   group.
+- **Rewards and the summary (step 6).** Each enemy has an `ash_value` (Skeleton
+  Warrior 1, Dark Cultist 2, Fallen Knight 10, Ashen Lord 50). The Run adds it
+  up per kill along with kills, damage taken and time, and pays it once at the
+  end of the run through `RunController.claim_reward()` →
+  `Profile.grant_run_reward(run_id, ash)`. `Profile` (autoload) is the lasting
+  progress across runs; it refuses a second payment for the same run id. It
+  holds Ash in memory only: saving is Milestone 4, server validation
+  Milestone 5, and both hook into that one function. The end screen shows the
+  summary; after a victory it waits 2 s.
 - **See-through walls.** North walls, gates and tall pillars use
   `resources/materials/dungeon_cutout.tres`, a shader that draws the KayKit
   texture but cuts a dithered hole wherever the surface is between the camera

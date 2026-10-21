@@ -53,6 +53,8 @@ const REPATH_DISTANCE := 0.5
 ## Hunts the player anywhere in the level and never gives up, instead of
 ## waiting for it within aggro range (encounter enemies).
 @export var hunting: bool = false
+## Ash the run earns when this enemy is killed.
+@export_range(0, 1000, 1) var ash_value: int = 1
 
 var state: State = State.IDLE
 ## Scales movement speed (a boss's last phase moves faster). The movement

@@ -6,8 +6,8 @@ reset and replay. The content was decided by the owner on 2026-10-21: Skeleton
 Warriors and Dark Cultists in the waves, a Fallen Knight elite, and the Ashen
 Lord as the boss.
 
-**Status:** specification, being built. Steps 1 to 5 of the build order are
-done; the rest is not implemented yet. Numbers are first-pass tuning to be adjusted in playtests.
+**Status:** specification, being built. All six steps of the build order are
+done. Device checks remain. Numbers are first-pass tuning to be adjusted in playtests.
 
 **Gate (charter):** multiple consecutive runs complete correctly with no stale
 state or duplicate rewards.
@@ -172,7 +172,8 @@ Each step is its own branch and PR, tested, and published to the web preview.
    *Done.* He rises from his throne (1.5 s); Cinder Cleave 2H slice, Ash Slam
    2H chop (alternating once you stand within 3 m), Ember Ring from phase 2.
 6. **Run summary and Ash:** result screen, stats, reward granted once,
-   multi-run tests; Milestone 3 gate.
+   multi-run tests; Milestone 3 gate. *Done.* Ash is paid when the run ends
+   (the summary shows it), through the `Profile` autoload.
 
 ## Assumptions to confirm
 

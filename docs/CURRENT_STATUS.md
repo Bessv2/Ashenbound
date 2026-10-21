@@ -39,7 +39,7 @@ Status labels follow the charter:
 | 0: Repository and toolchain baseline | Verified in runtime | Imports cleanly, runs, tests pass, a debug APK exports and its signature verifies. |
 | 1: Movement and camera | Verified in runtime | **Device gate blocked:** there is no Android device, and no `/dev/kvm` for an emulator. The manual checklist is in [BUILD_ANDROID.md](BUILD_ANDROID.md#manual-device-checklist). |
 | 2: Combat foundation | In progress | See below. |
-| 3: First dungeon | In progress | Spec: [dungeons/ashen_crypt.md](dungeons/ashen_crypt.md). Steps 1 to 5 of 6 (encounters, the crypt, the Dark Cultist, the Fallen Knight, the Ashen Lord) validated and verified in runtime. |
+| 3: First dungeon | Validated, verified in runtime | Spec: [dungeons/ashen_crypt.md](dungeons/ashen_crypt.md). All six steps done; the gate (three runs in a row, clean, paid once each) passes in automated tests. **Device check open.** PRs #15 to #20, stacked. |
 | 4: First loot loop | Parked | PR #6 |
 | 5 to 7 | Not started | |
 

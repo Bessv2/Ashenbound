@@ -2,7 +2,9 @@ class_name RunController
 extends Node
 ## Decides how a run ends: in victory when every encounter in `encounters` is
 ## cleared, in defeat when the player dies. Whichever happens first stands;
-## the other is ignored afterwards. Counts the run's time and kills.
+## the other is ignored afterwards. Counts the run's time, kills, damage taken
+## and the Ash earned (each killed enemy's `ash_value`), and pays the Ash out
+## once through claim_reward().
 ##
 ## Lives in the dungeon scene, so a restart (scene reload) starts a new run
 ## with nothing carried over.
@@ -18,11 +20,18 @@ var result: Result = Result.RUNNING
 ## Seconds of play, paused time excluded.
 var elapsed: float = 0.0
 var kills: int = 0
+var damage_taken: int = 0
+## Ash earned so far; a defeat keeps what was earned.
+var ash: int = 0
+## Unique per run, so a reward can be claimed only once.
+var run_id: String = ""
 
 
 func _ready() -> void:
+	run_id = "%d-%d" % [Time.get_unix_time_from_system() * 1000.0, randi()]
 	if player_health:
 		player_health.died.connect(_finish.bind(Result.DEFEAT))
+		player_health.damaged.connect(_on_player_damaged.unbind(1))
 	var listed := encounters.duplicate()
 	encounters.clear()
 	watch(listed)
@@ -35,7 +44,7 @@ func watch(list: Array[EncounterController]) -> void:
 			continue
 		encounters.append(encounter)
 		encounter.cleared.connect(_on_encounter_cleared)
-		encounter.enemy_killed.connect(_on_enemy_killed.unbind(1))
+		encounter.enemy_killed.connect(_on_enemy_killed)
 
 
 func _physics_process(delta: float) -> void:
@@ -47,9 +56,27 @@ func is_over() -> bool:
 	return result != Result.RUNNING
 
 
-func _on_enemy_killed() -> void:
+## Pays this run's Ash into `profile` (the Profile autoload by default). Only
+## after the run is over, and only once: returns false otherwise.
+func claim_reward(profile: Node = null) -> bool:
 	if result == Result.RUNNING:
-		kills += 1
+		return false
+	if profile == null:
+		profile = get_node_or_null(^"/root/Profile")
+	return profile != null and profile.grant_run_reward(run_id, ash)
+
+
+func _on_enemy_killed(enemy: Node3D) -> void:
+	if result != Result.RUNNING:
+		return
+	kills += 1
+	if enemy is EnemyController:
+		ash += (enemy as EnemyController).ash_value
+
+
+func _on_player_damaged(amount: int) -> void:
+	if result == Result.RUNNING:
+		damage_taken += amount
 
 
 func _on_encounter_cleared() -> void:
