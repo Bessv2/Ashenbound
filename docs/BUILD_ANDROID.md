@@ -118,6 +118,15 @@ Orientation comes from `display/window/handheld/orientation` in
 manifest as `userLandscape`: either landscape direction, respecting the user's
 rotation lock.
 
+### Or download the APK from CI
+
+Every pull request and every push to `main` builds the same debug APK on GitHub
+Actions (see `.github/workflows/ci.yml`). Open the run under the repository's
+**Actions** tab and download **ashenbound-debug.apk** from its **Artifacts**
+section. Artifacts are kept for 14 days. CI signs with a fresh debug key each
+time, so uninstall the previous build before installing one from a different
+run or machine.
+
 ## 6. Install and run on a phone
 
 1. On the phone, enable **Developer options** and **USB debugging**, connect it
@@ -151,6 +160,14 @@ step.
 - [ ] Holding the stick, switching apps and coming back: the game is paused
       and the stick is released.
 - [ ] The debug label in the top-left corner shows FPS (debug builds only).
+- [ ] On a phone with a camera cutout, the HUD stays clear of it.
+- [ ] Holding **ATTACK** next to a training dummy swings repeatedly; the dummy
+      flashes, shows "10" and its health label drops; after 5 hits it
+      disappears and respawns about 2.5 s later.
+- [ ] Moving with the stick and holding **ATTACK** at the same time works; the
+      player slows down while attacking.
+- [ ] Pausing while holding **ATTACK** stops the attacks; after **Resume** the
+      player does not keep attacking.
 
 ## Troubleshooting
 

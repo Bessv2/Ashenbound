@@ -1,7 +1,8 @@
 # Architecture
 
-This document covers the current foundation: scenes, input, movement, camera,
-pause and settings. It will grow as systems are added.
+This document covers the current foundation (scenes, input, movement, camera,
+pause and settings) and the first combat slice. It will grow as systems are
+added.
 
 ## Scene structure
 
@@ -17,13 +18,21 @@ Main (Node3D)                         scenes/main.tscn, scripts/main.gd
 │   └── Pillars/Pillar{N,S,E,W}       obstacles with an ember light on top
 ├── Player (CharacterBody3D)          scenes/player/player.tscn, scripts/player/player_controller.gd
 │   ├── CollisionShape3D              capsule, radius 0.4 m, height 1.8 m
-│   └── Visual (Node3D)               turned to face movement; holds the meshes
+│   ├── Visual (Node3D)               turned to face movement or the attack; holds the meshes
+│   │   └── WeaponPivot/Blade         scripts/player/weapon_swing.gd, placeholder swing
+│   └── MeleeAttack (Node)            scripts/combat/melee_attack.gd + resources/combat/player_basic_attack.tres
+├── Enemies (Node3D)
+│   └── TrainingDummy{East,North,West} scenes/enemies/training_dummy.tscn, 5 m from the start
+│       ├── Health (Node)             scripts/combat/health.gd, 50 HP
+│       ├── Visual, HealthLabel (Label3D)
+│       └── CollisionShape3D          layer 3 "enemy"
 ├── CameraRig (Node3D)                scenes/camera/isometric_camera_rig.tscn
 │   └── Camera3D                      orthographic, size 16 m
 ├── HUD (CanvasLayer)                 ui/hud/hud.tscn
 │   └── Root
 │       ├── TopBar: Title, DebugLabel (debug builds only), PauseButton
 │       ├── TouchJoystick             ui/hud/touch_joystick.gd, lower-left 560×420 px zone
+│       ├── AttackButton              ui/hud/touch_action_button.gd, lower-right, holds `attack`
 │       └── ControlsHint              keyboard hint, hidden on mobile
 └── PauseMenu (CanvasLayer)           ui/pause_menu/pause_menu.tscn  [process: when paused]
 ```
@@ -39,19 +48,26 @@ Main (Node3D)                         scenes/main.tscn, scripts/main.gd
 - Gameplay never references the HUD. The joystick and the player communicate
   only through InputMap actions (see below).
 - `PlayerController.camera` and `IsometricCameraRig.target` are node references
-  wired in `main.tscn`.
+  wired in `main.tscn`. `PlayerController.attack` and `WeaponSwing.attack` are
+  wired in `player.tscn`.
+- On mobile, the HUD root is inset by the display safe area
+  (`Hud.safe_area_insets()`), so controls stay clear of camera cutouts.
 
 ## Input mappings
 
-All movement goes through four InputMap actions, defined in `project.godot`:
+Gameplay goes through these InputMap actions, defined in `project.godot`:
 
-| Action | Keyboard (physical keys) | Touch joystick |
+| Action | Keyboard (physical keys) | Touch |
 |---|---|---|
-| `move_left` | A, Left arrow | stick left (analog strength) |
-| `move_right` | D, Right arrow | stick right (analog strength) |
-| `move_forward` | W, Up arrow | stick up (analog strength) |
-| `move_back` | S, Down arrow | stick down (analog strength) |
+| `move_left` | A, Left arrow | joystick left (analog strength) |
+| `move_right` | D, Right arrow | joystick right (analog strength) |
+| `move_forward` | W, Up arrow | joystick up (analog strength) |
+| `move_back` | S, Down arrow | joystick down (analog strength) |
+| `attack` | J, Space | **ATTACK** button (held) |
 | `toggle_pause` | Escape, P | — (HUD **II** button; Android Back) |
+
+`GameplayActions.ALL` lists the gameplay actions (movement and attack). They
+are the ones released when the game pauses.
 
 Keys are bound by **physical** position, so WASD stays in the same place on
 AZERTY and other layouts.
@@ -97,6 +113,10 @@ used, for two reasons:
 
 Revisit this when those are addressed upstream.
 
+`TouchActionButton` (the **ATTACK** button) follows the same rules: one finger
+by touch index, a round hit area, it releases the action only if it pressed it,
+and it resets on pause, focus loss and when hidden.
+
 ## Movement
 
 `PlayerController` (`CharacterBody3D`):
@@ -110,11 +130,48 @@ Revisit this when those are addressed upstream.
   (`resources/player/player_movement.tres`). Defaults: 6 m/s top speed, 60 m/s²
   acceleration, 80 m/s² deceleration. Other characters can reuse the type with
   different data.
-- Only the `Visual` child turns to face the movement direction. The collision
-  capsule never rotates.
-- Collision layers: 1 `world` (floor, walls, pillars) and 2 `player`. The player
-  is on layer 2 and collides with layer 1.
+- Only the `Visual` child turns to face the movement direction (or the attack
+  direction while attacking). The collision capsule never rotates.
+- Collision layers: 1 `world` (floor, walls, pillars), 2 `player` and 3
+  `enemy`. The player is on layer 2 and collides with layers 1 and 3.
 - 3D physics uses Jolt (`physics/3d/physics_engine = "Jolt Physics"`).
+
+## Combat
+
+The first slice is one melee attack against training dummies. It is
+deliberately small: no enemy AI, no player health, no loot.
+
+- **`Health`** (Node): `max_health`, `current`, and the signals `damaged`,
+  `died` and `revived`. `apply_damage()` returns the damage actually dealt and
+  ignores dead targets. Attacks find it as a direct child of the body they hit
+  (`Health.of(collider)`).
+- **`AttackData`** (Resource): damage, reach, arc, windup, recovery, movement
+  multiplier and aim-assist radius. The player's attack
+  (`resources/combat/player_basic_attack.tres`) does 10 damage at 1.8 m in a
+  120° arc, with a 0.12 s windup and 0.33 s recovery: one attack every 0.45 s.
+- **`MeleeAttack`** (Node, child of the attacker): `try_start(facing)` runs
+  windup → hit → recovery in `_physics_process`, carrying leftover time from
+  one phase into the next. The hit uses a sphere shape query on `target_mask`
+  (layer 3), keeps the bodies whose centers fall inside the arc, and damages
+  each one once. The attacker's own body is excluded. Aim assist turns the attack
+  toward the nearest living target within `aim_assist_radius`, which matters on
+  touch screens where facing is imprecise. Signals: `started(direction)` and
+  `struck(targets)`.
+- **`PlayerController`** starts the attack while `attack` is held, so holding
+  repeats it. It slows movement by the attack's multiplier, and snaps facing to
+  the attack direction while the attack runs.
+- **`TrainingDummy`** (StaticBody3D, layer 3): flashes white, spawns a floating
+  `DamageNumber` and updates its health label when hit. When destroyed it hides,
+  stops colliding and respawns with full health after `respawn_delay` (2.5 s).
+- **Feedback** (`WeaponSwing`, `DamageNumber`, hit flash) uses tweens on the
+  physics clock, so it pauses with the game and works with physics
+  interpolation.
+
+Known simplifications: the arc check uses target *centers*, so a large enemy
+whose edge overlaps the arc but whose center is outside it is missed. Attacks
+can only start on a physics tick, so each attack cycle can last up to one tick
+longer than its data says: at most 33 ms at 30 Hz and 17 ms at 60 Hz. The test
+suite checks that the number of attacks in 2 s is the same at 30, 60 and 120 Hz.
 
 ## Camera
 
@@ -138,11 +195,13 @@ Revisit this when those are addressed upstream.
   (`quit_on_go_back` is disabled), losing focus, and the app moving to the
   background. Regaining focus does **not** resume; the player resumes
   explicitly.
-- Every pause transition calls `MovementInput.release_all()`. Input that ends
-  while the game is paused (a lifted finger, a released key) never reaches
-  gameplay, so anything held is dropped rather than left stuck.
-- `TouchJoystick` resets itself on `NOTIFICATION_PAUSED`, on application focus
-  loss and when hidden.
+- Every pause transition calls `GameplayActions.release_all()`, which covers
+  movement and attack. Input that ends while the game is paused (a lifted
+  finger, a released key) never reaches gameplay, so anything held is dropped
+  rather than left stuck.
+- `TouchJoystick` and `TouchActionButton` reset themselves on
+  `NOTIFICATION_PAUSED`, on application focus loss and when hidden.
+- An attack in progress freezes with the game and finishes after resuming.
 
 ## Settings
 
@@ -170,7 +229,8 @@ Revisit this when those are addressed upstream.
 named `test_*.gd`. Each test method runs on a fresh suite instance in the scene
 tree. Integration tests instantiate the real `main.tscn`. A test fails on a
 failed `check` or on any engine or script error logged during it, captured with
-a custom `Logger`. Run them with `tools/test.sh`.
+a custom `Logger`. Warnings are printed under the test that logged them, and
+counted in the summary, but do not fail it. Run them with `tools/test.sh`.
 
 ## Conventions
 

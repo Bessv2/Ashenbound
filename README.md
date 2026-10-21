@@ -5,21 +5,22 @@
 A stylized 2.5D isometric dark fantasy action RPG for Android phones (landscape),
 built with Godot 4 and GDScript.
 
-**Status:** project foundation. The repository contains a playable movement
-prototype: a test arena, a placeholder player, a fixed isometric camera, keyboard
-and touch-joystick movement, a HUD, pause/resume, and a settings structure.
-Combat, loot, inventory, accounts and the backend have not been started.
+**Status:** early prototype. A test arena with a placeholder player, a fixed
+isometric camera, keyboard and touch-joystick movement, a HUD, pause/resume and
+a settings structure, plus a first combat slice: a melee attack with aim assist
+against training dummies that take damage, die and respawn. Loot, inventory,
+real enemies, accounts and the backend have not been started.
 
-![Movement prototype with the touch joystick in use](docs/images/prototype-joystick.png)
+![Attacking a training dummy: damage number, health label and the touch controls](docs/images/prototype-combat.png)
 
 ## Repository layout
 
 ```
 game/             Godot project (open this folder in the editor)
   scenes/         Gameplay scenes: main entry scene, arena, player, camera rig
-  scripts/        Gameplay scripts: input, player, camera, core (pause, settings)
-  ui/             HUD, touch joystick, pause menu, UI theme
-  resources/      Materials, environment, movement data
+  scripts/        Gameplay scripts: input, player, camera, combat, enemies, core
+  ui/             HUD, touch joystick and buttons, pause menu, UI theme
+  resources/      Materials, environment, movement and attack data
   tests/          Headless test runner and suites (excluded from exports)
 docs/             Build guide, architecture notes, implementation report
 tools/            test.sh and export-android-debug.sh
@@ -78,12 +79,15 @@ Desktop controls:
 | Input | Action |
 |---|---|
 | W A S D or arrow keys | Move (relative to the camera) |
+| J or Space (hold) | Attack; holding repeats |
 | Esc or P | Pause / resume |
 | Left mouse drag in the lower-left area | Touch joystick (mouse emulates touch) |
+| Left click on **ATTACK** | Touch attack button |
 
-On a phone, the lower-left area of the screen is the movement stick, and the
-**II** button in the top-right corner pauses. Android's Back button also pauses
-and resumes. Leaving the app pauses the game.
+On a phone, the lower-left area of the screen is the movement stick, the round
+**ATTACK** button in the lower-right corner attacks while held, and the **II**
+button in the top-right corner pauses. Android's Back button also pauses and
+resumes. Leaving the app pauses the game.
 
 ## Test
 
@@ -99,7 +103,8 @@ godot --headless --path game --fixed-fps 60 --script res://tests/run_tests.gd
 ```
 
 The exit code is 0 when every test passes. A test fails on a failed check or on
-any engine or script error logged while it runs. `--fixed-fps 60` makes the
+any engine or script error logged while it runs. Warnings are printed under the
+test and counted in the summary, but do not fail it. `--fixed-fps 60` makes the
 physics tests deterministic and fast.
 
 ## Build an Android debug APK
