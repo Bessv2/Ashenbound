@@ -29,13 +29,15 @@ game/             Godot project (open this folder in the editor)
   ui/             HUD, touch joystick and buttons, pause menu, death screen, theme
   resources/      Materials, environment, navigation, movement, attack and enemy data
   tests/          Headless test runner and suites (excluded from exports)
-docs/             Build guide, architecture notes, art direction, implementation report
+docs/             Status, build guide, architecture notes, art direction, implementation report
 tools/            test.sh and export-android-debug.sh
 ```
 
 Scene structure, input mappings and design notes are in
-[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). The concept art, palette and the
-planned order of features are in [docs/ART_DIRECTION.md](docs/ART_DIRECTION.md).
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). The concept art and palette are in
+[docs/ART_DIRECTION.md](docs/ART_DIRECTION.md). The project charter is
+[CLAUDE.md](CLAUDE.md), and the current milestone state and next task are in
+[docs/CURRENT_STATUS.md](docs/CURRENT_STATUS.md).
 
 ## Requirements
 
