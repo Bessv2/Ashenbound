@@ -116,7 +116,7 @@ jobs:
           profile: pixel_6
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none
-          script: env ALLOW_EMULATOR=1 SOAK_SECONDS=20 tools/device-test.sh build/android/ashenbound-debug-x86_64.apk
+          script: env ALLOW_EMULATOR=1 SOAK_SECONDS=20 RELAUNCH_WAIT=10 tools/device-test.sh build/android/ashenbound-debug-x86_64.apk
 
       - name: Show the emulator test summary
         if: always()
@@ -126,8 +126,11 @@ jobs:
           echo "emulator step outcome: ${{ steps.emulator.outcome }}"
           for dir in build/device-test/*/; do
             echo "--- Godot lines in the log (${dir})"
-            grep -c " godot " "${dir}logcat.txt" || true
-            grep -E "PERF|Godot Engine|OpenGL|Vulkan|SCRIPT|WARNING" "${dir}logcat.txt" | head -25 || true
+            grep -E "[IWE]/godot" "${dir}logcat.txt" | head -30 || true
+            echo "--- Frame statistics lines"
+            grep -c "PERF fps=" "${dir}logcat.txt" || true
+            echo "--- Not responding, fatal errors"
+            grep -iE "ANR in|am_anr|not responding|FATAL|Fatal signal|am_crash|am_proc_died.*ashenbound" "${dir}logcat.txt" | head -15 || true
             echo "--- Screenshot statistics (${dir})"
             python3 -m pip install --quiet pillow
             python3 tools/screenshot_stats.py "$dir"
