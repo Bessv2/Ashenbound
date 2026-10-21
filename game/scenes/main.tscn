@@ -1,0 +1,28 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" path="res://scripts/core/pause_controller.gd" id="2_pause"]
+[ext_resource type="PackedScene" path="res://scenes/arena/test_arena.tscn" id="3_arena"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="4_player"]
+[ext_resource type="PackedScene" path="res://scenes/camera/isometric_camera_rig.tscn" id="5_camera"]
+[ext_resource type="PackedScene" path="res://ui/hud/hud.tscn" id="6_hud"]
+[ext_resource type="PackedScene" path="res://ui/pause_menu/pause_menu.tscn" id="7_menu"]
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_main")
+
+[node name="PauseController" type="Node" parent="."]
+script = ExtResource("2_pause")
+
+[node name="TestArena" parent="." instance=ExtResource("3_arena")]
+
+[node name="Player" parent="." node_paths=PackedStringArray("camera") instance=ExtResource("4_player")]
+camera = NodePath("../CameraRig/Camera3D")
+
+[node name="CameraRig" parent="." node_paths=PackedStringArray("target") instance=ExtResource("5_camera")]
+target = NodePath("../Player")
+
+[node name="HUD" parent="." instance=ExtResource("6_hud")]
+
+[node name="PauseMenu" parent="." instance=ExtResource("7_menu")]
+visible = false

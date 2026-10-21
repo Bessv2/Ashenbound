@@ -1,0 +1,34 @@
+# Godot 4 editor cache and imported assets (regenerated on import).
+# Also holds export_credentials.cfg, which stores keystore passwords.
+.godot/
+
+# Godot-generated Android Gradle build template. Installed per machine via
+# Project > Install Android Build Template. Only needed for Gradle builds,
+# which this project does not use yet; un-ignore if it gets customized.
+game/android/
+
+# Export output.
+build/
+*.apk
+*.aab
+*.apks
+*.idsig
+
+# Signing material and secrets. Never commit these.
+*.keystore
+*.jks
+*.p12
+*.pem
+.env
+.env.*
+
+# .NET / Mono (not used yet, but Godot creates these if C# is enabled).
+.mono/
+data_*/
+mono_crash.*.json
+
+# OS and editor clutter.
+.DS_Store
+Thumbs.db
+*.tmp
+*~
