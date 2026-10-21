@@ -10,6 +10,9 @@ signal revived
 @export_range(1, 100000, 1) var max_health: int = 100
 
 var current: int = 0
+## While true, apply_damage() deals nothing. Set by Dodge during its
+## invulnerable window.
+var invulnerable: bool = false
 
 
 func _ready() -> void:
@@ -21,9 +24,10 @@ func is_dead() -> bool:
 
 
 ## Applies damage and returns the amount actually dealt, which is less than
-## `amount` when it exceeds the remaining health. Dead targets take none.
+## `amount` when it exceeds the remaining health. Dead and invulnerable
+## targets take none.
 func apply_damage(amount: int) -> int:
-	if is_dead() or amount <= 0:
+	if is_dead() or invulnerable or amount <= 0:
 		return 0
 	var dealt := mini(amount, current)
 	current -= dealt

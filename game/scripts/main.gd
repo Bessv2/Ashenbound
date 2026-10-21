@@ -15,6 +15,7 @@ func _ready() -> void:
 	_pause_controller.paused_changed.connect(_pause_menu.set_open)
 	_pause_menu.set_open(_pause_controller.is_paused())
 	_hud.track_health(_player.health)
+	_hud.track_dodge(_player.dodge)
 	_player.health.died.connect(_on_player_died)
 	_death_screen.restart_requested.connect(restart)
 

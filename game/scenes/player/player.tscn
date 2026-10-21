@@ -10,6 +10,9 @@
 [ext_resource type="Material" path="res://resources/materials/blade.tres" id="8_blade"]
 [ext_resource type="Script" path="res://scripts/combat/health.gd" id="9_health"]
 [ext_resource type="Script" path="res://scripts/combat/hit_feedback.gd" id="10_feedback"]
+[ext_resource type="Script" path="res://scripts/combat/dodge.gd" id="12_dodge"]
+[ext_resource type="Resource" path="res://resources/combat/player_dodge.tres" id="13_dodge_data"]
+[ext_resource type="Script" path="res://scripts/player/dodge_lean.gd" id="14_lean"]
 [ext_resource type="Material" path="res://resources/materials/hit_flash.tres" id="11_flash"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
@@ -29,7 +32,7 @@ size = Vector3(0.36, 0.14, 0.3)
 material = ExtResource("8_blade")
 size = Vector3(0.08, 0.04, 1.1)
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("visual", "attack", "health")]
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("visual", "attack", "health", "dodge")]
 collision_layer = 2
 collision_mask = 5
 script = ExtResource("1_controller")
@@ -37,6 +40,7 @@ stats = ExtResource("2_stats")
 visual = NodePath("Visual")
 attack = NodePath("MeleeAttack")
 health = NodePath("Health")
+dodge = NodePath("Dodge")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -76,3 +80,13 @@ visual = NodePath("../Visual")
 flash_material = ExtResource("11_flash")
 number_height = 2.3
 number_color = Color(1, 0.35, 0.3, 1)
+
+[node name="Dodge" type="Node" parent="." node_paths=PackedStringArray("health")]
+script = ExtResource("12_dodge")
+data = ExtResource("13_dodge_data")
+health = NodePath("../Health")
+
+[node name="DodgeLean" type="Node" parent="." node_paths=PackedStringArray("dodge", "visual")]
+script = ExtResource("14_lean")
+dodge = NodePath("../Dodge")
+visual = NodePath("../Visual")

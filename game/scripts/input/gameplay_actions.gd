@@ -3,8 +3,9 @@ extends RefCounted
 ## InputMap actions that drive gameplay, as opposed to UI or pausing.
 
 const ATTACK := &"attack"
+const DODGE := &"dodge"
 const ALL: Array[StringName] = [
-	MovementInput.LEFT, MovementInput.RIGHT, MovementInput.FORWARD, MovementInput.BACK, ATTACK,
+	MovementInput.LEFT, MovementInput.RIGHT, MovementInput.FORWARD, MovementInput.BACK, ATTACK, DODGE,
 ]
 
 
