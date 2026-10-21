@@ -101,9 +101,10 @@ as for the Warden. The spec covers:
 The content is decided (see Owner decisions): Skeleton Warriors and Dark
 Cultists in the waves, a Fallen Knight elite, and the Ashen Lord as the boss.
 
-Before that, the owner tests a demo build on an Android device, or in the
-[web preview](WEB_PREVIEW.md) for the feel of the controls. Its results
-close the device checks for Milestones 1 and 2. The owner chose to run the
+Before that, the owner tests a demo build on an Android device. Its results
+close the device checks for Milestones 1 and 2. The [web preview](WEB_PREVIEW.md)
+can show the feel of the controls in a phone's browser, but it does not count
+as a device check: it uses a different renderer and a browser, not the app. The owner chose to run the
 test with Claude Code on their own computer and a USB-connected phone. The
 procedure is [DEVICE_TESTING.md](DEVICE_TESTING.md): `tools/device-test.sh`
 plus hand checks.
