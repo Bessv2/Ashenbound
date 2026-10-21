@@ -1,0 +1,127 @@
+name: Web preview
+
+# Builds the browser version of the game so it can be playtested on a phone with
+# nothing to install (docs/WEB_PREVIEW.md). Every run builds it, boots it in a
+# headless browser and uploads it. Publishing it to GitHub Pages is manual:
+# Actions > Web preview > Run workflow > publish.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish this build to the gh-pages branch (GitHub Pages must serve that branch)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: web-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GODOT_VERSION: 4.7.2-stable
+  GODOT_TEMPLATES_DIR: 4.7.2.stable
+  PLAYWRIGHT_VERSION: 1.56.1
+
+jobs:
+  build:
+    name: Build and smoke-test the web preview
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Restore Godot from cache
+        id: godot-cache
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates/${{ env.GODOT_TEMPLATES_DIR }}
+          key: godot-${{ env.GODOT_VERSION }}-linux-web-v1
+
+      - name: Download Godot and the web export templates
+        if: steps.godot-cache.outputs.cache-hit != 'true'
+        run: |
+          base="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}"
+          templates="$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATES_DIR}"
+          mkdir -p "$HOME/godot" "$templates"
+          cd "$RUNNER_TEMP"
+          curl -fsSLO "${base}/Godot_v${GODOT_VERSION}_linux.x86_64.zip"
+          unzip -q "Godot_v${GODOT_VERSION}_linux.x86_64.zip"
+          mv "Godot_v${GODOT_VERSION}_linux.x86_64" "$HOME/godot/godot"
+          curl -fsSLO "${base}/Godot_v${GODOT_VERSION}_export_templates.tpz"
+          # Only the single-threaded web templates are needed.
+          unzip -q -j "Godot_v${GODOT_VERSION}_export_templates.tpz" \
+            "templates/version.txt" "templates/web_nothreads_*" -d "$templates"
+
+      - name: Add Godot to PATH
+        run: echo "$HOME/godot" >> "$GITHUB_PATH"
+
+      - name: Export the web build
+        run: tools/export-web.sh
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save --no-audit --no-fund --prefix "$RUNNER_TEMP/pw" "playwright@${PLAYWRIGHT_VERSION}"
+          npx --prefix "$RUNNER_TEMP/pw" playwright install --with-deps chromium
+
+      - name: Boot the build in a browser
+        run: NODE_PATH="$RUNNER_TEMP/pw/node_modules" node tools/web/smoke.js build/web build/web-smoke
+
+      - name: Upload the web build
+        uses: actions/upload-artifact@v7
+        with:
+          name: ashenbound-web
+          path: build/web
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: error
+
+      - name: Upload the smoke test screenshot
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: web-smoke-screenshot
+          path: build/web-smoke
+          retention-days: 14
+          if-no-files-found: ignore
+
+  publish:
+    name: Publish to GitHub Pages (gh-pages branch)
+    needs: build
+    # Runs on every pull request as a dry run that stops before pushing, so the
+    # steps are proven before anyone publishes.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Download the web build
+        uses: actions/download-artifact@v8
+        with:
+          name: ashenbound-web
+          path: site
+
+      - name: Commit the site
+        working-directory: site
+        run: |
+          git init -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Web preview of ${GITHUB_SHA}"
+          git log --oneline -1
+          git show --stat --format= HEAD | tail -3
+
+      - name: Push to gh-pages
+        if: github.event_name == 'workflow_dispatch' && inputs.publish
+        working-directory: site
+        run: |
+          git push --force "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
+          echo "Published. Pages serves it at https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/ once Pages is set to the gh-pages branch."

@@ -40,7 +40,9 @@ Scene structure, input mappings and design notes are in
 [docs/ART_DIRECTION.md](docs/ART_DIRECTION.md). The project charter is
 [CLAUDE.md](CLAUDE.md), and the current milestone state and next task are in
 [docs/CURRENT_STATUS.md](docs/CURRENT_STATUS.md). To test on a phone with
-Claude Code, see [docs/DEVICE_TESTING.md](docs/DEVICE_TESTING.md).
+Claude Code, see [docs/DEVICE_TESTING.md](docs/DEVICE_TESTING.md). To try the
+controls in a phone's browser with nothing to install, see
+[docs/WEB_PREVIEW.md](docs/WEB_PREVIEW.md).
 
 ## Requirements
 

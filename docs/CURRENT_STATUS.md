@@ -26,7 +26,8 @@ Status labels follow the charter:
 | 2026-10-21 | The charter is committed as `CLAUDE.md`. |
 | 2026-10-21 | **The Warden's starter abilities are Cleave, Bulwark Guard and Ember Brand**, one per specialization direction. Skill trees for each class come later and are designed per class. |
 | 2026-10-21 | **Milestone 3 content:** the first boss is **the Ashen Lord**, with distinct phases. **Skeleton Warriors** are the basic enemy and replace the placeholder Hollow; a **Dark Cultist** is the ranged second type; a **Fallen Knight** is the elite. |
-| 2026-10-21 | Test a demo build on an Android device before Milestone 3 work starts. |
+| 2026-10-21 | Test a demo build on an Android device before Milestone 3 work starts. The owner's phone is their daily driver, so cloud options were explored: the CI emulator proves the game starts without crashing but cannot draw it. |
+| 2026-10-21 | **A browser build is a playtest preview** ([WEB_PREVIEW.md](WEB_PREVIEW.md)), not a platform change: Android stays the target. |
 
 ## Milestones
 
@@ -69,7 +70,10 @@ Each PR is stacked on the one before it. Merge them in order.
 | #6 | `feature/loot` | Loot (**parked, do not merge**) | |
 | #7 | `docs/project-charter` | This file and `CLAUDE.md` | |
 | #8 | `feature/warden-abilities` | The Warden and its three starter abilities | |
-| next | `feature/enemy-states` | The Hollow's states split to match the charter | |
+| #9 | `feature/enemy-states` | The Hollow's states split to match the charter | Green |
+| #10 | `feature/device-testing` | PerfLog, `tools/device-test.sh`, device-test procedure | Green |
+| #11 | `feature/ci-emulator` | Device test on a CI emulator (start-up and stability only) | Green |
+| next | `feature/web-preview` | Browser build for playtesting on a phone | | |
 
 ## Deviations from the charter
 
@@ -98,7 +102,9 @@ The content is decided (see Owner decisions): Skeleton Warriors and Dark
 Cultists in the waves, a Fallen Knight elite, and the Ashen Lord as the boss.
 
 Before that, the owner tests a demo build on an Android device. Its results
-close the device checks for Milestones 1 and 2. The owner chose to run the
+close the device checks for Milestones 1 and 2. The [web preview](WEB_PREVIEW.md)
+can show the feel of the controls in a phone's browser, but it does not count
+as a device check: it uses a different renderer and a browser, not the app. The owner chose to run the
 test with Claude Code on their own computer and a USB-connected phone. The
 procedure is [DEVICE_TESTING.md](DEVICE_TESTING.md): `tools/device-test.sh`
 plus hand checks.
