@@ -48,8 +48,9 @@ func test_death_stops_the_player_and_opens_the_death_screen() -> void:
 
 	await wait_process_frames(90)  # Past the 0.8 s delay and 0.5 s fade.
 	check(not restart.disabled, "restart is enabled once the screen has faded in")
-	var visual: Node3D = player.get_node("Visual")
-	check_near(visual.rotation.x, -PI * 0.5, 0.01, "the player has toppled over")
+	var animation: AnimationPlayer = player.get_node("Visual/Model/AnimationPlayer")
+	check(animation.current_animation == "Death_A" or animation.assigned_animation == "Death_A",
+			"the death clip played, got %s" % animation.assigned_animation)
 
 
 func test_death_releases_held_input() -> void:

@@ -146,6 +146,12 @@ with `tools/export-android-debug.sh`, and uploads `ashenbound-debug.apk` as a
 build artifact, kept for 14 days. Download it from the run's **Artifacts**
 section.
 
+## Credits
+
+Character and dungeon models: KayKit packs by Kay Lousberg
+(<https://www.kaylousberg.com>), CC0. Details in
+[docs/ART_ASSET_PIPELINE.md](docs/ART_ASSET_PIPELINE.md).
+
 ## Notes
 
 - The Android package name is `com.ashenbound.game`. Change it in
