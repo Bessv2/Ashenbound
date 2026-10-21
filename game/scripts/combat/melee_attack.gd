@@ -12,7 +12,8 @@ extends Node
 
 ## The attack started; `direction` is the flat world direction it faces.
 signal started(direction: Vector3)
-## The hit resolved. `targets` is empty on a miss.
+## The hit resolved. `targets` holds those that took damage: it is empty on a
+## miss, and leaves out targets that were invulnerable.
 signal struck(targets: Array[Health])
 ## The attack was abandoned before or after its hit (see cancel()).
 signal canceled
@@ -95,8 +96,8 @@ func _strike() -> Array[Health]:
 	var origin := _origin()
 	for target in _living_targets_within(data.reach):
 		var body := target.get_parent() as Node3D
-		if is_in_arc(body.global_position - origin, direction, data.arc_degrees):
-			target.apply_damage(data.damage)
+		if is_in_arc(body.global_position - origin, direction, data.arc_degrees) \
+				and target.apply_damage(data.damage) > 0:
 			hits.append(target)
 	return hits
 

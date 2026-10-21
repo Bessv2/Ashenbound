@@ -23,7 +23,9 @@ Main (Node3D)                         scenes/main.tscn, scripts/main.gd
 │   │   └── WeaponPivot/Blade         scripts/player/weapon_swing.gd, placeholder swing
 │   ├── MeleeAttack (Node)            scripts/combat/melee_attack.gd + resources/combat/player_basic_attack.tres
 │   ├── Health (Node)                 100 HP
-│   └── HitFeedback (Node)            scripts/combat/hit_feedback.gd, red damage numbers
+│   ├── HitFeedback (Node)            scripts/combat/hit_feedback.gd, red damage numbers
+│   ├── Dodge (Node)                  scripts/combat/dodge.gd + resources/combat/player_dodge.tres
+│   └── DodgeLean (Node)              scripts/player/dodge_lean.gd, placeholder lean and squash
 ├── Enemies (Node3D)
 │   ├── TrainingDummy{East,North,West} scenes/enemies/training_dummy.tscn, 5 m from the start
 │   │   ├── Health (Node)             scripts/combat/health.gd, 50 HP
@@ -42,6 +44,7 @@ Main (Node3D)                         scenes/main.tscn, scripts/main.gd
 │       ├── TopBar: Title, HealthBar + HealthText, DebugLabel (debug builds only), PauseButton
 │       ├── TouchJoystick             ui/hud/touch_joystick.gd, lower-left 560×420 px zone
 │       ├── AttackButton              ui/hud/touch_action_button.gd, lower-right, holds `attack`
+│       ├── DodgeButton               ui/hud/touch_action_button.gd, beside ATTACK, `dodge` + cooldown sweep
 │       └── ControlsHint              keyboard hint, hidden on mobile
 ├── DeathScreen (CanvasLayer)         ui/death_screen/death_screen.tscn, "Rise again"
 └── PauseMenu (CanvasLayer)           ui/pause_menu/pause_menu.tscn  [process: when paused]
@@ -79,10 +82,11 @@ Gameplay goes through these InputMap actions, defined in `project.godot`:
 | `move_forward` | W, Up arrow | joystick up (analog strength) |
 | `move_back` | S, Down arrow | joystick down (analog strength) |
 | `attack` | J, Space | **ATTACK** button (held) |
+| `dodge` | Left Shift, K | **DODGE** button (tap) |
 | `toggle_pause` | Escape, P | — (HUD **II** button; Android Back) |
 
-`GameplayActions.ALL` lists the gameplay actions (movement and attack). They
-are the ones released when the game pauses.
+`GameplayActions.ALL` lists the gameplay actions (movement, attack and dodge).
+They are the ones released when the game pauses.
 
 Keys are bound by **physical** position, so WASD stays in the same place on
 AZERTY and other layouts.
@@ -128,9 +132,12 @@ used, for two reasons:
 
 Revisit this when those are addressed upstream.
 
-`TouchActionButton` (the **ATTACK** button) follows the same rules: one finger
-by touch index, a round hit area, it releases the action only if it pressed it,
-and it resets on pause, focus loss and when hidden.
+`TouchActionButton` (the **ATTACK** and **DODGE** buttons) follows the same
+rules: one finger by touch index, a round hit area, it releases the action only
+if it pressed it, and it resets on pause, focus loss and when hidden. Given a
+`cooldown` callable (returning 1 just after use and 0 when ready), it darkens
+that share of its face clockwise from the top. The HUD gives the dodge
+button `Dodge.cooldown_fraction`.
 
 ## Movement
 
@@ -156,12 +163,13 @@ and it resets on pause, focus loss and when hidden.
 
 ## Combat
 
-The first slice is one melee attack against training dummies. It is
-deliberately small: no enemy AI, no player health, no loot.
+The first slice was one melee attack against training dummies. Player health,
+enemies and the dodge came after it, and are described below.
 
 - **`Health`** (Node): `max_health`, `current`, and the signals `damaged`,
-  `died` and `revived`. `apply_damage()` returns the damage actually dealt and
-  ignores dead targets. Attacks find it as a direct child of the body they hit
+  `died` and `revived`. `apply_damage()` returns the damage actually dealt. It
+  deals none to a dead target, or to any target while `invulnerable` is set.
+  Attacks find it as a direct child of the body they hit
   (`Health.of(collider)`).
 - **`AttackData`** (Resource): damage, reach, arc, windup, recovery, movement
   multiplier and aim-assist radius. The player's attack
@@ -189,6 +197,46 @@ deliberately small: no enemy AI, no player health, no loot.
   interpolation.
 - **`MeleeAttack.cancel()`** abandons an attack in progress without resolving
   its hit. Enemies call it when they die mid-windup.
+
+### Dodge
+
+![Mid-dodge: the player leans into the dash, and the DODGE button starts its cooldown sweep](images/prototype-dodge.png)
+
+- **`DodgeData`** (Resource): distance, duration, invulnerable time, cooldown and
+  input buffer. The player's dodge (`resources/combat/player_dodge.tres`)
+  dashes 4 m in 0.3 s (13.3 m/s, about twice running speed), ignores damage for
+  the first 0.25 s, and can be used again 0.9 s after it starts.
+- **`Dodge`** (Node, child of the body): `try_start(direction)` and
+  `step(delta) -> Vector3`. The body calls `step()` once per physics tick and
+  moves with the velocity it returns. On the tick that ends the dash, only the
+  part of the tick still inside the dash moves the body, so the dash covers its
+  distance exactly at any tick rate (a unit test checks 24 to 144 Hz with a
+  duration that is not a whole number of ticks). Signals: `started(direction)`,
+  `finished` (full duration) and `canceled` (cut short).
+- **Invulnerability:** while the window is open, `Dodge` sets
+  `Health.invulnerable`, and `apply_damage()` deals nothing. `MeleeAttack`'s
+  `struck` lists only the targets that took damage, so an evaded hit counts as a
+  miss.
+- **`PlayerController`:**
+  - A dodge press is kept for `input_buffer` (0.2 s), so pressing slightly
+    before the cooldown ends still dodges as soon as it can.
+  - The dash goes toward the movement input, or toward the facing when there
+    is none.
+  - Starting a dodge cancels the attack in progress (an attack in its windup
+    never lands), and no attack starts during the dash even with the button
+    held.
+  - When the dash ends, horizontal speed is capped to running speed, so the
+    body slides about 0.2 m rather than carrying dash speed.
+  - Death cancels a dash and its invulnerability.
+- **`DodgeLean`:** leans the visual 30° forward and squashes it while the dash
+  runs, then straightens it. On `canceled` it straightens at once, so the death
+  topple starts from rest.
+
+Known simplifications: the dash is blocked by enemies like any movement (it
+does not pass through them), and there is no visual cue yet for an evaded hit
+beyond the missing damage number.
+
+### Attack limitations
 
 Known simplifications: the arc check uses target *centers*, so a large enemy
 whose edge overlaps the arc but whose center is outside it is missed. Attacks
@@ -315,7 +363,8 @@ Known simplifications:
   rather than left stuck.
 - `TouchJoystick` and `TouchActionButton` reset themselves on
   `NOTIFICATION_PAUSED`, on application focus loss and when hidden.
-- An attack in progress freezes with the game and finishes after resuming.
+- An attack or dodge in progress freezes with the game and finishes after
+  resuming. A dodge that is paused keeps its invulnerability until it ends.
 
 ## Settings
 

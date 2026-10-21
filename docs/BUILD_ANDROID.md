@@ -171,6 +171,11 @@ step.
 - [ ] Walking toward a Hollow (about 15 m from the start, in any direction)
       makes it chase you. Before it strikes, a red sector appears on the ground;
       stepping out of it in time avoids the hit.
+- [ ] Tapping **DODGE** dashes the player a few meters toward the stick (or
+      forward when the stick is idle). The button darkens and refills over
+      about a second, and tapping it again before then does nothing.
+- [ ] Dodging just before a Hollow's hit lands avoids it: no damage number
+      appears and the health bar does not drop.
 - [ ] Standing with a pillar between you and a chasing Hollow: it walks around
       the pillar instead of pushing into it.
 - [ ] Three hits kill a Hollow; it sinks into the floor and another appears

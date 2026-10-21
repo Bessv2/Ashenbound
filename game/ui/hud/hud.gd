@@ -12,6 +12,7 @@ signal pause_requested
 @onready var _controls_hint: Label = %ControlsHint
 @onready var _health_bar: ProgressBar = %HealthBar
 @onready var _health_text: Label = %HealthText
+@onready var _dodge_button: TouchActionButton = %DodgeButton
 
 var _health: Health
 
@@ -34,6 +35,11 @@ func track_health(health: Health) -> void:
 	health.damaged.connect(_update_health.unbind(2))
 	health.revived.connect(_update_health)
 	_update_health()
+
+
+## Shows `dodge`'s cooldown on the dodge button.
+func track_dodge(dodge: Dodge) -> void:
+	_dodge_button.cooldown = dodge.cooldown_fraction
 
 
 func _update_health() -> void:

@@ -323,3 +323,43 @@ The design notes are in
 2. Combat feel: hit-stop, a short stagger on the enemy, a clearer swing effect.
 3. Navigation avoidance (RVO) once more than a few enemies chase at once.
 4. A second enemy type (ranged or charging) to exercise `EnemyBehavior` reuse.
+
+## 9. Art reference and dodge (branches `feature/art-reference`, `feature/dodge-skills`)
+
+Requested after PR #3: "Go ahead and add the reference and then move to the
+next features."
+
+- **Art reference (PR #4, docs only).** `docs/art/concept-sheet.jpg` and
+  [ART_DIRECTION.md](ART_DIRECTION.md) hold the supplied concept sheet, its
+  palette and rarity colors, how the build compares, and the planned order:
+  dodge and skill buttons, then loot with rarity tiers, then a second enemy.
+- **Dodge.** The first skill from the concept sheet's action cluster:
+
+| Change | Details |
+|---|---|
+| `Dodge` and `DodgeData` | A 4 m dash over 0.3 s, invulnerable for the first 0.25 s, with a 0.9 s cooldown and a 0.2 s input buffer. The body drives it with `step(delta)`; the last tick is partial, so the distance is exact at any tick rate. |
+| `Health.invulnerable` | `apply_damage()` deals nothing while it is set. `MeleeAttack.struck` now lists only targets that took damage. |
+| `PlayerController` | Buffers the press. Dashes toward the input or the facing. Cancels the attack in progress and holds attacks off during the dash. Caps speed to running speed when the dash ends. Death cancels the dash. |
+| HUD | A **DODGE** button beside **ATTACK**. `TouchActionButton` gained an optional cooldown sweep. Keyboard: Left Shift or K. |
+| `DodgeLean` | Placeholder animation: a 30° lean and a squash during the dash. |
+
+### Checks
+
+| Check | Result |
+|---|---|
+| `tools/test.sh` | **120 passed, 0 failed** on 3 consecutive runs (+14 dodge tests). The only warning is the known fast-forward Jolt message. |
+| Tests fail without the feature | Each of these was removed in turn, and exactly one test failed each time: the partial-tick correction (exact distance), the invulnerability check (a hit inside the window does nothing), the input buffer (an early press dodges), the attack cancel, and the exit speed cap (frame-rate test). All were reverted, and the restored files were compared byte for byte with backups. |
+| Invulnerable window against a real Hollow | With the player dodging into a wall (so they stay in reach), a hit landing 0.2 s into the dodge deals nothing and `struck` reports no targets. A hit landing after the window deals 12. |
+| Rendered smoke test (Xvfb, Mobile renderer) | A touch on the HUD **DODGE** button dashed the player out of a Hollow's windup with no damage. The button showed its cooldown sweep (0.54 left 20 ticks after the dash). Screenshot: `docs/images/prototype-dodge.png`. |
+
+### Known issues
+
+- **The slide after the dash depends slightly on tick rate**, by up to 5 cm
+  between 30 Hz and 60 Hz. This is not the dodge: ordinary deceleration
+  updates speed before moving each tick, so it stops about half a tick of
+  speed short, the same as releasing the stick after running. The dash
+  distance itself is exact. Fixing it means changing how all movement
+  integrates speed, which is out of this PR's scope.
+- **No feedback for an evaded hit** beyond the missing damage number.
+- **The dash does not pass through enemies.**
+- **Untested on a phone.**
