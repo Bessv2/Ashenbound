@@ -147,6 +147,10 @@ step.
 
 ### Manual device checklist
 
+To have Claude Code run a scripted device test and collect screenshots, logs
+and frame statistics, see [DEVICE_TESTING.md](DEVICE_TESTING.md). The
+checklist below is the full manual pass.
+
 - [ ] The game starts in landscape and fullscreen. With rotation lock off,
       turning the phone 180° flips the image.
 - [ ] Dragging in the lower-left area moves the player; releasing stops it
