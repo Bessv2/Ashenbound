@@ -1,7 +1,5 @@
 extends "res://tests/framework/test_case.gd"
 ## Integration tests: the real main scene, physics and camera.
-
-const MainScene := preload("res://scenes/main.tscn")
 ## Inner faces of the arena walls, minus the player capsule radius.
 const ARENA_LIMIT := 20.0 - 0.4
 
@@ -11,7 +9,7 @@ var rig: IsometricCameraRig
 
 
 func _ready() -> void:
-	main = MainScene.instantiate()
+	main = instantiate_main()
 	add_child(main)
 	player = main.get_node("Player")
 	rig = main.get_node("CameraRig")

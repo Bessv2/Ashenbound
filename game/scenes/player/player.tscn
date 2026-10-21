@@ -8,6 +8,9 @@
 [ext_resource type="Resource" path="res://resources/combat/player_basic_attack.tres" id="6_attack_data"]
 [ext_resource type="Script" path="res://scripts/player/weapon_swing.gd" id="7_swing"]
 [ext_resource type="Material" path="res://resources/materials/blade.tres" id="8_blade"]
+[ext_resource type="Script" path="res://scripts/combat/health.gd" id="9_health"]
+[ext_resource type="Script" path="res://scripts/combat/hit_feedback.gd" id="10_feedback"]
+[ext_resource type="Material" path="res://resources/materials/hit_flash.tres" id="11_flash"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
@@ -26,13 +29,14 @@ size = Vector3(0.36, 0.14, 0.3)
 material = ExtResource("8_blade")
 size = Vector3(0.08, 0.04, 1.1)
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("visual", "attack")]
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("visual", "attack", "health")]
 collision_layer = 2
 collision_mask = 5
 script = ExtResource("1_controller")
 stats = ExtResource("2_stats")
 visual = NodePath("Visual")
 attack = NodePath("MeleeAttack")
+health = NodePath("Health")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -60,3 +64,15 @@ mesh = SubResource("BoxMesh_blade")
 [node name="MeleeAttack" type="Node" parent="."]
 script = ExtResource("5_attack")
 data = ExtResource("6_attack_data")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("9_health")
+max_health = 100
+
+[node name="HitFeedback" type="Node" parent="." node_paths=PackedStringArray("health", "visual")]
+script = ExtResource("10_feedback")
+health = NodePath("../Health")
+visual = NodePath("../Visual")
+flash_material = ExtResource("11_flash")
+number_height = 2.3
+number_color = Color(1, 0.35, 0.3, 1)

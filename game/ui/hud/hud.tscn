@@ -41,6 +41,26 @@ layout_mode = 2
 theme_type_variation = &"HeaderLabel"
 text = "ASHENBOUND"
 
+[node name="HealthRow" type="HBoxContainer" parent="Root/TopBar/Row/TitleBlock"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="HealthBar" type="ProgressBar" parent="Root/TopBar/Row/TitleBlock/HealthRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 18)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+value = 100.0
+show_percentage = false
+
+[node name="HealthText" type="Label" parent="Root/TopBar/Row/TitleBlock/HealthRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DimLabel"
+text = "100 / 100"
+
 [node name="DebugLabel" type="Label" parent="Root/TopBar/Row/TitleBlock"]
 unique_name_in_owner = true
 layout_mode = 2

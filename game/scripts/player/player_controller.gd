@@ -1,10 +1,14 @@
 class_name PlayerController
 extends CharacterBody3D
 ## Moves a character across the ground from MovementInput, relative to a camera,
-## and starts its attack while the attack action is held.
+## and starts its attack while the attack action is held. When its Health runs
+## out it topples over and stops taking input.
 ##
 ## Runs in _physics_process with delta-based integration, so speed does not
 ## depend on frame rate. Collision with the world is handled by move_and_slide.
+
+## Enemies find the player through this group.
+const GROUP := &"player"
 
 @export var stats: MovementStats
 ## Movement is relative to this camera's horizontal orientation.
@@ -14,13 +18,22 @@ extends CharacterBody3D
 ## Optional. Started while the attack action is held; slows movement and
 ## takes over facing while it runs.
 @export var attack: MeleeAttack
+## Optional. Without it the character cannot die.
+@export var health: Health
 ## When false, input is ignored and the character decelerates to a stop.
 @export var input_enabled: bool = true
 
 
 func _ready() -> void:
+	add_to_group(GROUP)
 	if stats == null:
 		stats = MovementStats.new()
+	if health:
+		health.died.connect(_on_died)
+
+
+func is_alive() -> bool:
+	return health == null or not health.is_dead()
 
 
 func _physics_process(delta: float) -> void:
@@ -44,6 +57,15 @@ func _physics_process(delta: float) -> void:
 		visual.rotation.y = MovementStats.yaw_of(attack.direction)
 	else:
 		stats.turn_toward(visual, direction, delta)
+
+
+func _on_died() -> void:
+	input_enabled = false
+	if visual:
+		# The visual's origin is at the feet, so this topples it forward.
+		var tween := create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
+		tween.tween_property(visual, "rotation:x", -PI * 0.5, 0.4) \
+				.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 
 
 ## Flat world direction the character currently faces.

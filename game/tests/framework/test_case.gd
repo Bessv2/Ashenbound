@@ -4,7 +4,14 @@ extends Node
 ## Each method whose name starts with "test_" runs on a fresh instance of the
 ## suite, after the instance has been added to the scene tree. Tests may await.
 
+const MainScene := preload("res://scenes/main.tscn")
+
 var failures: PackedStringArray = []
+
+
+## A fresh, not yet added main scene.
+func instantiate_main() -> Node3D:
+	return MainScene.instantiate()
 
 
 func check(condition: bool, message: String) -> void:

@@ -1,7 +1,7 @@
 class_name Hud
 extends CanvasLayer
-## In-game overlay: title, pause button, touch joystick and a debug readout.
-## Emits requests; it does not change game state itself.
+## In-game overlay: title, player health, pause button, touch controls and a
+## debug readout. Emits requests; it does not change game state itself.
 
 signal pause_requested
 
@@ -10,6 +10,10 @@ signal pause_requested
 @onready var _joystick: TouchJoystick = %TouchJoystick
 @onready var _debug_label: Label = %DebugLabel
 @onready var _controls_hint: Label = %ControlsHint
+@onready var _health_bar: ProgressBar = %HealthBar
+@onready var _health_text: Label = %HealthText
+
+var _health: Health
 
 
 func _ready() -> void:
@@ -22,6 +26,20 @@ func _ready() -> void:
 	_apply_settings(Settings.current)
 	get_viewport().size_changed.connect(_fit_to_safe_area)
 	_fit_to_safe_area()
+
+
+## Shows `health` in the health bar and keeps it up to date.
+func track_health(health: Health) -> void:
+	_health = health
+	health.damaged.connect(_update_health.unbind(2))
+	health.revived.connect(_update_health)
+	_update_health()
+
+
+func _update_health() -> void:
+	_health_bar.max_value = _health.max_health
+	_health_bar.value = _health.current
+	_health_text.text = "%d / %d" % [_health.current, _health.max_health]
 
 
 func _process(_delta: float) -> void:

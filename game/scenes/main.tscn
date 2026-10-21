@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://ui/hud/hud.tscn" id="6_hud"]
 [ext_resource type="PackedScene" path="res://ui/pause_menu/pause_menu.tscn" id="7_menu"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/training_dummy.tscn" id="8_dummy"]
+[ext_resource type="PackedScene" path="res://ui/death_screen/death_screen.tscn" id="9_death"]
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
@@ -35,6 +36,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 0)
 target = NodePath("../Player")
 
 [node name="HUD" parent="." instance=ExtResource("6_hud")]
+
+[node name="DeathScreen" parent="." instance=ExtResource("9_death")]
+visible = false
 
 [node name="PauseMenu" parent="." instance=ExtResource("7_menu")]
 visible = false
