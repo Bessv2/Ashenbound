@@ -9,6 +9,8 @@
 [ext_resource type="PackedScene" path="res://ui/pause_menu/pause_menu.tscn" id="7_menu"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/training_dummy.tscn" id="8_dummy"]
 [ext_resource type="PackedScene" path="res://ui/death_screen/death_screen.tscn" id="9_death"]
+[ext_resource type="Script" path="res://scripts/enemies/enemy_spawner.gd" id="10_spawner"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/hollow.tscn" id="11_hollow"]
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
@@ -31,6 +33,22 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
 
 [node name="TrainingDummyWest" parent="Enemies" instance=ExtResource("8_dummy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 0)
+
+[node name="HollowSpawner" type="Node3D" parent="Enemies"]
+script = ExtResource("10_spawner")
+enemy_scene = ExtResource("11_hollow")
+
+[node name="SpawnNorthWest" type="Marker3D" parent="Enemies/HollowSpawner"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0, -8)
+
+[node name="SpawnNorthEast" type="Marker3D" parent="Enemies/HollowSpawner"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -15)
+
+[node name="SpawnSouthWest" type="Marker3D" parent="Enemies/HollowSpawner"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 15)
+
+[node name="SpawnSouthEast" type="Marker3D" parent="Enemies/HollowSpawner"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0, 8)
 
 [node name="CameraRig" parent="." node_paths=PackedStringArray("target") instance=ExtResource("5_camera")]
 target = NodePath("../Player")

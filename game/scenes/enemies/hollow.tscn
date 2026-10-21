@@ -1,0 +1,108 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/enemy_controller.gd" id="1_controller"]
+[ext_resource type="Resource" path="res://resources/enemies/hollow_movement.tres" id="2_movement"]
+[ext_resource type="Resource" path="res://resources/enemies/hollow_behavior.tres" id="3_behavior"]
+[ext_resource type="Script" path="res://scripts/combat/health.gd" id="4_health"]
+[ext_resource type="Script" path="res://scripts/combat/hit_feedback.gd" id="5_feedback"]
+[ext_resource type="Material" path="res://resources/materials/hit_flash.tres" id="6_flash"]
+[ext_resource type="Script" path="res://scripts/combat/melee_attack.gd" id="7_attack"]
+[ext_resource type="Resource" path="res://resources/enemies/hollow_attack.tres" id="8_attack_data"]
+[ext_resource type="Script" path="res://scripts/player/weapon_swing.gd" id="9_swing"]
+[ext_resource type="Script" path="res://scripts/combat/attack_telegraph.gd" id="10_telegraph"]
+[ext_resource type="Material" path="res://resources/materials/hollow_body.tres" id="11_body"]
+[ext_resource type="Material" path="res://resources/materials/hollow_eyes.tres" id="12_eyes"]
+[ext_resource type="Material" path="res://resources/materials/iron.tres" id="13_iron"]
+[ext_resource type="Material" path="res://resources/materials/telegraph.tres" id="14_telegraph"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_body"]
+material = ExtResource("11_body")
+radius = 0.34
+height = 1.6
+
+[sub_resource type="SphereMesh" id="SphereMesh_head"]
+material = ExtResource("11_body")
+radius = 0.21
+height = 0.42
+radial_segments = 16
+rings = 8
+
+[sub_resource type="SphereMesh" id="SphereMesh_eye"]
+material = ExtResource("12_eyes")
+radius = 0.045
+height = 0.09
+radial_segments = 8
+rings = 4
+
+[sub_resource type="BoxMesh" id="BoxMesh_claw"]
+material = ExtResource("13_iron")
+size = Vector3(0.07, 0.05, 0.8)
+
+[node name="Hollow" type="CharacterBody3D" node_paths=PackedStringArray("attack", "health", "visual")]
+collision_layer = 4
+collision_mask = 7
+script = ExtResource("1_controller")
+movement = ExtResource("2_movement")
+behavior = ExtResource("3_behavior")
+attack = NodePath("MeleeAttack")
+health = NodePath("Health")
+visual = NodePath("Visual")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("4_health")
+max_health = 30
+
+[node name="HitFeedback" type="Node" parent="." node_paths=PackedStringArray("health", "visual")]
+script = ExtResource("5_feedback")
+health = NodePath("../Health")
+visual = NodePath("../Visual")
+flash_material = ExtResource("6_flash")
+number_height = 2.3
+
+[node name="MeleeAttack" type="Node" parent="."]
+script = ExtResource("7_attack")
+data = ExtResource("8_attack_data")
+target_mask = 2
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+mesh = SubResource("CapsuleMesh_body")
+
+[node name="Head" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.72, -0.03)
+mesh = SubResource("SphereMesh_head")
+
+[node name="EyeLeft" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.08, 1.75, -0.21)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_eye")
+
+[node name="EyeRight" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.08, 1.75, -0.21)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_eye")
+
+[node name="WeaponPivot" type="Node3D" parent="Visual" node_paths=PackedStringArray("attack")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0)
+script = ExtResource("9_swing")
+attack = NodePath("../../MeleeAttack")
+
+[node name="Claw" type="MeshInstance3D" parent="Visual/WeaponPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.6)
+mesh = SubResource("BoxMesh_claw")
+
+[node name="Telegraph" type="MeshInstance3D" parent="Visual" node_paths=PackedStringArray("attack")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
+material_override = ExtResource("14_telegraph")
+script = ExtResource("10_telegraph")
+attack = NodePath("../../MeleeAttack")

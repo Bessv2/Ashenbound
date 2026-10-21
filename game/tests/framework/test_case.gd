@@ -9,9 +9,16 @@ const MainScene := preload("res://scenes/main.tscn")
 var failures: PackedStringArray = []
 
 
-## A fresh, not yet added main scene.
-func instantiate_main() -> Node3D:
-	return MainScene.instantiate()
+## A fresh, not yet added main scene. Enemy spawners are switched off unless
+## `with_enemies` is true, so tests that are not about enemies run in a quiet
+## arena.
+func instantiate_main(with_enemies: bool = false) -> Node3D:
+	var main: Node3D = MainScene.instantiate()
+	if not with_enemies:
+		for node in main.find_children("*", "Node3D", true, false):
+			if node is EnemySpawner:
+				node.enabled = false
+	return main
 
 
 func check(condition: bool, message: String) -> void:
@@ -32,6 +39,16 @@ func check_vector_near(actual: Variant, expected: Variant, tolerance: float, mes
 func wait_physics_frames(count: int) -> void:
 	for i in count:
 		await get_tree().physics_frame
+
+
+## Waits until `condition` returns true, checking after each physics frame.
+## Returns false if it is still false after `max_frames`.
+func wait_until(condition: Callable, max_frames: int) -> bool:
+	for i in max_frames:
+		if condition.call():
+			return true
+		await get_tree().physics_frame
+	return condition.call()
 
 
 func wait_process_frames(count: int) -> void:
