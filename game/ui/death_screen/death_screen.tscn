@@ -1,0 +1,59 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://ui/death_screen/death_screen.gd" id="1_death"]
+
+[node name="DeathScreen" type="CanvasLayer"]
+layer = 15
+script = ExtResource("1_death")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.1, 0.01, 0.02, 0.65)
+
+[node name="Center" type="CenterContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="Root/Center"]
+layout_mode = 2
+
+[node name="Items" type="VBoxContainer" parent="Root/Center/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="Root/Center/Panel/Items"]
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+text = "You have fallen"
+horizontal_alignment = 1
+
+[node name="Flavor" type="Label" parent="Root/Center/Panel/Items"]
+layout_mode = 2
+theme_type_variation = &"DimLabel"
+text = "The ash remembers."
+horizontal_alignment = 1
+
+[node name="RestartButton" type="Button" parent="Root/Center/Panel/Items"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 88)
+layout_mode = 2
+text = "Rise again"

@@ -2,7 +2,6 @@ extends "res://tests/framework/test_case.gd"
 ## Integration tests: the player's attack and the training dummies in the
 ## real main scene.
 
-const MainScene := preload("res://scenes/main.tscn")
 
 var main: Node3D
 var player: PlayerController
@@ -10,7 +9,7 @@ var dummy: TrainingDummy
 
 
 func _ready() -> void:
-	main = MainScene.instantiate()
+	main = instantiate_main()
 	add_child(main)
 	player = main.get_node("Player")
 	dummy = main.get_node("Enemies/TrainingDummyEast")

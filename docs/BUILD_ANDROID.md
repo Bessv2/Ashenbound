@@ -168,6 +168,13 @@ step.
       player slows down while attacking.
 - [ ] Pausing while holding **ATTACK** stops the attacks; after **Resume** the
       player does not keep attacking.
+- [ ] Walking toward a Hollow (about 15 m from the start, in any direction)
+      makes it chase you. Before it strikes, a red sector appears on the ground;
+      stepping out of it in time avoids the hit.
+- [ ] Three hits kill a Hollow; it sinks into the floor and another appears
+      a few seconds later at a spawn point away from you.
+- [ ] The health bar drops when you are hit. At zero the player falls,
+      "You have fallen" appears, and **Rise again** restarts with full health.
 
 ## Troubleshooting
 

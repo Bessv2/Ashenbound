@@ -14,6 +14,8 @@ extends Node
 signal started(direction: Vector3)
 ## The hit resolved. `targets` is empty on a miss.
 signal struck(targets: Array[Health])
+## The attack was abandoned before or after its hit (see cancel()).
+signal canceled
 
 enum Phase { READY, WINDUP, RECOVERY }
 
@@ -66,6 +68,15 @@ func try_start(facing: Vector3) -> bool:
 	_time_left = data.windup
 	started.emit(direction)
 	return true
+
+
+## Abandons the attack in progress. A hit that has not landed yet never will.
+func cancel() -> void:
+	if not is_busy():
+		return
+	_phase = Phase.READY
+	_time_left = 0.0
+	canceled.emit()
 
 
 ## Whether a target at `offset` (from the attacker, flattened) lies inside an

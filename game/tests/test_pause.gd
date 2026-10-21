@@ -1,8 +1,6 @@
 extends "res://tests/framework/test_case.gd"
 ## Integration tests for pausing: controls, focus loss and Android Back.
 
-const MainScene := preload("res://scenes/main.tscn")
-
 var main: Node3D
 var player: PlayerController
 var pause_controller: PauseController
@@ -10,7 +8,7 @@ var pause_menu: PauseMenu
 
 
 func _ready() -> void:
-	main = MainScene.instantiate()
+	main = instantiate_main()
 	add_child(main)
 	player = main.get_node("Player")
 	pause_controller = main.get_node("PauseController")
