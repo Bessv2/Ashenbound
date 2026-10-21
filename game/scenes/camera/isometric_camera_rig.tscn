@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/camera/isometric_camera_rig.gd" id="1_rig"]
+
+[node name="IsometricCameraRig" type="Node3D"]
+script = ExtResource("1_rig")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+projection = 1
+current = true
+size = 16.0
+near = 0.1
+far = 100.0

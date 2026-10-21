@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/attack_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+damage = 10
+reach = 1.8
+arc_degrees = 120.0
+windup = 0.12
+recovery = 0.33
+movement_multiplier = 0.35
+aim_assist_radius = 4.0

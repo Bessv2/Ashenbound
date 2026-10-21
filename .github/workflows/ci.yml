@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GODOT_VERSION: 4.7.2-stable
+  # Godot looks for templates in a folder named <version>.<status>.
+  GODOT_TEMPLATES_DIR: 4.7.2.stable
+
+jobs:
+  test-and-build:
+    name: Test and build debug APK
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Restore Godot from cache
+        id: godot-cache
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates/${{ env.GODOT_TEMPLATES_DIR }}
+          key: godot-${{ env.GODOT_VERSION }}-linux-android-v1
+
+      - name: Download Godot and Android export templates
+        if: steps.godot-cache.outputs.cache-hit != 'true'
+        run: |
+          base="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}"
+          templates="$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATES_DIR}"
+          mkdir -p "$HOME/godot" "$templates"
+          cd "$RUNNER_TEMP"
+          curl -fsSLO "${base}/Godot_v${GODOT_VERSION}_linux.x86_64.zip"
+          unzip -q "Godot_v${GODOT_VERSION}_linux.x86_64.zip"
+          mv "Godot_v${GODOT_VERSION}_linux.x86_64" "$HOME/godot/godot"
+          curl -fsSLO "${base}/Godot_v${GODOT_VERSION}_export_templates.tpz"
+          # Only the Android templates are needed; the full set is about 1 GB.
+          unzip -q -j "Godot_v${GODOT_VERSION}_export_templates.tpz" \
+            "templates/version.txt" "templates/android_*" -d "$templates"
+
+      - name: Add Godot to PATH
+        run: |
+          echo "$HOME/godot" >> "$GITHUB_PATH"
+
+      - name: Show tool versions
+        run: |
+          godot --version
+          java -version
+          ls "$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATES_DIR}"
+
+      # The first import also creates Godot's editor settings, taking the JDK
+      # and Android SDK paths from JAVA_HOME and ANDROID_HOME, and generates
+      # the debug keystore used to sign the APK.
+      - name: Run tests
+        run: tools/test.sh
+
+      - name: Install Android build-tools
+        run: |
+          sdkmanager="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$sdkmanager" --licenses > /dev/null || true
+          "$sdkmanager" --install "build-tools;36.1.0" "platform-tools" > /dev/null
+          echo "$ANDROID_HOME/build-tools/36.1.0" >> "$GITHUB_PATH"
+
+      - name: Export debug APK
+        run: tools/export-android-debug.sh
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v7
+        with:
+          path: build/android/ashenbound-debug.apk
+          archive: false
+          retention-days: 14
+          if-no-files-found: error
