@@ -1,0 +1,31 @@
+<!-- Added to the exported index.html by tools/export-web.sh. -->
+<style>
+	#rotate-hint, #fullscreen-button { font-family: sans-serif; color: #e8dcc4; }
+	#rotate-hint {
+		display: none; position: fixed; inset: 0; z-index: 10; background: #0b0a0c;
+		align-items: center; justify-content: center; text-align: center; padding: 24px; font-size: 20px;
+	}
+	@media (orientation: portrait) { #rotate-hint { display: flex; } }
+	#fullscreen-button {
+		position: fixed; top: 8px; left: 50%; transform: translateX(-50%); z-index: 5;
+		background: rgba(11, 10, 12, 0.6); border: 1px solid #8a4b2a; border-radius: 6px;
+		padding: 6px 14px; font-size: 14px; cursor: pointer;
+	}
+	html, body { overscroll-behavior: none; touch-action: none; }
+</style>
+<div id="rotate-hint">Turn your phone sideways to play.</div>
+<button id="fullscreen-button" type="button">Fullscreen</button>
+<script>
+	(function () {
+		var button = document.getElementById('fullscreen-button');
+		if (!document.documentElement.requestFullscreen) { button.style.display = 'none'; return; }
+		button.addEventListener('click', function () {
+			document.documentElement.requestFullscreen().then(function () {
+				if (screen.orientation && screen.orientation.lock) { screen.orientation.lock('landscape').catch(function () {}); }
+			}).catch(function () {});
+		});
+		document.addEventListener('fullscreenchange', function () {
+			button.style.display = document.fullscreenElement ? 'none' : '';
+		});
+	})();
+</script>
