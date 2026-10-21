@@ -25,6 +25,8 @@ Status labels follow the charter:
 | 2026-10-21 | **Loot is parked** until Milestone 4. Draft PR #6 holds the early loot work, which predates the charter: five tiers and three slots, against the charter's six tiers and nine slots. |
 | 2026-10-21 | The charter is committed as `CLAUDE.md`. |
 | 2026-10-21 | **The Warden's starter abilities are Cleave, Bulwark Guard and Ember Brand**, one per specialization direction. Skill trees for each class come later and are designed per class. |
+| 2026-10-21 | **Milestone 3 content:** the first boss is **the Ashen Lord**, with distinct phases. **Skeleton Warriors** are the basic enemy and replace the placeholder Hollow; a **Dark Cultist** is the ranged second type; a **Fallen Knight** is the elite. |
+| 2026-10-21 | Test a demo build on an Android device before Milestone 3 work starts. |
 
 ## Milestones
 
@@ -92,6 +94,8 @@ as for the Warden. The spec covers:
 - a reward summary;
 - reset and replay.
 
-Open questions for the owner: whether the first boss is the Ashen Lord (the
-charter's working first-boss concept), and which charter enemies make up the
-first waves (Skeleton Warrior, Ghoul, Dark Cultist or Fallen Knight).
+The content is decided (see Owner decisions): Skeleton Warriors and Dark
+Cultists in the waves, a Fallen Knight elite, and the Ashen Lord as the boss.
+
+Before that, the owner tests a demo build on an Android device. Its results
+close the device checks for Milestones 1 and 2.
