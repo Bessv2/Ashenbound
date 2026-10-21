@@ -3,6 +3,10 @@ extends Node
 ## Hit points for anything that can be damaged. Add it as a direct child of
 ## the body that attacks should hit; Health.of() finds it from the collider.
 
+## Something tried to deal `amount` damage to this living, vulnerable target,
+## before mitigation. Emitted before `damaged`, and even when mitigation
+## leaves nothing to deal.
+signal hit(amount: int)
 signal damaged(amount: int, remaining: int)
 signal died
 signal revived
@@ -13,6 +17,9 @@ var current: int = 0
 ## While true, apply_damage() deals nothing. Set by Dodge during its
 ## invulnerable window.
 var invulnerable: bool = false
+## Share of each hit that is dealt, rounded to the nearest whole point. Set by
+## Bulwark Guard while it is up.
+var damage_multiplier: float = 1.0
 
 
 func _ready() -> void:
@@ -23,13 +30,19 @@ func is_dead() -> bool:
 	return current <= 0
 
 
-## Applies damage and returns the amount actually dealt, which is less than
-## `amount` when it exceeds the remaining health. Dead and invulnerable
-## targets take none.
+## Applies damage and returns the amount actually dealt: `amount` scaled by
+## `damage_multiplier`, and no more than the remaining health. Dead and
+## invulnerable targets take none.
 func apply_damage(amount: int) -> int:
 	if is_dead() or invulnerable or amount <= 0:
 		return 0
-	var dealt := mini(amount, current)
+	# Fixed before `hit` is emitted, so a handler that changes the multiplier
+	# (a guard ending, for one) does not change this hit.
+	var mitigated := maxi(roundi(amount * damage_multiplier), 0)
+	hit.emit(amount)
+	if mitigated == 0 or is_dead():
+		return 0
+	var dealt := mini(mitigated, current)
 	current -= dealt
 	damaged.emit(dealt, current)
 	if current == 0:

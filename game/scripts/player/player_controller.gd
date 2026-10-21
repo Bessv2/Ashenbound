@@ -1,9 +1,12 @@
 class_name PlayerController
 extends CharacterBody3D
 ## Moves a character across the ground from MovementInput, relative to a camera,
-## starts its attack while the attack action is held, and dodges when the dodge
-## action is pressed. When its Health runs out it topples over and stops taking
-## input.
+## starts its attack while the attack action is held, starts its abilities on
+## their actions, and dodges when the dodge action is pressed. When its Health
+## runs out it topples over and stops taking input.
+##
+## Priority: a dodge cancels any ability or attack in progress; an ability
+## cancels the basic attack; nothing else starts while an ability plays out.
 ##
 ## Runs in _physics_process with delta-based integration, so speed does not
 ## depend on frame rate. Collision with the world is handled by move_and_slide.
@@ -24,6 +27,8 @@ const GROUP := &"player"
 ## Optional. Dashes toward the movement input (or the facing without input)
 ## when the dodge action is pressed, canceling the attack in progress.
 @export var dodge: Dodge
+## Started on their own InputMap actions.
+@export var abilities: Array[Ability] = []
 ## When false, input is ignored and the character decelerates to a stop.
 @export var input_enabled: bool = true
 
@@ -50,12 +55,18 @@ func _physics_process(delta: float) -> void:
 	_update_dodge_request(direction, delta)
 	var dash := dodge.step(delta) if dodge else Vector3.ZERO
 	var dodging := dodge != null and (dodge.is_active() or not dash.is_zero_approx())
-	if attack and input_enabled and not dodging and Input.is_action_pressed(GameplayActions.ATTACK):
+	if input_enabled and not dodging:
+		_start_abilities()
+	var busy_ability := _busy_ability()
+	if attack and input_enabled and not dodging and busy_ability == null \
+			and Input.is_action_pressed(GameplayActions.ATTACK):
 		attack.try_start(_facing())
 
 	var horizontal := dash
 	if not dodging:
 		var speed := stats.move_speed * (attack.movement_multiplier() if attack else 1.0)
+		if busy_ability:
+			speed = stats.move_speed * busy_ability.movement_multiplier()
 		# Leaving a dash at dash speed would slide far past its end.
 		var current := Vector3(velocity.x, 0.0, velocity.z).limit_length(stats.move_speed)
 		horizontal = stats.step_velocity(current, direction * speed, delta)
@@ -67,8 +78,13 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	if visual == null:
 		return
+	var ability_facing := busy_ability.facing() if busy_ability else Vector3.ZERO
 	if dodging:
 		visual.rotation.y = MovementStats.yaw_of(dodge.direction)
+	elif not ability_facing.is_zero_approx():
+		visual.rotation.y = MovementStats.yaw_of(ability_facing)
+	elif busy_ability:
+		pass  # Holds its facing, like a raised guard.
 	elif attack and attack.is_busy():
 		visual.rotation.y = MovementStats.yaw_of(attack.direction)
 	else:
@@ -87,6 +103,8 @@ func _update_dodge_request(direction: Vector3, delta: float) -> void:
 		_dodge_buffer_left = 0.0
 		if attack:
 			attack.cancel()
+		for ability in abilities:
+			ability.cancel()
 	else:
 		_dodge_buffer_left -= delta
 
@@ -96,11 +114,29 @@ func _on_died() -> void:
 	_dodge_buffer_left = 0.0
 	if dodge:
 		dodge.cancel()
+	for ability in abilities:
+		ability.cancel()
 	if visual:
 		# The visual's origin is at the feet, so this topples it forward.
 		var tween := create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
 		tween.tween_property(visual, "rotation:x", -PI * 0.5, 0.4) \
 				.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
+
+func _start_abilities() -> void:
+	for ability in abilities:
+		if not Input.is_action_just_pressed(ability.action) or _busy_ability():
+			continue
+		if ability.try_activate(_facing()) and attack:
+			attack.cancel()
+
+
+## The ability still playing out, or null.
+func _busy_ability() -> Ability:
+	for ability in abilities:
+		if ability.is_busy():
+			return ability
+	return null
 
 
 ## Flat world direction the character currently faces.

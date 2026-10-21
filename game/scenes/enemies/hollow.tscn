@@ -97,10 +97,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.08, 1.75, -0.21)
 cast_shadow = 0
 mesh = SubResource("SphereMesh_eye")
 
-[node name="WeaponPivot" type="Node3D" parent="Visual" node_paths=PackedStringArray("attack")]
+[node name="WeaponPivot" type="Node3D" parent="Visual" node_paths=PackedStringArray("attacks")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0)
 script = ExtResource("9_swing")
-attack = NodePath("../../MeleeAttack")
+attacks = [NodePath("../../MeleeAttack")]
 
 [node name="Claw" type="MeshInstance3D" parent="Visual/WeaponPivot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.6)

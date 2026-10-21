@@ -17,7 +17,7 @@ Main (Node3D)                         scenes/main.tscn, scripts/main.gd
 │       ├── Walls/{North,West}Wall    3 m tall (far side from the camera)
 │       ├── Walls/{South,East}Wall    1 m tall (camera side, so they never hide the player)
 │       └── Pillars/Pillar{N,S,E,W}   obstacles with an ember light on top
-├── Player (CharacterBody3D)          scenes/player/player.tscn, scripts/player/player_controller.gd
+├── Player (CharacterBody3D)          the Warden: scenes/player/warden.tscn, scripts/player/player_controller.gd
 │   ├── CollisionShape3D              capsule, radius 0.4 m, height 1.8 m
 │   ├── Visual (Node3D)               turned to face movement or the attack; topples on death
 │   │   └── WeaponPivot/Blade         scripts/player/weapon_swing.gd, placeholder swing
@@ -25,7 +25,10 @@ Main (Node3D)                         scenes/main.tscn, scripts/main.gd
 │   ├── Health (Node)                 100 HP
 │   ├── HitFeedback (Node)            scripts/combat/hit_feedback.gd, red damage numbers
 │   ├── Dodge (Node)                  scripts/combat/dodge.gd + resources/combat/player_dodge.tres
-│   └── DodgeLean (Node)              scripts/player/dodge_lean.gd, placeholder lean and squash
+│   ├── DodgeLean (Node)              scripts/player/dodge_lean.gd, placeholder lean and squash
+│   ├── CleaveAttack, Cleave          MeleeAttack (warden_cleave.tres) + CleaveAbility
+│   ├── CounterAttack, Guard          MeleeAttack (warden_guard_counter.tres) + GuardAbility
+│   └── Brand (Node)                  BrandAbility; puts a Burning node on its target
 ├── Enemies (Node3D)
 │   ├── TrainingDummy{East,North,West} scenes/enemies/training_dummy.tscn, 5 m from the start
 │   │   ├── Health (Node)             scripts/combat/health.gd, 50 HP
@@ -45,6 +48,7 @@ Main (Node3D)                         scenes/main.tscn, scripts/main.gd
 │       ├── TouchJoystick             ui/hud/touch_joystick.gd, lower-left 560×420 px zone
 │       ├── AttackButton              ui/hud/touch_action_button.gd, lower-right, holds `attack`
 │       ├── DodgeButton               ui/hud/touch_action_button.gd, beside ATTACK, `dodge` + cooldown sweep
+│       ├── Cleave/Guard/BrandButton  same script, in an arc around ATTACK, `ability_1` to `ability_3`
 │       └── ControlsHint              keyboard hint, hidden on mobile
 ├── DeathScreen (CanvasLayer)         ui/death_screen/death_screen.tscn, "Rise again"
 └── PauseMenu (CanvasLayer)           ui/pause_menu/pause_menu.tscn  [process: when paused]
@@ -66,8 +70,8 @@ Main (Node3D)                         scenes/main.tscn, scripts/main.gd
 - Gameplay never references the HUD. The joystick and the player communicate
   only through InputMap actions (see below).
 - `PlayerController.camera` and `IsometricCameraRig.target` are node references
-  wired in `main.tscn`. `PlayerController.attack` and `WeaponSwing.attack` are
-  wired in `player.tscn`.
+  wired in `main.tscn`. `PlayerController.attack`, `PlayerController.abilities`
+  and `WeaponSwing.attacks` are wired in `warden.tscn`.
 - On mobile, the HUD root is inset by the display safe area
   (`Hud.safe_area_insets()`), so controls stay clear of camera cutouts.
 
@@ -83,9 +87,13 @@ Gameplay goes through these InputMap actions, defined in `project.godot`:
 | `move_back` | S, Down arrow | joystick down (analog strength) |
 | `attack` | J, Space | **ATTACK** button (held) |
 | `dodge` | Left Shift, K | **DODGE** button (tap) |
+| `ability_1` | Q, 1 | **CLEAVE** button (tap) |
+| `ability_2` | E, 2 | **GUARD** button (tap) |
+| `ability_3` | R, 3 | **BRAND** button (tap) |
 | `toggle_pause` | Escape, P | — (HUD **II** button; Android Back) |
 
-`GameplayActions.ALL` lists the gameplay actions (movement, attack and dodge).
+`GameplayActions.ALL` lists the gameplay actions (movement, attack, dodge and
+the three abilities).
 They are the ones released when the game pauses.
 
 Keys are bound by **physical** position, so WASD stays in the same place on
@@ -169,6 +177,9 @@ enemies and the dodge came after it, and are described below.
 - **`Health`** (Node): `max_health`, `current`, and the signals `damaged`,
   `died` and `revived`. `apply_damage()` returns the damage actually dealt. It
   deals none to a dead target, or to any target while `invulnerable` is set.
+  Otherwise it deals `amount × damage_multiplier`, rounded (Bulwark Guard sets
+  0.2), and first emits `hit(amount)`, even when mitigation leaves nothing.
+  Mitigation lives here so damage has one source of truth.
   Attacks find it as a direct child of the body they hit
   (`Health.of(collider)`).
 - **`AttackData`** (Resource): damage, reach, arc, windup, recovery, movement
@@ -235,6 +246,57 @@ enemies and the dodge came after it, and are described below.
 Known simplifications: the dash is blocked by enemies like any movement (it
 does not pass through them), and there is no visual cue yet for an evaded hit
 beyond the missing damage number.
+
+### Warden abilities
+
+The design, numbers and acceptance checks are in
+[characters/warden.md](characters/warden.md).
+
+![Bulwark Guard: the ember ring is up as a Hollow's telegraphed hit lands](images/prototype-warden-guard.png)
+
+- **`Ability`** (Node, a child of the body): `display_name`, an InputMap
+  `action` and a `cooldown`.
+  - `try_activate(facing)` calls the subclass's `_activate()`. The cooldown
+    starts only if `_activate()` succeeds, so a Brand with no target costs
+    nothing.
+  - The cooldown runs on the physics clock, so it pauses with the game.
+  - Subclasses report `is_busy()`, `movement_multiplier()` and `facing()`
+    while they play out, and implement `cancel()`.
+- **`CleaveAbility`** wraps a second `MeleeAttack` with its own `AttackData`:
+  25 damage, 2.6 m, 220°, 0.3 s windup.
+- **`GuardAbility`:**
+  - For 1 s it sets `Health.damage_multiplier` to 0.2 and roots the Warden.
+  - On the first `hit` of each guard, it starts its counter: a 360°, 15-damage
+    `MeleeAttack` with no windup.
+  - The ember ring is visual only.
+- **`BrandAbility`** finds the nearest living enemy within 7 m with
+  `Targeting.nearest_living()` and applies `Burning` to it.
+- **`Burning`** (Node3D on the target):
+  - 4 damage every 0.5 s, 8 times, carrying leftover time between ticks so the
+    rate holds at any tick rate.
+  - Applying it again restarts the count instead of adding a second burn.
+  - It stops when the target dies. Its ember mark is visual only.
+- **`Targeting`:** the sphere query that finds living Health on given
+  layers. `MeleeAttack` uses it too, for hits and aim assist.
+- **`PlayerController`** starts an ability on its action's press when no ability
+  is busy.
+  - **Priority:** a dodge cancels abilities and the basic attack; an ability
+    cancels the basic attack; nothing starts while an ability plays out.
+  - While an ability is busy, the controller uses that ability's movement
+    multiplier and facing.
+  - Death cancels all abilities.
+- **`WeaponSwing.attacks`:** a list of attacks, so the basic attack and Cleave
+  sweep the same greatsword.
+- **`Hud.track_abilities()`** labels each ability button after the ability
+  bound to its action, and wires its cooldown sweep.
+
+Known simplifications:
+
+- Ability presses are not buffered: one made while another ability plays out
+  is ignored.
+- The counter hits all around the Warden rather than toward the attacker.
+- Abilities have no visual windup beyond the sword swing, the guard ring and
+  the ember mark.
 
 ### Attack limitations
 

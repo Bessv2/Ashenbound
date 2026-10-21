@@ -47,7 +47,7 @@ and the whole `game/` project:
 
 - **Config:** `project.godot`, `export_presets.cfg`, `icon.svg`
 - **Scenes:** `scenes/main.tscn`, `scenes/arena/test_arena.tscn`,
-  `scenes/player/player.tscn`, `scenes/camera/isometric_camera_rig.tscn`
+  `scenes/player/warden.tscn`, `scenes/camera/isometric_camera_rig.tscn`
 - **Scripts:** `scripts/main.gd`, `scripts/input/movement_input.gd`,
   `scripts/player/{player_controller,movement_stats}.gd`,
   `scripts/camera/isometric_camera_rig.gd`,
@@ -363,3 +363,94 @@ next features."
 - **No feedback for an evaded hit** beyond the missing damage number.
 - **The dash does not pass through enemies.**
 - **Untested on a phone.**
+
+## 10. Project charter and the Warden's starter abilities (branches `docs/project-charter`, `feature/warden-abilities`)
+
+The owner supplied the project charter, now committed as
+[CLAUDE.md](../CLAUDE.md), and decided:
+
+- loot is parked until Milestone 4 (draft PR #6);
+- the charter goes into the repository;
+- Cleave, Bulwark Guard and Ember Brand are the Warden's starter abilities;
+- per-class skill trees come later.
+
+[CURRENT_STATUS.md](CURRENT_STATUS.md) now carries the live state in the
+charter's terms. The report below follows the charter's format.
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: 2: Combat foundation (three abilities)
+Status: Validated, verified in runtime. Device: blocked.
+
+Changes:
+- Specification first: docs/characters/warden.md (numbers, priority rules,
+  acceptance checks per ability)
+- The player scene is now the Warden (scenes/player/warden.tscn):
+  greatsword placeholder, blackened-iron armor with an ember glow
+- Ability base class; CleaveAbility, GuardAbility and BrandAbility; Burning status
+- Health: damage_multiplier (guard mitigation) and a `hit` signal
+- Targeting helper extracted from MeleeAttack (shared with Ember Brand)
+- WeaponSwing takes a list of attacks (basic attack and Cleave)
+- Inputs ability_1 to ability_3 (Q E R / 1 2 3); CLEAVE, GUARD and BRAND
+  buttons in an arc around ATTACK, each with a cooldown sweep
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 140 passed, 0 failed, on 3 runs (+20 tests)
+- Command: tools/export-android-debug.sh
+  Exit code: 0
+  Result: APK signature verified, ability scripts packaged, tests excluded
+- Command: godot --check-only on the 10 new and changed scripts
+  Exit code: 0
+  Result: no errors
+- Command: rendered run (Xvfb, Mobile renderer, software Vulkan)
+  Exit code: 0
+  Result: Cleave hit two Hollows for 25 each; Guard's counter finished them;
+          Brand ticked 4 on the nearest target
+
+Manual checks:
+- None on a device
+
+Not tested:
+- On a device: the ability buttons' thumb reach and the feel of each ability
+
+Blockers:
+- No Android device, and no /dev/kvm for an emulator
+
+Known risks:
+- Five buttons now sit around ATTACK; their spacing needs checking on a phone
+- Ability presses are not buffered
+
+Recommended next task:
+- Split the Hollow's attack state into telegraph, attack and recovery
+
+Acceptance criteria (docs/characters/warden.md):
+- [x] Cleave: 25 to each enemy in the arc once; none behind or out of reach;
+      cooldown; slows the Warden; a dodge cancels it
+- [x] Guard: hits cut to 20%; one counter per guard; full damage after;
+      rooted; a dodge ends it
+- [x] Brand: no target, no cooldown; 8 ticks of 4 on the nearest enemy at
+      30, 60 and 120 Hz; restarts instead of stacking; stops on death
+- [ ] Verified on device
+```
+
+**Tests fail without the feature.** Each behavior was removed in turn, and
+each time the test meant to catch it failed:
+
+- guard mitigation;
+- the guard's once-only counter;
+- the burn timer's carried-over time;
+- burns not stacking;
+- Brand not spending its cooldown without a target;
+- one ability at a time.
+
+Two of these first passed, which showed two tests were too weak:
+
+- the counter test never had two hits during one guard;
+- the burn rate test used 0.5 s, which divides evenly into every tick rate
+  tested.
+
+Both tests were strengthened, and both probes now fail. Every probe was
+reverted, and the restored files were compared byte for byte with backups.

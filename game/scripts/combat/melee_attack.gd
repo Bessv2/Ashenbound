@@ -120,23 +120,7 @@ func _aim(facing: Vector3) -> Vector3:
 
 
 func _living_targets_within(radius: float) -> Array[Health]:
-	var sphere := SphereShape3D.new()
-	sphere.radius = radius
-	var query := PhysicsShapeQueryParameters3D.new()
-	query.shape = sphere
-	query.transform = Transform3D(Basis.IDENTITY, _origin())
-	query.collision_mask = target_mask
-	var attacker := get_parent() as CollisionObject3D
-	if attacker:
-		query.exclude = [attacker.get_rid()]
-	var targets: Array[Health] = []
-	var space := (get_parent() as Node3D).get_world_3d().direct_space_state
-	for result in space.intersect_shape(query):
-		var collider := result["collider"] as Node3D
-		var health: Health = Health.of(collider) if collider else null
-		if health and not health.is_dead() and not targets.has(health):
-			targets.append(health)
-	return targets
+	return Targeting.living_within(get_parent() as Node3D, radius, target_mask)
 
 
 func _origin() -> Vector3:

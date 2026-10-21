@@ -45,7 +45,7 @@ Status labels follow the charter:
 | Targeting and range (basic attack, aim assist) | Validated, verified in runtime |
 | Basic attack | Validated, verified in runtime |
 | Dodge with cooldown and an invulnerable window | Validated, verified in runtime (PR #5) |
-| Three abilities | Next: Cleave, Bulwark Guard, Ember Brand |
+| Three abilities | Validated, verified in runtime: Cleave, Bulwark Guard, Ember Brand |
 | Enemy states (idle, approach, telegraph, attack, recovery, death) | Behavior implemented, see below |
 | Hit feedback, HUD, pause and lifecycle handling | Validated, verified in runtime |
 | Manual checks on a device | Blocked |
@@ -66,12 +66,14 @@ Each PR is stacked on the one before it. Merge them in order.
 | #4 | `feature/art-reference` | Concept sheet and art direction (docs) | Green |
 | #5 | `feature/dodge-skills` | Dodge | Green |
 | #6 | `feature/loot` | Loot (**parked, do not merge**) | |
-| next | `docs/project-charter` | This file and `CLAUDE.md` | |
+| #7 | `docs/project-charter` | This file and `CLAUDE.md` | |
+| next | `feature/warden-abilities` | The Warden and its three starter abilities | |
 
 ## Deviations from the charter
 
-- **Names:** the hero is still a generic player scene; it becomes the Warden
-  in the next task. The arena is not yet framed as the Fallen Marches. The
+- **Names:** the hero is the Warden. The main scene's slot for it is still
+  called `Player`, because that slot will hold any class. The arena is not yet
+  framed as the Fallen Marches. The
   Hollow is a placeholder enemy that is not on the charter's list.
 - **Docs:** there is no `GAME_DESIGN.md` or `TEST_PLAN.md` yet. The test
   approach is described in [ARCHITECTURE.md](ARCHITECTURE.md#tests).
@@ -80,10 +82,7 @@ Each PR is stacked on the one before it. Merge them in order.
 
 ## Next task
 
-The Warden's three starter abilities, one at a time:
-
-1. Specify them in `docs/characters/warden.md`, as charter section 13.1
-   requires before implementation.
-2. Turn the player scene into the Warden, with a greatsword placeholder.
-3. Implement Cleave, then Bulwark Guard, then Ember Brand, each with tests
-   and a HUD button.
+Close out Milestone 2 by splitting the Hollow's attack state into the
+charter's telegraph, attack and recovery states. That makes enemy states
+testable one by one, ahead of Milestone 3's elite and boss. Milestone 2's
+device check stays blocked until a phone is available.

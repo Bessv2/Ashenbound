@@ -2,7 +2,7 @@ extends "res://tests/framework/test_case.gd"
 ## Tests for the player's dodge: the dash, its cooldown and input buffer, its
 ## invulnerable window against a real Hollow, and the HUD button.
 
-const PlayerScene := preload("res://scenes/player/player.tscn")
+const PlayerScene := preload("res://scenes/player/warden.tscn")
 const HollowScene := preload("res://scenes/enemies/hollow.tscn")
 ## A wall west of the start: its east face is at x = -2.
 const WALL := AABB(Vector3(-3.0, 0.0, -3.0), Vector3(1.0, 3.0, 6.0))

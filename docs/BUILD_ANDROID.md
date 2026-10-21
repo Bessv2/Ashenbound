@@ -176,6 +176,15 @@ step.
       about a second, and tapping it again before then does nothing.
 - [ ] Dodging just before a Hollow's hit lands avoids it: no damage number
       appears and the health bar does not drop.
+- [ ] **CLEAVE** sweeps the greatsword and hits every Hollow in front and to
+      the sides (each shows 25); its button darkens for 4 s.
+- [ ] **GUARD** shows an ember ring and the Warden stops moving. A Hollow's
+      hit during it shows 2 instead of 12, and the Hollow takes 15 back.
+- [ ] **BRAND** with a Hollow or dummy within about 7 m shows small ember
+      damage numbers (4) every half second. With nothing nearby, the button
+      does nothing and does not darken.
+- [ ] The five buttons around **ATTACK** are easy to hit with a thumb and do
+      not cover anything important.
 - [ ] Standing with a pillar between you and a chasing Hollow: it walks around
       the pillar instead of pushing into it.
 - [ ] Three hits kill a Hollow; it sinks into the floor and another appears

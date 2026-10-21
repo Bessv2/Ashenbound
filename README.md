@@ -11,6 +11,8 @@ a settings structure, plus a first combat loop:
 
 - a melee attack with aim assist;
 - a dodge: a quick dash with a short invulnerable window and a cooldown;
+- the Warden's starter abilities: Cleave, Bulwark Guard and Ember Brand
+  (see [docs/characters/warden.md](docs/characters/warden.md));
 - training dummies;
 - Hollows, enemies that find their way to you around walls and pillars,
   telegraph their attacks with a red ground marker, and respawn;
@@ -91,13 +93,15 @@ Desktop controls:
 | W A S D or arrow keys | Move (relative to the camera) |
 | J or Space (hold) | Attack; holding repeats |
 | Shift or K | Dodge toward the movement direction (or forward when standing still) |
+| Q / E / R, or 1 / 2 / 3 | Cleave / Bulwark Guard / Ember Brand |
 | Esc or P | Pause / resume |
 | Left mouse drag in the lower-left area | Touch joystick (mouse emulates touch) |
-| Left click on **ATTACK** / **DODGE** | Touch attack and dodge buttons |
+| Left click on **ATTACK**, **DODGE** or an ability button | Touch buttons |
 
 On a phone, the lower-left area of the screen is the movement stick, the round
 **ATTACK** button in the lower-right corner attacks while held, the smaller
-**DODGE** button beside it dodges (its face darkens while it recharges), and the **II**
+**DODGE**, **CLEAVE**, **GUARD** and **BRAND** buttons around it use the
+dodge and abilities (each face darkens while it recharges), and the **II**
 button in the top-right corner pauses. Android's Back button also pauses and
 resumes. Leaving the app pauses the game.
 
