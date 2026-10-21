@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://scripts/loot/item_data.gd" id="1_ibr5g"]
+
+[resource]
+script = ExtResource("1_ibr5g")
+id = &"iron_cuirass"
+display_name = "Iron Cuirass"
+slot = 1
