@@ -71,18 +71,20 @@ Where it differs:
   uses `#AD1F14`. The in-game panel itself shows a bright red bar, so this may
   be right for readability.
 
-## What the sheet adds, and the planned order
+## What the sheet adds
 
-Planned next, each on its own branch:
+The order of work follows the milestones in the charter
+([CLAUDE.md](../CLAUDE.md)), not this sheet. The live plan is in
+[CURRENT_STATUS.md](CURRENT_STATUS.md).
 
-1. **Skill buttons and a dodge.** The in-game panel shows a large attack button
-   with smaller skill buttons arranged around it. The first skill is a dodge
-   roll that passes through enemy telegraphs.
-2. **Loot drops with rarity.** Hollows drop items framed in the five tier
-   colors above.
-3. **A second enemy type** from the roster below, to prove enemy data reuse.
+- **Done:** the skill button cluster around **ATTACK**. Its first skill is a
+  dodge.
+- **Next:** the Warden's starter abilities, which fill the rest of the cluster.
+- **Parked until Milestone 4:** loot drops with rarity. The charter's ladder
+  adds a sixth tier, **Mythic**, above Legendary. The sheet shows no color for
+  it; one will be chosen when loot resumes.
 
-Later, roughly in order of how much they depend on the above:
+Further elements of the sheet:
 
 - **HUD:**
   - a portrait and level next to the health bar;
@@ -90,14 +92,9 @@ Later, roughly in order of how much they depend on the above:
   - a minimap in the top-right corner.
 - **Enemies:** Skeleton Warrior, Ghoul, Dark Cultist, Fallen Knight, Demon, and
   a boss, the Ashen Lord. The current Hollow is a placeholder.
-- **Playable classes:**
-
-  | Class | Concept |
-  |---|---|
-  | Warrior | Balanced, durable, close combat |
-  | Rogue | Fast, agile, high critical chance |
-  | Mage | Powerful spells, area control |
-  | Barbarian | High damage, berserker abilities |
+- **Playable classes:** the sheet shows a Warrior, Rogue, Mage and Barbarian.
+  The charter's roster supersedes them: Warden, Reaver, Hexbinder,
+  Dreadhunter, Reliquary and Gravecaller, starting with the Warden.
 
 - **Screens:** character (stats: health, attack, defense, critical chance,
   critical damage), inventory (gold and a premium currency), quest and mission
