@@ -51,7 +51,7 @@ func _update_level(profile: Node) -> void:
 	var bar := %XpBar as ProgressBar
 	bar.max_value = profile.xp_to_next(profile.level)
 	bar.value = profile.xp
-	var points: int = profile.points_available(profile.HERO_CLASS)
+	var points: int = profile.points_available(profile.hero_class)
 	(%LevelText as Label).text = "Level %d" % profile.level + ("  ·  %d to spend" % points if points > 0 else "")
 
 

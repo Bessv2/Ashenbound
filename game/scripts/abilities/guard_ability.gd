@@ -18,10 +18,22 @@ var _guard_left: float = 0.0
 var _countered: bool = false
 
 
+var _base_duration: float = 0.0
+
+
 func _ready() -> void:
+	_base_duration = duration
 	health.hit.connect(_on_hit)
 	if visual:
 		visual.hide()
+
+
+## Skills: Shield Wall (GUARD_DURATION_MS) and Retribution
+## (COUNTER_DAMAGE_PCT).
+func apply_stats(stats: CharacterStats, damage_scale: float) -> void:
+	duration = _base_duration + stats.value(SkillStats.GUARD_DURATION_MS) / 1000.0
+	if counter:
+		counter.damage_scale = damage_scale * (1.0 + stats.value(SkillStats.COUNTER_DAMAGE_PCT) / 100.0)
 
 
 func _physics_process(delta: float) -> void:

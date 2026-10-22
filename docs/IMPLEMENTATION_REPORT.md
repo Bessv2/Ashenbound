@@ -1163,3 +1163,78 @@ Commands run:
 Not tested:
 - On a phone (tab size on small screens).
 ```
+
+## 28. The Reaver, second playable class (branch `feature/reaver`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: roster (charter 13.9 steps 2 and 3: combat abstraction review, then a second class)
+Status: Validated, verified in runtime (desktop software Vulkan); not verified on device
+
+Changes:
+- Abstraction review, driven by the second class: each Ability applies its
+  own skill stats (apply_stats); CharacterStats no longer names Warden nodes.
+  Burning takes an effect name and colour (a bleed is not a burn).
+- Reaver scene (KayKit Rogue, CC0), Twin Slash, faster dodge, 85 health.
+- VeilRendAbility (dash through enemies, unhurt; cut and mark on the path),
+  Marked, BleedAbility; Fan of Blades reuses CleaveAbility with its own data.
+- Reaver tree playable. Profile.hero_class (saved); Main swaps the hero;
+  the skill screen opens on the played class and offers "Play …".
+- docs/characters/reaver.md.
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 245 passed, 0 failed (8 new in test_reaver.gd; the refactor kept
+  every Warden test green); probes that keep the enemy layer during the dash
+  or skip the hero swap fail the matching tests
+- Command: the Reaver in the crypt rendered under Xvfb
+  Exit code: 0
+  Result: Veil Rend through two skeletons: 14 each, both marked
+
+Not tested:
+- On a phone: dash feel, the mark's readability.
+- Balance against the Warden in full runs.
+```
+
+## 29. Fix: exported builds lost text lists (owner playtest, 2026-10-22)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: bug fix (owner's web playtest: "I can't open doors, enemies aren't
+moving, XP is not coming up when I kill one of the test dummies")
+Status: Validated, verified in runtime (web build in headless Chromium)
+
+Cause:
+- Godot 4.7.2's export-time conversion of text resources to binary wrote every
+  PackedStringArray empty. Wave spawn markers were lost, so the Ossuary's
+  enemies never spawned ("no spawn marker named ''"), the room could never be
+  cleared and its exit stayed shut. Skill branch names and the Warden's
+  hidden model parts were lost too. Desktop and the tests read the text files
+  directly, so they never saw it. A plain binary save/load keeps the arrays;
+  only the export converter drops them.
+- XP from the training targets: by design they give none (they respawn
+  forever); XP comes from the crypt's enemies.
+
+Changes:
+- project.godot: editor/export/convert_text_resources_to_binary=false (also
+  fixes the Android export, which uses the same converter).
+- tools/check_export.gd, run by tools/export-web.sh: fails the export when the
+  markers, branch names or hidden parts come out empty.
+
+Commands run:
+- Command: godot --main-pack build/web/index.pck --script (probe)
+  Result: before: markers=[], branches=[], hidden=[]; after: all present
+- Command: tools/export-web.sh with the old setting, then the new one
+  Exit code: 1 ("export check FAILED: …"), then 0
+- Command: the web build in headless Chromium, walking north with the keyboard
+  Result: before: three "no spawn marker" errors, an empty Ossuary; after:
+  skeletons rise, chase and attack; no errors
+- Command: tools/test.sh
+  Exit code: 0; 245 passed
+
+Not tested:
+- The Android APK on a phone (same setting; no device).
+```

@@ -5,7 +5,8 @@ all 6 classes". The charter (section 13) gives every class three
 specialization branches. This document defines the progression system and
 the first three trees.
 
-**Status:** the Warden's tree is playable. The other five classes' trees
+**Status:** the Warden's and the Reaver's trees are playable
+([characters/reaver.md](characters/reaver.md)). The other four classes' trees
 (all six of the charter's roster) are complete data, shown in the skill
 screen as previews: their nodes act on
 their own abilities, which arrive with those classes (charter 13.9: a second
@@ -52,15 +53,15 @@ Numbers are first-pass tuning.
 | | Ember Haste | 3 | +4% cooldown reduction | Kindling |
 | | Ashen Stride | 3 | +3% move speed | Ember Haste |
 
-### Reaver (preview)
+### Reaver (playable)
 
 Branches from charter 13.2: **Bloodletting** (bleeds, sustained damage),
 **Shadowstep** (mobility, flank attacks), **Executioner** (marks, finishers).
 Nodes: Open Veins, Hemorrhage, Crimson Thirst, Deep Cuts, Exsanguinate;
 Light Feet, Phantom Step, Flanker, Smoke Veil, Veil Rend Mastery; Mark for
 Death, Coup de Grâce, Cold Focus, Relentless, Final Verdict. Stat nodes (damage,
-crits, move speed, attack speed) are real; ability nodes name the Reaver's
-abilities.
+crits, move speed, attack speed) and ability nodes (bleed, Veil Rend, the
+mark, the dash cooldown) all act.
 
 ### Hexbinder (preview)
 

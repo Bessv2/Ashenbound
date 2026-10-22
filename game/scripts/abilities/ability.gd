@@ -65,6 +65,14 @@ func facing() -> Vector3:
 	return Vector3.ZERO
 
 
+## Takes the hero's final numbers (CharacterStats calls it after every
+## recalculation): `stats` for skill-only stats that change this ability, and
+## `damage_scale` (weapon and damage %) for its strikes. Each ability knows its
+## own skill stats, so a new class needs no change in CharacterStats.
+func apply_stats(_stats: CharacterStats, _damage_scale: float) -> void:
+	pass
+
+
 ## Ends whatever is still playing out. The cooldown keeps running.
 func cancel() -> void:
 	pass

@@ -1,7 +1,7 @@
 class_name CharacterStats
 extends Node
-## The hero's final numbers: base values plus everything equipped (and, later,
-## the skill tree), pushed into the combat nodes that use them. Combat code
+## The hero's final numbers: base values plus everything equipped and the
+## learned skills, pushed into the combat nodes that use them. Combat code
 ## reads only those nodes; equipping never changes a shared resource.
 ##
 ## How each stat acts (docs/LOOT.md):
@@ -35,21 +35,10 @@ var final: Dictionary[String, int] = {}
 var _equipment: Equipment
 var _profile: Node
 var _base_max_health: int = 0
-## Ability values before skills: [Guard duration, Brand damage, Brand ticks].
-var _base_guard_duration: float = 0.0
-var _base_brand_damage: int = 0
-var _base_brand_ticks: int = 0
 
 
 func _ready() -> void:
 	_base_max_health = player.health.max_health
-	var guard := player.get_node_or_null(^"Guard") as GuardAbility
-	if guard:
-		_base_guard_duration = guard.duration
-	var brand := player.get_node_or_null(^"Brand") as BrandAbility
-	if brand:
-		_base_brand_damage = brand.damage_per_tick
-		_base_brand_ticks = brand.tick_count
 	_profile = get_node_or_null(^"/root/Profile")
 	if _profile and skill_tree:
 		_profile.changed.connect(_take_skills)
@@ -124,20 +113,10 @@ func _apply() -> void:
 		health.current = clampi(health.max_health - missing, 1, health.max_health)
 
 
-## Skill-only stats: each changes one of the Warden's abilities.
+## Skill-only stats: each ability applies the ones that change it.
 func _apply_skills(damage_scale: float) -> void:
-	var cleave := player.get_node_or_null(^"Cleave") as CleaveAbility
-	if cleave and cleave.attack:
-		cleave.attack.damage_scale = damage_scale * (1.0 + value(SkillStats.CLEAVE_DAMAGE_PCT) / 100.0)
-	var guard := player.get_node_or_null(^"Guard") as GuardAbility
-	if guard:
-		guard.duration = _base_guard_duration + value(SkillStats.GUARD_DURATION_MS) / 1000.0
-		if guard.counter:
-			guard.counter.damage_scale = damage_scale * (1.0 + value(SkillStats.COUNTER_DAMAGE_PCT) / 100.0)
-	var brand := player.get_node_or_null(^"Brand") as BrandAbility
-	if brand:
-		brand.damage_per_tick = _base_brand_damage + value(SkillStats.BRAND_TICK_DAMAGE)
-		brand.tick_count = _base_brand_ticks + value(SkillStats.BRAND_TICKS)
+	for ability in player.abilities:
+		ability.apply_stats(self, damage_scale)
 
 
 ## Every MeleeAttack the hero owns (basic attack, Cleave, Guard's counter).

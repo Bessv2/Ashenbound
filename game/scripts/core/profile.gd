@@ -22,7 +22,7 @@ signal offline_ready
 ## 3 added crypt tiers; older saves load with tier 1 open.
 const SAVE_VERSION := 3
 const MAX_LEVEL := 30
-## The class the player plays (only the Warden so far).
+## The class a new profile plays.
 const HERO_CLASS := "warden"
 const DEFAULT_SAVE_PATH := "user://profile.json"
 ## Run ids remembered against double payment (the most recent ones).
@@ -45,6 +45,8 @@ var skill_ranks: Dictionary[String, Dictionary] = {}
 var tier_unlocked: int = 1
 ## The tier the next run is played at.
 var tier: int = 1
+## The class the player plays (its id, as in the skill trees).
+var hero_class: String = HERO_CLASS
 ## The highest crypt tier cleared (0 when none): what time away farms.
 var tier_cleared: int = 0
 ## When the profile was last saved (device clock, unix seconds); 0 = never.
@@ -100,6 +102,7 @@ func to_dict() -> Dictionary:
 		"tier_unlocked": tier_unlocked,
 		"tier": tier,
 		"tier_cleared": tier_cleared,
+		"hero_class": hero_class,
 		"last_seen": last_seen,
 		"offline_seconds": offline_seconds,
 	}
@@ -177,6 +180,7 @@ func _apply(data: Dictionary) -> bool:
 	# Saves from before tier_cleared: the tier below the highest one open.
 	tier_cleared = clampi(int(data.get("tier_cleared", tier_unlocked - 1)), tier_unlocked - 1, Difficulty.MAX_TIER)
 	last_seen = maxi(int(data.get("last_seen", 0)), 0)
+	hero_class = str(data.get("hero_class", HERO_CLASS))
 	offline_seconds = clampi(int(data.get("offline_seconds", 0)), 0, OfflineRewards.CAP_SECONDS)
 	skill_ranks.clear()
 	if data.get("skills") is Dictionary:
@@ -200,6 +204,7 @@ func _apply_empty() -> void:
 	tier_unlocked = 1
 	tier = 1
 	tier_cleared = 0
+	hero_class = HERO_CLASS
 	last_seen = 0
 	offline_seconds = 0
 	ash = 0
@@ -319,6 +324,13 @@ func claim_offline() -> Dictionary:
 	return reward
 
 
+## Plays `class_id` from the next run on (Main checks that it is playable).
+func select_class(class_id: String) -> void:
+	if class_id != hero_class:
+		hero_class = class_id
+		changed.emit()
+
+
 ## Chooses the tier of the next run, within the open tiers. Returns the tier.
 func select_tier(wanted: int) -> int:
 	var chosen := clampi(wanted, 1, tier_unlocked)
@@ -419,6 +431,7 @@ func reset() -> void:
 	tier_unlocked = 1
 	tier = 1
 	tier_cleared = 0
+	hero_class = HERO_CLASS
 	last_seen = 0
 	offline_seconds = 0
 	ash = 0

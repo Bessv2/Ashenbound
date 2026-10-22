@@ -18,6 +18,11 @@ func facing() -> Vector3:
 	return attack.direction if attack.is_busy() else Vector3.ZERO
 
 
+## Skill: Heavy Swings (CLEAVE_DAMAGE_PCT) on top of the general damage.
+func apply_stats(stats: CharacterStats, damage_scale: float) -> void:
+	attack.damage_scale = damage_scale * (1.0 + stats.value(SkillStats.CLEAVE_DAMAGE_PCT) / 100.0)
+
+
 func cancel() -> void:
 	attack.cancel()
 

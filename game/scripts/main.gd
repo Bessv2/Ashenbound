@@ -3,6 +3,13 @@ extends Node3D
 ## the UI to game state; the UI only emits requests and never pauses the tree
 ## or restarts the game itself.
 
+## The playable classes: class id → hero scene. The scene's "Player" is the
+## Warden; another chosen class replaces it when the run starts.
+const HERO_SCENES := {
+	"warden": "res://scenes/player/warden.tscn",
+	"reaver": "res://scenes/player/reaver.tscn",
+}
+
 ## The level played, instanced as the child "Level" when the scene starts.
 @export var level_scene: PackedScene
 ## When false, no encounter starts by itself: a quiet level for practice and
@@ -30,6 +37,7 @@ var _loot_found: int = 0
 
 
 func _ready() -> void:
+	_use_chosen_hero()
 	_load_level()
 	_hud.pause_requested.connect(_pause_controller.set_paused.bind(true))
 	_pause_menu.resume_requested.connect(_pause_controller.set_paused.bind(false))
@@ -39,6 +47,7 @@ func _ready() -> void:
 	_inventory.close_requested.connect(_pause_controller.set_paused.bind(false))
 	_hud.skills_requested.connect(open_skills)
 	_skills.close_requested.connect(_pause_controller.set_paused.bind(false))
+	_skills.class_chosen.connect(play_class)
 	_offline.close_requested.connect(_pause_controller.set_paused.bind(false))
 	# A method, not a lambda: the connection to the autoload goes when Main goes.
 	Profile.offline_ready.connect(open_offline_rewards)
@@ -56,6 +65,33 @@ func _ready() -> void:
 	open_offline_rewards()
 	if difficulty.tier > 1:
 		_hud.show_toast("Tier %d: the dead grow stronger" % difficulty.tier, Color("#D9A44C"))
+
+
+## The class being played: Profile's choice when it is playable, else the
+## Warden.
+static func hero_class_of(profile: Node) -> String:
+	return profile.hero_class if HERO_SCENES.has(profile.hero_class) else "warden"
+
+
+## Replaces the scene's Warden with the chosen class's hero, in the same
+## place and under the same name, before anything uses it.
+func _use_chosen_hero() -> void:
+	var chosen: String = hero_class_of(Profile)
+	if _player.scene_file_path == HERO_SCENES[chosen]:
+		return
+	var hero := (load(HERO_SCENES[chosen]) as PackedScene).instantiate() as PlayerController
+	hero.camera = _player.camera
+	hero.transform = _player.transform
+	var index := _player.get_index()
+	remove_child(_player)
+	_player.free()
+	hero.name = "Player"
+	add_child(hero)
+	move_child(hero, index)
+	_player = hero
+	_camera_rig.target = hero
+	_camera_rig.snap_to_target()
+	_run.track_player(hero.health)
 
 
 ## Shakes the camera when the hero is hurt, lands a critical hit or kills an
@@ -95,6 +131,14 @@ func open_offline_rewards() -> void:
 		return
 	_offline.open()
 	_pause_controller.set_paused(true)
+
+
+## Switches to `class_id` (when playable) and starts a new run with it.
+func play_class(class_id: String) -> void:
+	if not HERO_SCENES.has(class_id):
+		return
+	Profile.select_class(class_id)
+	restart()
 
 
 ## Opens the skill trees; the game waits while they are open.
