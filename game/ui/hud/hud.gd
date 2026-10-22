@@ -197,6 +197,9 @@ func track_abilities(abilities: Array[Ability]) -> void:
 			button.label = ability.display_name
 			button.cooldown = ability.cooldown_fraction
 			button.set_accent(ability.hud_color)
+			button.badge_source = ability.badge_text if ability.badge_text() != "" else Callable()
+			if not button.badge_source.is_valid():
+				button.badge = ""
 			button.queue_redraw()
 
 

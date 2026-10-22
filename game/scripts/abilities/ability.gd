@@ -75,6 +75,11 @@ func apply_stats(_stats: CharacterStats, _damage_scale: float) -> void:
 	pass
 
 
+## A short count for the HUD button's badge (souls held), or "" for none.
+func badge_text() -> String:
+	return ""
+
+
 ## Ends whatever is still playing out. The cooldown keeps running.
 func cancel() -> void:
 	pass

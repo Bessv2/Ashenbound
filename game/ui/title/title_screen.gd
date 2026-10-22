@@ -12,8 +12,8 @@ const ROLES := {
 	"reaver": "Twin blades. Strikes, marks, vanishes.",
 	"hexbinder": "Curses that bloom, then burst.",
 	"dreadhunter": "Bolt, snare and raven. Patient death.",
-	"reliquary": "Hollow light. Coming later.",
-	"gravecaller": "The unburied answer. Coming later.",
+	"reliquary": "Hollow light that heals and judges.",
+	"gravecaller": "The dead rise and fight for you.",
 }
 const ACCENTS := {
 	"warden": Color(1.0, 0.55, 0.25),

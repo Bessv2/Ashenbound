@@ -1436,3 +1436,54 @@ Not tested:
 Recommended next task:
 - The Reliquary and the Gravecaller, so all six classes are playable.
 ```
+
+## 35. The Reliquary and the Gravecaller: the full roster (branch `feature/full-roster`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone / feature: six-class roster (charter v2.0 §5.5, §5.6); owner request
+2026-10-22: "a fully playable test version of the game with mechanics we
+talked about by today"
+Status: Validated, verified in runtime (desktop software Vulkan); not verified on device
+
+What changed:
+- Reliquary (docs/characters/reliquary.md):
+  - the Knight with a sword and shield, 110 health, a 9-damage flail;
+  - Last Benediction: a capped heal plus damage;
+  - Hallowed Lantern: a pulsing zone;
+  - Martyr's Judgment: a health-cost smite. It is refused at 20% health or
+    less and never takes the last point;
+  - MartyrZeal: below half health, more damage (MeleeAttack.bonus_scale).
+- Gravecaller (docs/characters/gravecaller.md):
+  - the Mage with book and wand, 85 health, a soul bolt;
+  - Raise the Forsaken: Minion skeletons with a defined count, lifetime,
+    targets, collision and cleanup;
+  - Wraith Swarm: hits plus Marked;
+  - Soul Harvest: souls from nearby deaths, shown as a badge on the HUD
+    button (Ability.badge_text, TouchActionButton.badge_source).
+- Both trees are playable, and every node acts. Phantom Swarm now uses
+  `wraith_count`, so it no longer shares Mass Grave's key.
+- All six classes can be chosen on the title screen. Tests that relied on a
+  preview tree now build a non-playable tree themselves.
+
+Commands and tests:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 308 passed, 0 failed (7 new in test_reliquary.gd, 9 in
+  test_gravecaller.gd)
+- Probes: I removed Judgment's health floor and last-point rule, the
+  minions' lifetime, and the soul gathering, one at a time. The matching
+  tests failed each time, then passed once the code was restored.
+- Command: both classes rendered in the crypt under Xvfb
+  Result:
+  - Reliquary: the lantern's ring, Judgment's 28, and health 99/110 after
+    the cost;
+  - Gravecaller: teal skeletons fighting, wraith hits of 9 with marks, and
+    the HARVEST badge.
+
+Not tested:
+- On a phone: the readability of minions against enemies, and the frame
+  rate with summons out.
+- Balance across the six classes in full runs.
+```

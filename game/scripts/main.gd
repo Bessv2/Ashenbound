@@ -10,6 +10,8 @@ const HERO_SCENES := {
 	"reaver": "res://scenes/player/reaver.tscn",
 	"hexbinder": "res://scenes/player/hexbinder.tscn",
 	"dreadhunter": "res://scenes/player/dreadhunter.tscn",
+	"reliquary": "res://scenes/player/reliquary.tscn",
+	"gravecaller": "res://scenes/player/gravecaller.tscn",
 }
 
 const TITLE_SCENE := "res://scenes/title.tscn"

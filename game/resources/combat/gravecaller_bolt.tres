@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ProjectileAttackData" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/projectile_attack_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+damage = 7
+reach = 12.0
+arc_degrees = 30.0
+windup = 0.12
+recovery = 0.32
+movement_multiplier = 0.5
+aim_assist_radius = 11.0
+speed = 20.0
+radius = 0.25
+height = 1.1

@@ -464,7 +464,15 @@ Milestone 3, step 1 ([dungeons/ashen_crypt.md](dungeons/ashen_crypt.md)).
   `DeadfallAbility` sets a `DeadfallTrap` in the level (holds with `Slowed`,
   then erupts once); `ChargedShotAbility` (a busy draw, then a line hit
   clipped by a world-layer ray); `RavenAbility` calls one `Raven`, a
-  `top_level` child of the hero that strikes on a timer.
+  `top_level` child of the hero that strikes on a timer. Reliquary parts:
+  `BenedictionAbility` (a capped heal), `LanternAbility` with a
+  `HallowedLantern` in the level, `JudgmentAbility` (a health cost paid
+  directly, with safeguards), `MartyrZeal` (sets `MeleeAttack.bonus_scale`
+  below half health). Gravecaller parts: `RaiseForsakenAbility` raises
+  `Minion`s (`scenes/player/forsaken_skeleton.tscn`), `WraithSwarmAbility`
+  (instant hits and `Marked`), and `SoulHarvestAbility`, which watches nearby
+  enemies' Health for deaths. Its soul count shows on the HUD button through
+  `Ability.badge_text()` and `TouchActionButton.badge_source`.
 - **`Forge`** (`scripts/items/forge.gd`): salvage values, upgrade prices and
   the +10% per rank rule ([LOOT.md](LOOT.md#gold-salvage-and-upgrades)).
   `Profile.salvage()` and `Profile.upgrade_item()` apply them; an item's
@@ -779,7 +787,7 @@ Design: [SKILL_TREES.md](SKILL_TREES.md). Code in `game/scripts/progression/`.
 - `SkillTree` (Resource, `resources/skills/<class>_tree.tres`): three branches
   of `SkillNode`s; each node adds `per_rank` stats and may require another node
   of its branch. `learn_problem()` says why a rank cannot be learned. Trees of
-  classes that are not playable yet (the Reliquary and the Gravecaller) are read-only.
+  classes that are not playable are read-only (all six are playable now; `SkillTree.playable` keeps the rule for future classes).
 - Ranks feed `CharacterStats.bonus` (the Warden's `skill_tree`), so a skill
   works exactly like gear. `SkillStats` adds keys that change one ability:
   Cleave damage, Guard duration, Guard's counter damage, Brand's damage and

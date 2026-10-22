@@ -1,0 +1,84 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/minion.gd" id="1_minion"]
+[ext_resource type="Resource" path="res://resources/player/forsaken_movement.tres" id="2_movement"]
+[ext_resource type="Script" path="res://scripts/combat/health.gd" id="4_health"]
+[ext_resource type="Script" path="res://scripts/combat/hit_feedback.gd" id="5_feedback"]
+[ext_resource type="Material" path="res://resources/materials/hit_flash.tres" id="6_flash"]
+[ext_resource type="Script" path="res://scripts/combat/melee_attack.gd" id="7_attack"]
+[ext_resource type="Resource" path="res://resources/combat/forsaken_claw.tres" id="8_attack_data"]
+[ext_resource type="Material" path="res://resources/materials/ghoul_eyes.tres" id="12_eyes"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/characters/Skeleton_Warrior.glb" id="15_model"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/weapons/Skeleton_Blade.gltf" id="16_blade"]
+[ext_resource type="Script" path="res://scripts/presentation/model_dressing.gd" id="17_dressing"]
+[ext_resource type="Script" path="res://scripts/presentation/character_animator.gd" id="18_animator"]
+[ext_resource type="Material" path="res://resources/materials/forsaken_model.tres" id="19_material"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.35
+height = 1.6
+
+[node name="ForsakenSkeleton" type="CharacterBody3D" node_paths=PackedStringArray("attack", "health", "visual")]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1_minion")
+movement = ExtResource("2_movement")
+attack = NodePath("Claw")
+health = NodePath("Health")
+visual = NodePath("Visual")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("4_health")
+max_health = 40
+
+[node name="HitFeedback" type="Node" parent="." node_paths=PackedStringArray("health", "visual")]
+script = ExtResource("5_feedback")
+health = NodePath("../Health")
+visual = NodePath("../Visual")
+flash_material = ExtResource("6_flash")
+number_height = 2.0
+death_burst = false
+
+[node name="Claw" type="Node" parent="."]
+script = ExtResource("7_attack")
+data = ExtResource("8_attack_data")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Model" parent="Visual" instance=ExtResource("15_model")]
+transform = Transform3D(-0.72, 0, 0, 0, 0.72, 0, 0, 0, -0.72, 0, 0, 0)
+
+[node name="RightHand" type="BoneAttachment3D" parent="Visual/Model/Rig/Skeleton3D"]
+bone_name = "handslot.r"
+
+[node name="Blade" parent="Visual/Model/Rig/Skeleton3D/RightHand" instance=ExtResource("16_blade")]
+
+[node name="SoulLight" type="OmniLight3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+light_color = Color(0.35, 1, 0.8, 1)
+light_energy = 0.8
+omni_range = 3.0
+
+[node name="ModelDressing" type="Node" parent="." node_paths=PackedStringArray("model")]
+script = ExtResource("17_dressing")
+model = NodePath("../Visual/Model")
+material = ExtResource("19_material")
+part_materials = Dictionary[String, Material]({
+"Skeleton_Warrior_Eyes": ExtResource("12_eyes")
+})
+
+[node name="Animator" type="Node" parent="." node_paths=PackedStringArray("body", "animation_player", "health", "attacks")]
+script = ExtResource("18_animator")
+body = NodePath("..")
+animation_player = NodePath("../Visual/Model/AnimationPlayer")
+health = NodePath("../Health")
+attacks = [NodePath("../Claw")]
+attack_animations = Array[StringName]([&"1H_Melee_Attack_Chop"])
+idle_animation = &"Idle_Combat"
+run_animation = &"Running_B"
+death_animation = &"Death_C_Skeletons"
+run_reference_speed = 4.6
