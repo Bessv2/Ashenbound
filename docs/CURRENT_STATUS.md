@@ -42,7 +42,7 @@ Status labels follow the charter:
 | 2: Combat foundation | In progress | See below. |
 | 3: First dungeon | Validated, verified in runtime | Spec: [dungeons/ashen_crypt.md](dungeons/ashen_crypt.md). All six steps done; the gate (three runs in a row, clean, paid once each) passes in automated tests. **Device check open.** PRs #15 to #20, stacked. |
 | 4: First loot loop | Validated, verified in runtime | Design: [LOOT.md](LOOT.md). All five steps done; the gate (restart restores bag, gear and Ash; stats verified in combat) passes in automated tests. **Device check open.** |
-| Progression (XP, levels, skill trees) | Validated, verified in runtime | Design: [SKILL_TREES.md](SKILL_TREES.md). Warden tree playable; Reaver and Hexbinder trees as previews. PR #24. |
+| Progression (XP, levels, skill trees) | Validated, verified in runtime | Design: [SKILL_TREES.md](SKILL_TREES.md). Warden tree playable; the other five classes' trees as previews (PR #24 and the six-trees PR). |
 | Visual pass | Validated, verified in runtime | Hit sparks, slash arcs, death bursts, camera shake with an off switch. PR stacked on #24. |
 | Crypt tiers | Validated, verified in runtime | [dungeons/tiers.md](dungeons/tiers.md): ten tiers, unlocked by clears, scaling enemies and rewards. PR stacked on the visual pass. |
 | Gold, salvage and upgrades | Validated, verified in runtime | [LOOT.md](LOOT.md#gold-salvage-and-upgrades). PR stacked on the crypt tiers. |

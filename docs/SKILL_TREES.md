@@ -5,8 +5,9 @@ all 6 classes". The charter (section 13) gives every class three
 specialization branches. This document defines the progression system and
 the first three trees.
 
-**Status:** the Warden's tree is playable. The Reaver's and Hexbinder's trees
-are complete data, shown in the skill screen as previews: their nodes act on
+**Status:** the Warden's tree is playable. The other five classes' trees
+(all six of the charter's roster) are complete data, shown in the skill
+screen as previews: their nodes act on
 their own abilities, which arrive with those classes (charter 13.9: a second
 class only after the first one's dungeon works, which it now does).
 Numbers are first-pass tuning.
@@ -68,10 +69,33 @@ Withering Word, Spreading Blight, Hex Mastery, Frailty, Black Testament
 Mastery; Soul Leech, Dark Pact, Hungering Souls, Spirit Ward, Reaper's Tithe;
 Gathering Storm, Volatile Hex, Doom Chain, Ruin, Cataclysm Mastery.
 
-### Dreadhunter, Reliquary, Gravecaller
+### Dreadhunter (preview)
 
-Branch names are set by the charter (13.4 to 13.6); their trees are written
-when each class is scheduled.
+Branches from charter 13.4: **Precision** (charged shots, weak points),
+**Trapper** (snares, Deadfall), **Beastcraft** (a companion, if scope and
+performance permit). Nodes: Steady Aim, Drawn Shaft, Weak Point, Piercing
+Volley, Deadeye; Snare Craft, Fleet Hunter, Bramble Spikes, Deadfall Mastery,
+Killing Ground; Hunter's Bond, Thick Hide, Pack Instinct, Wild Heart, Savage
+Bite.
+
+### Reliquary (preview)
+
+Branches from charter 13.5: **Atonement** (sustain), **Radiance** (spectral
+area damage), **Martyrdom** (power below half health). Nodes: Penitence,
+Mercy, Hallowed Plate, Benediction Mastery, Absolution; Pale Flame, Lantern
+Light, Sanctify, Judgment, Hollow Halo; Blood Oath, Unyielding Faith, Scourge,
+Stigmata, Final Vigil. Final Vigil carries the charter's safeguard: health
+costs can never take the last point. Last Benediction's healing stays capped
+(no infinite sustain).
+
+### Gravecaller (preview)
+
+Branches from charter 13.6: **Bone Legion**, **Wraiths**, **Soul Harvest**.
+Nodes: Grave Discipline, Shieldbearers, Mass Grave, Phalanx, Forsaken Host;
+Restless Dead, Chill Touch, Wailing, Phantom Swarm, Dread Aura; Reaping, Bone
+Ward, Soul Well, Hungry Grave, Lich Veil. Summon count nodes add at most +2
+skeletons and +2 wraiths in total, inside the summon budget the class spec
+will set.
 
 ## Screens
 

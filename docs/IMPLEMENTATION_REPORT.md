@@ -1137,3 +1137,29 @@ Not tested:
 - On a phone: background/resume banking (NOTIFICATION_APPLICATION_RESUMED).
 - Clock tampering beyond a backwards clock (accepted until Milestone 5).
 ```
+
+## 27. Skill trees for the whole roster (branch `feature/six-trees`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: progression (owner request 2026-10-22: "a skill tree for the first 3 classes or all 6 classes")
+Status: Validated, verified in runtime (desktop software Vulkan)
+
+Changes:
+- Dreadhunter, Reliquary and Gravecaller trees (15 nodes in the charter's 3
+  branches each) as previews; class-specific stat keys added to SkillStats.
+- The skill screen has six class tabs (narrower).
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 237 passed, 0 failed; every tree validates (known stats, same-branch
+  requirements), 3 × 5 nodes, only the Warden's playable
+- Command: the skill screen rendered under Xvfb
+  Exit code: 0
+  Result: six tabs fit at 1280×720; the Gravecaller tree and a node card shown
+
+Not tested:
+- On a phone (tab size on small screens).
+```
