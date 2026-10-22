@@ -19,6 +19,7 @@ var level: Level
 @onready var _death_screen: DeathScreen = $DeathScreen
 @onready var _run: RunController = $Run
 @onready var _loot: LootDropper = $Loot
+@onready var _inventory: InventoryPanel = $Inventory
 
 ## Items picked up this run.
 var _loot_found: int = 0
@@ -28,8 +29,10 @@ func _ready() -> void:
 	_load_level()
 	_hud.pause_requested.connect(_pause_controller.set_paused.bind(true))
 	_pause_menu.resume_requested.connect(_pause_controller.set_paused.bind(false))
-	_pause_controller.paused_changed.connect(_pause_menu.set_open)
+	_pause_controller.paused_changed.connect(_on_paused_changed)
 	_pause_menu.set_open(_pause_controller.is_paused())
+	_hud.inventory_requested.connect(open_inventory)
+	_inventory.close_requested.connect(_pause_controller.set_paused.bind(false))
 	_hud.track_health(_player.health)
 	_hud.track_dodge(_player.dodge)
 	_hud.track_abilities(_player.abilities)
@@ -38,6 +41,21 @@ func _ready() -> void:
 	_run.kill_counted.connect(_loot.on_enemy_killed)
 	_loot.collected.connect(_on_loot_collected)
 	_death_screen.restart_requested.connect(restart)
+
+
+## Opens the bag; the game waits while it is open.
+func open_inventory() -> void:
+	if _run.is_over():
+		return
+	_inventory.open()
+	_pause_controller.set_paused(true)
+
+
+func _on_paused_changed(paused: bool) -> void:
+	# The bag pauses the game too; the pause menu only shows without it.
+	_pause_menu.set_open(paused and not _inventory.visible)
+	if not paused:
+		_inventory.close()
 
 
 ## Starts the scene over from scratch.

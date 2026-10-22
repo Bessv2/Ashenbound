@@ -655,3 +655,17 @@ Design: [LOOT.md](LOOT.md). Code in `game/scripts/items/`.
   name. Walking within 1.3 m picks one up; a full bag leaves it. At victory
   the dropper gathers what is left, and the summary counts the items found.
   The HUD shows a short message for each pickup.
+- **Inventory screen (step 4).** `InventoryPanel` (CanvasLayer "Inventory" in
+  Main) shows the nine slots, the bag grid and the selected item's card: base
+  stats, affixes, and each stat's difference against what it would replace
+  (green better, red worse). Equip and Unequip go through `Profile`. Opening
+  it (the HUD's BAG button) pauses the game through `PauseController`; Main
+  keeps the pause menu hidden while it is open, and unpausing (Back, the
+  pause key) closes it.
+- **Saving (step 5).** `Profile` saves to `user://profile.json` at the end of
+  any frame in which something changed: Ash, the last 50 paid run ids, bag and
+  equipment, with a `version`. It writes a temporary file and moves it over
+  the old one, which becomes `profile.backup.json`. Loading tries the save,
+  then the backup; if neither reads, the game starts fresh and the broken file
+  is renamed `.broken-<time>`, never deleted. Items a save cannot read are left
+  out with a warning. Tests turn saving off (`save_path = ""`).

@@ -8,7 +8,7 @@ persistence works.
 **Gate (charter):** inventory and equipment restore after a restart, and stat
 changes are verified in combat.
 
-**Status:** design. Numbers are first-pass tuning. Decisions marked
+**Status:** built (all five steps). Numbers are first-pass tuning. Decisions marked
 **(owner)** are defaults chosen so work can continue; they are easy to change.
 
 The long-term target is the owner's: Diablo 4-style loot with Torchlight-like
