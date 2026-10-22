@@ -1,0 +1,149 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/ashen_lord.gd" id="1_controller"]
+[ext_resource type="Resource" path="res://resources/enemies/hollow_king_movement.tres" id="2_movement"]
+[ext_resource type="Resource" path="res://resources/enemies/hollow_king_behavior.tres" id="3_behavior"]
+[ext_resource type="Script" path="res://scripts/combat/health.gd" id="4_health"]
+[ext_resource type="Script" path="res://scripts/combat/hit_feedback.gd" id="5_feedback"]
+[ext_resource type="Material" path="res://resources/materials/hit_flash.tres" id="6_flash"]
+[ext_resource type="Script" path="res://scripts/combat/melee_attack.gd" id="7_attack"]
+[ext_resource type="Script" path="res://scripts/combat/ranged_attack.gd" id="8_ranged"]
+[ext_resource type="Resource" path="res://resources/enemies/hollow_king_soul_volley.tres" id="9_volley_data"]
+[ext_resource type="Script" path="res://scripts/combat/attack_telegraph.gd" id="10_telegraph"]
+[ext_resource type="PackedScene" path="res://scenes/combat/soul_bolt.tscn" id="11_bolt"]
+[ext_resource type="Material" path="res://resources/materials/skeleton_eyes.tres" id="12_eyes"]
+[ext_resource type="Material" path="res://resources/materials/telegraph.tres" id="14_telegraph"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/characters/Skeleton_Mage.glb" id="15_model"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/weapons/Skeleton_Staff.gltf" id="16_staff"]
+[ext_resource type="Script" path="res://scripts/presentation/model_dressing.gd" id="17_dressing"]
+[ext_resource type="Script" path="res://scripts/presentation/character_animator.gd" id="18_animator"]
+[ext_resource type="Resource" path="res://resources/enemies/hollow_king_grave_spikes.tres" id="19_spikes_data"]
+[ext_resource type="Resource" path="res://resources/enemies/hollow_king_soul_nova.tres" id="20_nova_data"]
+[ext_resource type="Script" path="res://scripts/combat/ring_attack.gd" id="21_ring_attack"]
+[ext_resource type="PackedScene" path="res://scenes/combat/soul_nova.tscn" id="22_ring"]
+[ext_resource type="Material" path="res://resources/materials/hollow_king_model.tres" id="23_model_material"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/ghoul.tscn" id="24_add"]
+[ext_resource type="Resource" path="res://resources/loot/ashen_lord_drops.tres" id="25_drops"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.7
+height = 3.0
+
+[node name="HollowKing" type="CharacterBody3D" node_paths=PackedStringArray("attack", "special_attack", "health", "visual", "navigation", "slam_attack", "animator")]
+collision_layer = 4
+collision_mask = 7
+script = ExtResource("1_controller")
+movement = ExtResource("2_movement")
+behavior = ExtResource("3_behavior")
+attack = NodePath("SoulVolley")
+special_attack = NodePath("SoulNova")
+health = NodePath("Health")
+visual = NodePath("Visual")
+navigation = NodePath("NavigationAgent")
+slam_attack = NodePath("GraveSpikes")
+slam_range = 3.6
+add_scene = ExtResource("24_add")
+summon_count = 4
+roar_animation = &"Spellcast_Summon"
+animator = NodePath("Animator")
+display_title = "THE HOLLOW KING"
+ash_value = 60
+champion_eligible = false
+drop_table = ExtResource("25_drops")
+xp_value = 600
+gold_value = 120
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("4_health")
+max_health = 700
+
+[node name="HitFeedback" type="Node" parent="." node_paths=PackedStringArray("health", "visual")]
+script = ExtResource("5_feedback")
+health = NodePath("../Health")
+visual = NodePath("../Visual")
+flash_material = ExtResource("6_flash")
+number_height = 3.6
+
+[node name="SoulVolley" type="Node" parent="."]
+script = ExtResource("8_ranged")
+data = ExtResource("9_volley_data")
+target_mask = 2
+projectile_scene = ExtResource("11_bolt")
+volley = 3
+
+[node name="GraveSpikes" type="Node" parent="."]
+script = ExtResource("7_attack")
+data = ExtResource("19_spikes_data")
+target_mask = 2
+
+[node name="SoulNova" type="Node" parent="."]
+script = ExtResource("21_ring_attack")
+data = ExtResource("20_nova_data")
+target_mask = 2
+ring_scene = ExtResource("22_ring")
+
+[node name="NavigationAgent" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.5
+path_height_offset = 0.5
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Model" parent="Visual" instance=ExtResource("15_model")]
+transform = Transform3D(-1.8, 0, 0, 0, 1.8, 0, 0, 0, -1.8, 0, 0, 0)
+
+[node name="RightHand" type="BoneAttachment3D" parent="Visual/Model/Rig/Skeleton3D"]
+bone_name = "handslot.r"
+
+[node name="Staff" parent="Visual/Model/Rig/Skeleton3D/RightHand" instance=ExtResource("16_staff")]
+
+[node name="SoulLight" type="OmniLight3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 0.5)
+light_color = Color(0.4, 0.9, 1, 1)
+light_energy = 2.0
+omni_range = 7.0
+
+[node name="VolleyTelegraph" type="MeshInstance3D" parent="Visual" node_paths=PackedStringArray("attack")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
+material_override = ExtResource("14_telegraph")
+script = ExtResource("10_telegraph")
+attack = NodePath("../../SoulVolley")
+
+[node name="SpikesTelegraph" type="MeshInstance3D" parent="Visual" node_paths=PackedStringArray("attack")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0)
+material_override = ExtResource("14_telegraph")
+script = ExtResource("10_telegraph")
+attack = NodePath("../../GraveSpikes")
+segments = 40
+
+[node name="NovaTelegraph" type="MeshInstance3D" parent="Visual" node_paths=PackedStringArray("attack")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+material_override = ExtResource("14_telegraph")
+script = ExtResource("10_telegraph")
+attack = NodePath("../../SoulNova")
+segments = 48
+
+[node name="ModelDressing" type="Node" parent="." node_paths=PackedStringArray("model")]
+script = ExtResource("17_dressing")
+model = NodePath("../Visual/Model")
+material = ExtResource("23_model_material")
+part_materials = Dictionary[String, Material]({
+"Skeleton_Mage_Eyes": ExtResource("12_eyes")
+})
+
+[node name="Animator" type="Node" parent="." node_paths=PackedStringArray("body", "enemy", "animation_player", "health", "attacks")]
+script = ExtResource("18_animator")
+body = NodePath("..")
+enemy = NodePath("..")
+animation_player = NodePath("../Visual/Model/AnimationPlayer")
+health = NodePath("../Health")
+attacks = [NodePath("../SoulVolley"), NodePath("../GraveSpikes"), NodePath("../SoulNova")]
+attack_animations = Array[StringName]([&"Spellcast_Shoot", &"Spellcast_Raise", &"Spellcast_Long"])
+idle_animation = &"Idle_Combat"
+run_animation = &"Walking_D_Skeletons"
+death_animation = &"Death_C_Skeletons"
+rise_animation = &"Skeletons_Awaken_Standing"
+run_reference_speed = 1.6

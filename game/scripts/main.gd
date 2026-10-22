@@ -16,6 +16,9 @@ const TITLE_SCENE := "res://scenes/title.tscn"
 
 ## The level played, instanced as the child "Level" when the scene starts.
 @export var level_scene: PackedScene
+## When true, the level is the dungeon chosen on the title screen
+## (Profile.dungeon) instead of `level_scene`. Tests turn it off.
+@export var use_chosen_dungeon: bool = true
 ## When false, no encounter starts by itself: a quiet level for practice and
 ## for tests. Encounters started by room triggers still start.
 @export var encounters_start_by_themselves: bool = true
@@ -190,6 +193,8 @@ func restart() -> void:
 
 
 func _load_level() -> void:
+	if use_chosen_dungeon:
+		level_scene = load(Dungeons.scene_path(Profile.dungeon))
 	if level_scene == null:
 		push_error("Main has no level to play.")
 		return

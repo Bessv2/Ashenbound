@@ -33,6 +33,8 @@ Status labels follow the charter:
 | 2026-10-22 | "Keep going, and dev as many milestones as you can. Up the gameplay loop, better visuals and start a skill tree for the first 3 classes or all 6 classes." |
 | 2026-10-22 | "Merge them all, keep going with the Hexbinder … make the visuals 100x better and let's start to put some life into the UI." Done in PRs #32 and #33, merged. |
 | 2026-10-22 | "Go ahead and keep building more of the gameplay." Next: champions and potions, then the Dreadhunter. |
+| 2026-10-22 | "Merge them and keep going with a second dungeon. You don't have to check in with me to merge them. I want a fully playable test version of the game with mechanics we talked about by today." |
+| 2026-10-22 | The charter was updated to v2.0 (`CLAUDE.md`) and reconciled with the repository. |
 | 2026-10-21 | **A browser build is a playtest preview** ([WEB_PREVIEW.md](WEB_PREVIEW.md)), not a platform change: Android stays the target. |
 
 ## Milestones
@@ -52,6 +54,7 @@ Status labels follow the charter:
 | Second class: Reaver | Validated, verified in runtime | [characters/reaver.md](characters/reaver.md): Twin Slash, Veil Rend, Fan of Blades, Hemorrhage; playable tree; class switch. |
 | Third class: Hexbinder | Validated, verified in runtime | [characters/hexbinder.md](characters/hexbinder.md): Hex Bolt, Black Testament, Grasp of the Grave, Unmake; playable tree. |
 | Visuals and living UI | Validated, verified in runtime | [UI.md](UI.md): fire, dust, grade, vignette, outlines, hit punch; health trail, banners, coloured buttons; title screen with class select. |
+| Second dungeon: the Forgotten Catacombs | Validated, verified in runtime | [dungeons/forgotten_catacombs.md](dungeons/forgotten_catacombs.md): opens after a crypt clear. Ghouls, three combat rooms, and the Hollow King (volley, spikes, nova, Ghoul adds); dungeon choice on the title screen. |
 | Fourth class: Dreadhunter | Validated, verified in runtime | [characters/dreadhunter.md](characters/dreadhunter.md): crossbow, Deadfall, Charged Shot, Carrion Raven; playable tree. |
 | Champions and health potions | Validated, verified in runtime | [CHAMPIONS.md](CHAMPIONS.md): ordinary enemies may rise as champions with affixes (Hasted, Stoneskin, Vampiric, Ember-wreathed, Vengeful) and a guaranteed Rare drop; three potions per run, refilled by kills. |
 | 5 to 7 | Not started | Offline rewards above are early Milestone 6 work. |
@@ -79,8 +82,9 @@ merged into `main`, apart from #6.
 
 | PR | Branch | State |
 |---|---|---|
-| #34 | `feature/champions` | Open draft: champions and health potions. |
-| (new) | `feature/dreadhunter` | Open draft, **stacked on #34**: the Dreadhunter. |
+| #34 | `feature/champions` | Merged: champions and health potions. |
+| #35 | `feature/dreadhunter` | The Dreadhunter; merged once its checks pass. |
+| (new) | `feature/second-dungeon` | The Forgotten Catacombs. |
 | #6 | `feature/loot` | Open draft, **obsolete**: the early loot work, superseded by Milestone 4's loot. Kept for reference; it can be closed. |
 
 ## Deviations from the charter
@@ -106,10 +110,11 @@ merged into `main`, apart from #6.
 
 ## Next task
 
-After the Dreadhunter, the options are:
+The **Reliquary and the Gravecaller**, so all six classes are playable for
+the owner's test version ("a fully playable test version of the game with
+mechanics we talked about"). After them, the options are:
 
-- a second dungeon in the Fallen Marches;
-- the Reliquary and the Gravecaller;
+- a third dungeon;
 - Milestone 5 (the backend), to make progression durable and the offline
   rewards trusted.
 

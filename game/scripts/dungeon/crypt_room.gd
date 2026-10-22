@@ -40,6 +40,10 @@ const CutoutMaterial := preload("res://resources/materials/dungeon_cutout.tres")
 @export var north: Edge = Edge.WALL
 @export var south: Edge = Edge.WALL
 @export var torches: bool = true
+## The torches' fire: warm by default; the Forgotten Catacombs burn cold.
+@export var torch_light_color: Color = Color(1.0, 0.5, 0.2)
+@export var torch_core_color: Color = Color(1.0, 0.85, 0.45)
+@export var torch_edge_color: Color = Color(1.0, 0.35, 0.08)
 ## Varies the floor tile turns and cracked walls between rooms.
 @export var seed: int = 1
 
@@ -230,13 +234,15 @@ func _add_torch(at: Transform3D) -> void:
 	torch.transform = at
 	var light := OmniLight3D.new()
 	light.position = Vector3(0.0, 0.55, 0.45)
-	light.light_color = Color(1.0, 0.5, 0.2)
+	light.light_color = torch_light_color
 	light.light_energy = 2.4
 	light.omni_range = 8.0
 	torch.add_child(light)
 	var flame := FlameFx.new()
 	flame.name = "Fire"
 	flame.light = light
+	flame.core_color = torch_core_color
+	flame.edge_color = torch_edge_color
 	flame.size = 0.42
 	flame.ember_count = 5
 	flame.position = Vector3(0.0, 0.42, 0.32)

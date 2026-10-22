@@ -49,6 +49,8 @@ var tier: int = 1
 var hero_class: String = HERO_CLASS
 ## The highest crypt tier cleared (0 when none): what time away farms.
 var tier_cleared: int = 0
+## The dungeon the next run is played in (Dungeons.ORDER).
+var dungeon: String = Dungeons.CRYPT
 ## When the profile was last saved (device clock, unix seconds); 0 = never.
 var last_seen: int = 0
 ## Time away banked for offline rewards, waiting to be collected (seconds,
@@ -103,6 +105,7 @@ func to_dict() -> Dictionary:
 		"tier": tier,
 		"tier_cleared": tier_cleared,
 		"hero_class": hero_class,
+		"dungeon": dungeon,
 		"last_seen": last_seen,
 		"offline_seconds": offline_seconds,
 	}
@@ -181,6 +184,10 @@ func _apply(data: Dictionary) -> bool:
 	tier_cleared = clampi(int(data.get("tier_cleared", tier_unlocked - 1)), tier_unlocked - 1, Difficulty.MAX_TIER)
 	last_seen = maxi(int(data.get("last_seen", 0)), 0)
 	hero_class = str(data.get("hero_class", HERO_CLASS))
+	# Saves from before the second dungeon play the crypt.
+	dungeon = str(data.get("dungeon", Dungeons.CRYPT))
+	if not Dungeons.is_open(dungeon, self):
+		dungeon = Dungeons.CRYPT
 	offline_seconds = clampi(int(data.get("offline_seconds", 0)), 0, OfflineRewards.CAP_SECONDS)
 	skill_ranks.clear()
 	if data.get("skills") is Dictionary:
@@ -205,6 +212,7 @@ func _apply_empty() -> void:
 	tier = 1
 	tier_cleared = 0
 	hero_class = HERO_CLASS
+	dungeon = Dungeons.CRYPT
 	last_seen = 0
 	offline_seconds = 0
 	ash = 0
@@ -331,6 +339,17 @@ func select_class(class_id: String) -> void:
 		changed.emit()
 
 
+## Plays dungeon `id` from the next run on, when it is open. Returns whether
+## it is now the chosen one.
+func select_dungeon(id: String) -> bool:
+	if not Dungeons.is_open(id, self):
+		return false
+	if id != dungeon:
+		dungeon = id
+		changed.emit()
+	return true
+
+
 ## Chooses the tier of the next run, within the open tiers. Returns the tier.
 func select_tier(wanted: int) -> int:
 	var chosen := clampi(wanted, 1, tier_unlocked)
@@ -432,6 +451,7 @@ func reset() -> void:
 	tier = 1
 	tier_cleared = 0
 	hero_class = HERO_CLASS
+	dungeon = Dungeons.CRYPT
 	last_seen = 0
 	offline_seconds = 0
 	ash = 0

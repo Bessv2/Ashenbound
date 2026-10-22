@@ -30,7 +30,7 @@ func _process(_delta: float) -> void:
 	var health := Health.of(boss) if boss else null
 	if health and not health.is_dead():
 		_health = health
-		_label.text = boss_name
+		_label.text = boss.display_title if boss is AshenLord else boss_name
 		show()
 
 

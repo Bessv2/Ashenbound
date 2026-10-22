@@ -16,7 +16,10 @@ func _ready() -> void:
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	if attack == null:
 		return
-	if attack.data is ProjectileAttackData:
+	if attack is RangedAttack and (attack as RangedAttack).volley > 1:
+		# A fanned volley covers its arc, not a single strip.
+		mesh = build_sector(attack.data.reach, attack.data.arc_degrees, segments)
+	elif attack.data is ProjectileAttackData:
 		mesh = build_strip(attack.data.reach, (attack.data as ProjectileAttackData).radius)
 	else:
 		mesh = build_sector(attack.data.reach, attack.data.arc_degrees, segments)
