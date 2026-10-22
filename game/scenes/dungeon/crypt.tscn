@@ -51,6 +51,7 @@ script = ExtResource("1_level")
 player_start = NodePath("PlayerStart")
 encounters = [NodePath("Encounters/Ossuary"), NodePath("Encounters/Chapel"), NodePath("Encounters/Throne")]
 victory_title = "The crypt is cleared"
+item_level = 2
 
 [node name="PlayerStart" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)

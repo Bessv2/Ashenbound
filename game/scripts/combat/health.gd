@@ -22,6 +22,8 @@ var invulnerable: bool = false
 ## Share of each hit that is dealt, rounded to the nearest whole point. Set by
 ## Bulwark Guard while it is up.
 var damage_multiplier: float = 1.0
+## Reduces every hit: damage × 100 / (100 + armour). From equipment.
+var armor: int = 0
 ## Optional: returns an extra damage factor for a hit coming from a world
 ## position, e.g. a shield that halves hits from the front (FrontalGuard).
 ## Called only for hits that say where they come from.
@@ -43,7 +45,7 @@ func is_dead() -> bool:
 func apply_damage(amount: int, from: Vector3 = Vector3.INF) -> int:
 	if is_dead() or invulnerable or amount <= 0:
 		return 0
-	var multiplier := damage_multiplier
+	var multiplier := damage_multiplier * 100.0 / (100.0 + maxi(armor, 0))
 	if from != Vector3.INF and direction_multiplier.is_valid():
 		multiplier *= direction_multiplier.call(from)
 	# Fixed before `hit` is emitted, so a handler that changes the multiplier

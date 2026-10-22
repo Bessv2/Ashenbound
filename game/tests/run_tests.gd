@@ -79,6 +79,9 @@ func _reset_global_state() -> void:
 	paused = false
 	Engine.physics_ticks_per_second = 60
 	GameplayActions.release_all()
+	var profile := root.get_node_or_null(^"Profile")
+	if profile:
+		profile.reset()
 
 
 func _suite_files() -> PackedStringArray:

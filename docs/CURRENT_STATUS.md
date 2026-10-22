@@ -30,6 +30,7 @@ Status labels follow the charter:
 | 2026-10-21 | **Art pass now**, ahead of Milestone 3, with free CC0 assets (KayKit), keeping Godot. |
 | 2026-10-21 | Owner playtest of the art pass in the web preview on their phone: "The play tests were great!" Continue with the milestones. |
 | 2026-10-21 | **Long-term vision:** "a Diablo 4 style game with Torchlight levels of classes and a full loot system", where being offline still earns XP, gold and loot resources. Work through the milestones in order to a working gameplay loop first, then add skills, attacks and systems. Offline XP extends the charter's offline rewards (Milestone 6). |
+| 2026-10-22 | "Keep going, and dev as many milestones as you can. Up the gameplay loop, better visuals and start a skill tree for the first 3 classes or all 6 classes." |
 | 2026-10-21 | **A browser build is a playtest preview** ([WEB_PREVIEW.md](WEB_PREVIEW.md)), not a platform change: Android stays the target. |
 
 ## Milestones
@@ -40,7 +41,7 @@ Status labels follow the charter:
 | 1: Movement and camera | Verified in runtime | **Device gate blocked:** there is no Android device, and no `/dev/kvm` for an emulator. The manual checklist is in [BUILD_ANDROID.md](BUILD_ANDROID.md#manual-device-checklist). |
 | 2: Combat foundation | In progress | See below. |
 | 3: First dungeon | Validated, verified in runtime | Spec: [dungeons/ashen_crypt.md](dungeons/ashen_crypt.md). All six steps done; the gate (three runs in a row, clean, paid once each) passes in automated tests. **Device check open.** PRs #15 to #20, stacked. |
-| 4: First loot loop | In progress | Design: [LOOT.md](LOOT.md). Step 1 of 5 (item model) validated. Parked PR #6 is reference only. |
+| 4: First loot loop | In progress | Design: [LOOT.md](LOOT.md). Steps 1 to 3 of 5 (item model, stats in combat, drops) validated. Parked PR #6 is reference only. |
 | 5 to 7 | Not started | |
 
 ### Milestone 2 progress

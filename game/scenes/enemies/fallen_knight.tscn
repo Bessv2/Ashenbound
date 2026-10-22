@@ -20,6 +20,7 @@
 [ext_resource type="Script" path="res://scripts/presentation/elite_bar.gd" id="21_bar"]
 [ext_resource type="PackedScene" path="res://assets/third_party/kaykit/weapons/Skeleton_Shield_Large_A.gltf" id="22_shield"]
 [ext_resource type="Material" path="res://resources/materials/fallen_knight_model.tres" id="23_model_material"]
+[ext_resource type="Resource" path="res://resources/loot/fallen_knight_drops.tres" id="24_drops"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.5
@@ -37,6 +38,7 @@ health = NodePath("Health")
 visual = NodePath("Visual")
 navigation = NodePath("NavigationAgent")
 ash_value = 10
+drop_table = ExtResource("24_drops")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.125, 0)

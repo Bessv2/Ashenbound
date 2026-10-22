@@ -22,6 +22,8 @@
 
 [ext_resource type="Script" path="res://scripts/presentation/occlusion_focus.gd" id="25_occlusion"]
 
+[ext_resource type="Script" path="res://scripts/player/character_stats.gd" id="26_stats"]
+
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
 height = 1.8
@@ -137,3 +139,7 @@ run_reference_speed = 6.0
 [node name="OcclusionFocus" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 script = ExtResource("25_occlusion")
+
+[node name="Stats" type="Node" parent="." node_paths=PackedStringArray("player")]
+script = ExtResource("26_stats")
+player = NodePath("..")

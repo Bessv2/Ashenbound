@@ -16,6 +16,11 @@ signal activated
 @export var action: StringName
 @export_range(0.0, 120.0, 0.05, "suffix:s") var cooldown: float = 1.0
 
+## Scales the cooldown spent from now on (cooldown reduction on gear).
+var cooldown_scale: float = 1.0
+## Scales the damage the ability deals (damage % on gear).
+var power: float = 1.0
+
 var _cooldown_left: float = 0.0
 
 
@@ -29,7 +34,8 @@ func is_ready() -> bool:
 
 ## Share of the cooldown still to run: 1 right after activation, 0 when ready.
 func cooldown_fraction() -> float:
-	return clampf(_cooldown_left / cooldown, 0.0, 1.0) if cooldown > 0.0 else 0.0
+	var full := cooldown * cooldown_scale
+	return clampf(_cooldown_left / full, 0.0, 1.0) if full > 0.0 else 0.0
 
 
 ## Activates the ability if it is ready and can take effect. `facing` is the
@@ -37,7 +43,7 @@ func cooldown_fraction() -> float:
 func try_activate(facing: Vector3) -> bool:
 	if not is_ready() or not _activate(facing):
 		return false
-	_cooldown_left = cooldown
+	_cooldown_left = cooldown * cooldown_scale
 	activated.emit()
 	return true
 
