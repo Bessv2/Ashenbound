@@ -52,6 +52,7 @@ Status labels follow the charter:
 | Second class: Reaver | Validated, verified in runtime | [characters/reaver.md](characters/reaver.md): Twin Slash, Veil Rend, Fan of Blades, Hemorrhage; playable tree; class switch. |
 | Third class: Hexbinder | Validated, verified in runtime | [characters/hexbinder.md](characters/hexbinder.md): Hex Bolt, Black Testament, Grasp of the Grave, Unmake; playable tree. |
 | Visuals and living UI | Validated, verified in runtime | [UI.md](UI.md): fire, dust, grade, vignette, outlines, hit punch; health trail, banners, coloured buttons; title screen with class select. |
+| Fourth class: Dreadhunter | Validated, verified in runtime | [characters/dreadhunter.md](characters/dreadhunter.md): crossbow, Deadfall, Charged Shot, Carrion Raven; playable tree. |
 | Champions and health potions | Validated, verified in runtime | [CHAMPIONS.md](CHAMPIONS.md): ordinary enemies may rise as champions with affixes (Hasted, Stoneskin, Vampiric, Ember-wreathed, Vengeful) and a guaranteed Rare drop; three potions per run, refilled by kills. |
 | 5 to 7 | Not started | Offline rewards above are early Milestone 6 work. |
 
@@ -78,7 +79,8 @@ merged into `main`, apart from #6.
 
 | PR | Branch | State |
 |---|---|---|
-| (new) | `feature/champions` | Champions and health potions. |
+| #34 | `feature/champions` | Open draft: champions and health potions. |
+| (new) | `feature/dreadhunter` | Open draft, **stacked on #34**: the Dreadhunter. |
 | #6 | `feature/loot` | Open draft, **obsolete**: the early loot work, superseded by Milestone 4's loot. Kept for reference; it can be closed. |
 
 ## Deviations from the charter
@@ -91,6 +93,9 @@ merged into `main`, apart from #6.
 - **Names:** the hero is the Warden. The main scene's slot for it is still
   called `Player`, because that slot will hold any class. The arena is not yet
   framed as the Fallen Marches.
+- **Dreadhunter's weapon:** a heavy crossbow instead of the charter's
+  longbow, because the free model set has no bow. Its companion is a raven
+  built from primitives ([characters/dreadhunter.md](characters/dreadhunter.md#deviations)).
 - **Art ahead of schedule:** the owner asked for a first art pass before
   Milestone 3. It uses third-party CC0 models
   ([ART_ASSET_PIPELINE.md](ART_ASSET_PIPELINE.md)), not final art.
@@ -101,8 +106,7 @@ merged into `main`, apart from #6.
 
 ## Next task
 
-The **Dreadhunter**, the fourth class (charter 13.4): ranged physical
-damage, traps and marks. After it, the options are:
+After the Dreadhunter, the options are:
 
 - a second dungeon in the Fallen Marches;
 - the Reliquary and the Gravecaller;

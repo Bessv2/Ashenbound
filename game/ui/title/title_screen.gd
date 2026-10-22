@@ -11,7 +11,7 @@ const ROLES := {
 	"warden": "Iron and ember. Stands and endures.",
 	"reaver": "Twin blades. Strikes, marks, vanishes.",
 	"hexbinder": "Curses that bloom, then burst.",
-	"dreadhunter": "Bow and snare. Coming later.",
+	"dreadhunter": "Bolt, snare and raven. Patient death.",
 	"reliquary": "Hollow light. Coming later.",
 	"gravecaller": "The unburied answer. Coming later.",
 }

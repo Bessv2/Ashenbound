@@ -444,7 +444,12 @@ Milestone 3, step 1 ([dungeons/ashen_crypt.md](dungeons/ashen_crypt.md)).
   `Burning` on a group found with `Targeting.living_around()`),
   `GraspAbility` with `Slowed` (multiplies `EnemyController.speed_multiplier`
   and restores it), `UnmakeAbility` (consumes curses for their remaining
-  damage). `Vfx.ring()` draws spell areas.
+  damage). `Vfx.ring()` draws spell areas. Dreadhunter parts: the crossbow
+  is a player-side `RangedAttack` (`scenes/combat/crossbow_bolt.tscn`);
+  `DeadfallAbility` sets a `DeadfallTrap` in the level (holds with `Slowed`,
+  then erupts once); `ChargedShotAbility` (a busy draw, then a line hit
+  clipped by a world-layer ray); `RavenAbility` calls one `Raven`, a
+  `top_level` child of the hero that strikes on a timer.
 - **`Forge`** (`scripts/items/forge.gd`): salvage values, upgrade prices and
   the +10% per rank rule ([LOOT.md](LOOT.md#gold-salvage-and-upgrades)).
   `Profile.salvage()` and `Profile.upgrade_item()` apply them; an item's
@@ -759,7 +764,7 @@ Design: [SKILL_TREES.md](SKILL_TREES.md). Code in `game/scripts/progression/`.
 - `SkillTree` (Resource, `resources/skills/<class>_tree.tres`): three branches
   of `SkillNode`s; each node adds `per_rank` stats and may require another node
   of its branch. `learn_problem()` says why a rank cannot be learned. Trees of
-  classes that are not playable yet (Reaver, Hexbinder) are read-only.
+  classes that are not playable yet (the Reliquary and the Gravecaller) are read-only.
 - Ranks feed `CharacterStats.bonus` (the Warden's `skill_tree`), so a skill
   works exactly like gear. `SkillStats` adds keys that change one ability:
   Cleave damage, Guard duration, Guard's counter damage, Brand's damage and
