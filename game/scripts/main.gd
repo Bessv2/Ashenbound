@@ -18,6 +18,10 @@ var level: Level
 @onready var _pause_menu: PauseMenu = $PauseMenu
 @onready var _death_screen: DeathScreen = $DeathScreen
 @onready var _run: RunController = $Run
+@onready var _loot: LootDropper = $Loot
+
+## Items picked up this run.
+var _loot_found: int = 0
 
 
 func _ready() -> void:
@@ -30,6 +34,9 @@ func _ready() -> void:
 	_hud.track_dodge(_player.dodge)
 	_hud.track_abilities(_player.abilities)
 	_run.ended.connect(_on_run_ended)
+	_run.kill_counted.connect(_on_kill_counted.unbind(1))
+	_run.kill_counted.connect(_loot.on_enemy_killed)
+	_loot.collected.connect(_on_loot_collected)
 	_death_screen.restart_requested.connect(restart)
 
 
@@ -56,6 +63,20 @@ func _load_level() -> void:
 		_player.reset_physics_interpolation()
 		_camera_rig.snap_to_target()
 	_run.watch(level.encounters)
+	_loot.item_level = level.item_level
+
+
+func _on_loot_collected(item: ItemInstance) -> void:
+	_loot_found += 1
+	var base := _loot.catalog.base(item.base_id)
+	_hud.show_toast("%s %s" % [Rarity.name_of(item.rarity), base.display_name if base else item.base_id],
+			Rarity.color_of(item.rarity))
+
+
+func _on_kill_counted() -> void:
+	var stats := _player.get_node_or_null(^"Stats") as CharacterStats
+	if stats:
+		_player.health.heal(stats.value(ItemStats.HEALTH_ON_KILL))
 
 
 ## Seconds between the killing blow that wins the run and the summary.
@@ -70,7 +91,9 @@ func _on_run_ended(victory: bool) -> void:
 	if not victory:
 		_death_screen.open("", "", "", summary_text())
 		return
-	# The run is won: nothing can hurt or move the Warden any more.
+	# The run is won: nothing can hurt or move the Warden any more, so what
+	# still lies on the floor is gathered for him.
+	_loot.collect_all()
 	_player.input_enabled = false
 	_player.health.invulnerable = true
 	_death_screen.open(level.victory_title, "The ash settles, for now.", "Play again",
@@ -80,5 +103,5 @@ func _on_run_ended(victory: bool) -> void:
 ## The run's summary, as shown on the end screen.
 func summary_text() -> String:
 	var seconds := int(_run.elapsed)
-	return "Time %d:%02d    Enemies slain %d    Damage taken %d\nAsh earned %d    Ash held %d" % [
-			seconds / 60, seconds % 60, _run.kills, _run.damage_taken, _run.ash, Profile.ash]
+	return "Time %d:%02d    Enemies slain %d    Damage taken %d\nAsh earned %d    Ash held %d    Items found %d" % [
+			seconds / 60, seconds % 60, _run.kills, _run.damage_taken, _run.ash, Profile.ash, _loot_found]

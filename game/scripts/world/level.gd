@@ -10,3 +10,5 @@ extends Node3D
 @export var encounters: Array[EncounterController] = []
 ## Shown when the run is won.
 @export var victory_title: String = "The hall is cleared"
+## Item level of the loot found here.
+@export_range(1, 100, 1) var item_level: int = 1

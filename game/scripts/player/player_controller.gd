@@ -31,6 +31,9 @@ const GROUP := &"player"
 @export var abilities: Array[Ability] = []
 ## When false, input is ignored and the character decelerates to a stop.
 @export var input_enabled: bool = true
+## Scales movement speed (move speed on gear). The stats resource is shared,
+## so it is never changed.
+var speed_multiplier: float = 1.0
 
 ## Time left in which a dodge press waits for the dodge to become ready.
 var _dodge_buffer_left: float = 0.0
@@ -84,11 +87,12 @@ func _physics_process(delta: float) -> void:
 		horizontal = _push_velocity * minf(delta, _push_left) / delta
 		_push_left -= delta
 	elif not dodging:
-		var speed := stats.move_speed * (attack.movement_multiplier() if attack else 1.0)
+		var top_speed := stats.move_speed * speed_multiplier
+		var speed := top_speed * (attack.movement_multiplier() if attack else 1.0)
 		if busy_ability:
-			speed = stats.move_speed * busy_ability.movement_multiplier()
+			speed = top_speed * busy_ability.movement_multiplier()
 		# Leaving a dash at dash speed would slide far past its end.
-		var current := Vector3(velocity.x, 0.0, velocity.z).limit_length(stats.move_speed)
+		var current := Vector3(velocity.x, 0.0, velocity.z).limit_length(top_speed)
 		horizontal = stats.step_velocity(current, direction * speed, delta)
 	velocity.x = horizontal.x
 	velocity.z = horizontal.z

@@ -18,6 +18,6 @@ func _activate(_toward: Vector3) -> bool:
 	var target := Targeting.nearest_living(get_parent() as Node3D, reach, target_mask)
 	if target == null:
 		return false
-	Burning.apply(target, damage_per_tick, tick_interval, tick_count)
+	Burning.apply(target, maxi(roundi(damage_per_tick * power), 1), tick_interval, tick_count)
 	last_target = target.get_parent() as Node3D
 	return true

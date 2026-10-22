@@ -17,6 +17,7 @@
 [ext_resource type="Script" path="res://scripts/presentation/character_animator.gd" id="18_animator"]
 [ext_resource type="PackedScene" path="res://scenes/combat/shadow_bolt.tscn" id="19_bolt"]
 [ext_resource type="Material" path="res://resources/materials/cultist_model.tres" id="20_model_material"]
+[ext_resource type="Resource" path="res://resources/loot/dark_cultist_drops.tres" id="21_drops"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
@@ -33,6 +34,7 @@ health = NodePath("Health")
 visual = NodePath("Visual")
 navigation = NodePath("NavigationAgent")
 ash_value = 2
+drop_table = ExtResource("21_drops")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)

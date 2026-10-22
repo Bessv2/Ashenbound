@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DropTable" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/drop_table.gd" id="1_table"]
+
+[resource]
+script = ExtResource("1_table")
+chance = 0.08
+rolls = 1
+min_rarity = 0
+rarity_boost = 1.0

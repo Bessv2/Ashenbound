@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" path="res://ui/death_screen/death_screen.tscn" id="9_death"]
 [ext_resource type="Script" path="res://scripts/dungeon/run_controller.gd" id="13_run"]
 [ext_resource type="Script" path="res://scripts/core/perf_log.gd" id="12_perf"]
+[ext_resource type="Script" path="res://scripts/items/loot_dropper.gd" id="14_loot"]
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
@@ -38,3 +39,6 @@ visible = false
 [node name="Run" type="Node" parent="." node_paths=PackedStringArray("player_health")]
 script = ExtResource("13_run")
 player_health = NodePath("../Player/Health")
+
+[node name="Loot" type="Node" parent="."]
+script = ExtResource("14_loot")

@@ -898,3 +898,39 @@ Commands run:
 Recommended next task:
 - Step 2: CharacterStats and combat.
 ```
+
+## 20. Milestone 4, steps 2 and 3: stats in combat and drops (branch `feature/m4-stats`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: 4 (first loot loop), steps 2 and 3 of 5
+Status: Validated, verified in runtime (desktop software Vulkan); not verified on device
+
+Changes:
+- CharacterStats on the Warden: equipment (and a skill-tree bonus) to final
+  numbers, applied to attacks (damage, crits, attack speed), abilities
+  (cooldowns, Brand's power), movement, armour, max health, health on kill.
+- Equipment (9 slots) and Inventory (30) in Profile; equip/unequip that
+  never loses an item.
+- DropTable per enemy (Skeleton 8%, Cultist 12%, Knight 2 items, Lord 3 Rare+),
+  LootDropper, LootPickup (rarity beam, name, walk-over pickup), gathering at
+  victory, "Items found" in the summary, pickup messages on the HUD.
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 203 passed, 0 failed (12 new in test_character_stats.gd and test_loot.gd)
+- Command: probes: armour ignored; equip losing the replaced item
+  Exit code: 1
+  Result: the matching tests failed; files restored and compared byte for byte
+- Command: rendered loot in the Chapel under Xvfb
+  Exit code: 0
+  Result: beams in the five rarity colours, names readable
+
+Not tested:
+- On a phone.
+
+Recommended next task:
+- Steps 4 and 5: inventory screen, save and load.
+```

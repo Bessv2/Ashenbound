@@ -10,6 +10,8 @@ extends Node
 ## with nothing carried over.
 
 signal ended(victory: bool)
+## An enemy of the run's encounters died while the run was on.
+signal kill_counted(enemy: Node3D)
 
 enum Result { RUNNING, VICTORY, DEFEAT }
 
@@ -72,6 +74,7 @@ func _on_enemy_killed(enemy: Node3D) -> void:
 	kills += 1
 	if enemy is EnemyController:
 		ash += (enemy as EnemyController).ash_value
+	kill_counted.emit(enemy)
 
 
 func _on_player_damaged(amount: int) -> void:

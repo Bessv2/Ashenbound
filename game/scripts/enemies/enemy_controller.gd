@@ -55,6 +55,8 @@ const REPATH_DISTANCE := 0.5
 @export var hunting: bool = false
 ## Ash the run earns when this enemy is killed.
 @export_range(0, 1000, 1) var ash_value: int = 1
+## What it may drop when killed; none when null.
+@export var drop_table: DropTable
 
 var state: State = State.IDLE
 ## Scales movement speed (a boss's last phase moves faster). The movement

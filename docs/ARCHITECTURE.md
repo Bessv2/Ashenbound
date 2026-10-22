@@ -632,3 +632,26 @@ Design: [LOOT.md](LOOT.md). Code in `game/scripts/items/`.
   base-stat bonus. **`ItemStats`**: the stat keys and how they are shown.
 - Ranges grow 15% per item level. Each stat appears at most once per item;
   Mythic items roll the top of every affix range.
+
+- **Stats (step 2).** `CharacterStats` (node "Stats" on the Warden) adds base
+  values, everything in an `Equipment` (Profile's) and a `bonus` dictionary
+  (for the skill tree), then pushes the results into combat: every
+  `MeleeAttack` gets `damage_scale` (weapon damage / 10 × damage %),
+  `crit_chance` and `crit_multiplier`; the basic attack gets attack-speed
+  `windup_scale` / `recovery_scale`; abilities get `cooldown_scale` (40% cap)
+  and `power` (Brand's burn); `PlayerController.speed_multiplier` (+30% cap);
+  `Health.armor` (damage × 100 / (100 + armour)) and max health, keeping the
+  health already lost. Health on kill heals through `RunController.kill_counted`.
+  Shared data resources are never changed. Base crit chance is 0%, so combat
+  without gear stays deterministic.
+- **Bag and equipment.** `Inventory` (30 items) and `Equipment` (nine slots,
+  two for rings) live in `Profile`. `Profile.equip_from_bag()` and
+  `unequip_to_bag()` move items so that none is ever lost or duplicated; a
+  full bag refuses an unequip.
+- **Drops (step 3).** Each enemy has a `DropTable` (chance, rolls, minimum
+  rarity, rarity boost). `LootDropper` (node "Loot" in Main) rolls it when the
+  run counts a kill, at the level's `item_level`, and lays `LootPickup`s on
+  the floor: a beam in the rarity colour (taller for rarer items) and the
+  name. Walking within 1.3 m picks one up; a full bag leaves it. At victory
+  the dropper gathers what is left, and the summary counts the items found.
+  The HUD shows a short message for each pickup.

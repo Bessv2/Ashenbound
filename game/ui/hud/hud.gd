@@ -15,9 +15,19 @@ signal pause_requested
 @onready var _dodge_button: TouchActionButton = %DodgeButton
 
 var _health: Health
+var _toasts: VBoxContainer
 
 
 func _ready() -> void:
+	_toasts = VBoxContainer.new()
+	_toasts.name = "Toasts"
+	_toasts.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_toasts.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	_toasts.offset_top = 120.0
+	_toasts.offset_left = -300.0
+	_toasts.offset_right = 300.0
+	_toasts.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_root.add_child(_toasts)
 	_pause_button.pressed.connect(pause_requested.emit)
 	_debug_label.visible = OS.is_debug_build()
 	# Not DisplayServer.is_touchscreen_available(): mouse-to-touch emulation
@@ -27,6 +37,32 @@ func _ready() -> void:
 	_apply_settings(Settings.current)
 	get_viewport().size_changed.connect(_fit_to_safe_area)
 	_fit_to_safe_area()
+
+
+## Shows `text` for a moment above the controls (loot picked up). New
+## messages stack below older ones.
+func show_toast(text: String, color: Color = Color.WHITE) -> void:
+	var label := Label.new()
+	label.text = text
+	label.modulate = color
+	label.add_theme_font_size_override(&"font_size", 30)
+	label.add_theme_constant_override(&"outline_size", 8)
+	label.add_theme_color_override(&"font_outline_color", Color(0, 0, 0, 0.8))
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_toasts.add_child(label)
+	var tween := label.create_tween()
+	tween.tween_interval(2.0)
+	tween.tween_property(label, "modulate:a", 0.0, 0.6)
+	tween.tween_callback(label.queue_free)
+
+
+## Messages shown now.
+func toasts() -> Array[Label]:
+	var list: Array[Label] = []
+	for child in _toasts.get_children():
+		list.append(child)
+	return list
 
 
 ## Shows `health` in the health bar and keeps it up to date.

@@ -27,8 +27,20 @@ enum Phase { READY, WINDUP, RECOVERY }
 ## Flat world direction of the current or last attack.
 var direction: Vector3 = Vector3.FORWARD
 ## Scales the windup of attacks started from now on (a boss's last phase
-## winds up faster). The data resource is shared, so it is never changed.
+## winds up faster, attack speed on gear). The data resource is shared, so
+## it is never changed.
 var windup_scale: float = 1.0
+## Scales the recovery the same way.
+var recovery_scale: float = 1.0
+## Multiplies the damage of each hit (weapon and damage % on gear).
+var damage_scale: float = 1.0
+## Chance (0 to 1) for each hit to be critical, dealing `crit_multiplier`.
+var crit_chance: float = 0.0
+var crit_multiplier: float = 1.5
+## Whether the last hit that landed was critical (for feedback).
+var last_hit_critical: bool = false
+
+var _rng := RandomNumberGenerator.new()
 
 var _phase: Phase = Phase.READY
 var _time_left: float = 0.0
@@ -48,13 +60,21 @@ func _physics_process(delta: float) -> void:
 	if _phase == Phase.WINDUP:
 		struck.emit(_strike())
 		_phase = Phase.RECOVERY
-		_time_left += data.recovery
+		_time_left += data.recovery * recovery_scale
 	if _phase == Phase.RECOVERY and _time_left <= 0.0:
 		_phase = Phase.READY
 
 
 func is_busy() -> bool:
 	return _phase != Phase.READY
+
+
+## The damage of one hit: the data's damage scaled by `damage_scale`, and by
+## `crit_multiplier` when it rolls critical.
+func roll_damage() -> int:
+	last_hit_critical = crit_chance > 0.0 and _rng.randf() < crit_chance
+	var amount := data.damage * damage_scale * (crit_multiplier if last_hit_critical else 1.0)
+	return maxi(roundi(amount), 1)
 
 
 ## The windup of the next attack, in seconds.
@@ -105,7 +125,7 @@ func _strike() -> Array[Health]:
 	for target in _living_targets_within(data.reach):
 		var body := target.get_parent() as Node3D
 		if is_in_arc(body.global_position - origin, direction, data.arc_degrees) \
-				and target.apply_damage(data.damage, origin) > 0:
+				and target.apply_damage(roll_damage(), origin) > 0:
 			hits.append(target)
 			if data.knockback > 0.0 and body.has_method(&"push"):
 				var away := body.global_position - origin
