@@ -18,14 +18,15 @@ func _title() -> TitleScreen:
 	return title
 
 
-func test_the_roster_is_shown_and_only_playable_classes_can_be_chosen() -> void:
+func test_the_roster_is_shown_and_every_class_can_be_chosen() -> void:
 	var title := _title()
 	var cards := title.find_child("Cards", true, false).get_children()
 	check(cards.size() == 6, "a card per class: %d" % cards.size())
-	check(title.playable_classes() == ["warden", "reaver", "hexbinder", "dreadhunter"], "four playable: %s" % [title.playable_classes()])
-	check(cards.filter(func(c: Button) -> bool: return c.disabled).size() == 2, "the other two are locked")
+	check(title.playable_classes() == ["warden", "reaver", "hexbinder", "dreadhunter", "reliquary", "gravecaller"],
+			"all six playable: %s" % [title.playable_classes()])
+	check(cards.filter(func(c: Button) -> bool: return c.disabled).is_empty(), "none locked")
 	check(title.choose("reaver") and Profile.hero_class == "reaver", "the Reaver chosen")
-	check(not title.choose("gravecaller") and Profile.hero_class == "reaver", "a locked class cannot be")
+	check(not title.choose("nobody") and Profile.hero_class == "reaver", "an unknown class cannot be")
 	title.free()
 
 

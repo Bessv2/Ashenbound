@@ -34,6 +34,9 @@ var windup_scale: float = 1.0
 var recovery_scale: float = 1.0
 ## Multiplies the damage of each hit (weapon and damage % on gear).
 var damage_scale: float = 1.0
+## A second multiplier for effects that come and go (the Reliquary's zeal
+## below half health). CharacterStats never sets it.
+var bonus_scale: float = 1.0
 ## Chance (0 to 1) for each hit to be critical, dealing `crit_multiplier`.
 var crit_chance: float = 0.0
 var crit_multiplier: float = 1.5
@@ -73,7 +76,7 @@ func is_busy() -> bool:
 ## `crit_multiplier` when it rolls critical.
 func roll_damage() -> int:
 	last_hit_critical = crit_chance > 0.0 and _rng.randf() < crit_chance
-	var amount := data.damage * damage_scale * (crit_multiplier if last_hit_critical else 1.0)
+	var amount := data.damage * damage_scale * bonus_scale * (crit_multiplier if last_hit_critical else 1.0)
 	return maxi(roundi(amount), 1)
 
 

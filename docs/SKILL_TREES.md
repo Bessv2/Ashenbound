@@ -80,7 +80,7 @@ Bramble Spikes, Deadfall Mastery, Killing Ground; Hunter's Bond, Thick Hide,
 Pack Instinct, Wild Heart, Savage Bite. Every node acts: see
 [characters/dreadhunter.md](characters/dreadhunter.md#skill-tree-playable).
 
-### Reliquary (preview)
+### Reliquary (playable)
 
 Branches from charter 13.5: **Atonement** (sustain), **Radiance** (spectral
 area damage), **Martyrdom** (power below half health). Nodes: Penitence,
@@ -89,8 +89,9 @@ Light, Sanctify, Judgment, Hollow Halo; Blood Oath, Unyielding Faith, Scourge,
 Stigmata, Final Vigil. Final Vigil carries the charter's safeguard: health
 costs can never take the last point. Last Benediction's healing stays capped
 (no infinite sustain).
+Every node acts: see [characters/reliquary.md](characters/reliquary.md#skill-tree-playable).
 
-### Gravecaller (preview)
+### Gravecaller (playable)
 
 Branches from charter 13.6: **Bone Legion**, **Wraiths**, **Soul Harvest**.
 Nodes: Grave Discipline, Shieldbearers, Mass Grave, Phalanx, Forsaken Host;
@@ -98,6 +99,7 @@ Restless Dead, Chill Touch, Wailing, Phantom Swarm, Dread Aura; Reaping, Bone
 Ward, Soul Well, Hungry Grave, Lich Veil. Summon count nodes add at most +2
 skeletons and +2 wraiths in total, inside the summon budget the class spec
 will set.
+Every node acts: see [characters/gravecaller.md](characters/gravecaller.md#skill-tree-playable).
 
 ## Screens
 

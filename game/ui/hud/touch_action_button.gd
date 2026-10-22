@@ -27,6 +27,8 @@ const NO_TOUCH := -1
 ## clockwise from the top. The button still presses during a cooldown: what
 ## the action does then is up to the game.
 var cooldown: Callable
+## Optional: returns the badge text, polled every frame (souls held).
+var badge_source: Callable
 ## Optional: a short text in a disc at the top right (a potion count).
 var badge: String = "":
 	set(value):
@@ -65,6 +67,10 @@ func _notification(what: int) -> void:
 
 
 func _process(delta: float) -> void:
+	if badge_source.is_valid():
+		var text: String = badge_source.call()
+		if text != badge:
+			badge = text
 	var fraction := cooldown_fraction()
 	if fraction != _shown_cooldown:
 		if fraction <= 0.0 and _shown_cooldown > 0.0:

@@ -172,6 +172,6 @@ requires = "unyielding_faith"
 script = ExtResource("1_tree")
 class_id = "reliquary"
 class_title = "Reliquary"
-playable = false
+playable = true
 branches = PackedStringArray("Atonement", "Radiance", "Martyrdom")
 nodes = Array[ExtResource("2_node")]([SubResource("Node_penitence"), SubResource("Node_mercy"), SubResource("Node_hallowed_plate"), SubResource("Node_benediction_mastery"), SubResource("Node_absolution"), SubResource("Node_pale_flame"), SubResource("Node_lantern_light"), SubResource("Node_sanctify"), SubResource("Node_judgment"), SubResource("Node_hollow_halo"), SubResource("Node_blood_oath"), SubResource("Node_unyielding_faith"), SubResource("Node_scourge"), SubResource("Node_stigmata"), SubResource("Node_final_vigil")])

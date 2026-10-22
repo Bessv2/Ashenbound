@@ -255,6 +255,16 @@ checklist below is the full manual pass.
       everything in it, then erupts for 24. **SHOT** draws for half a second,
       then an amber streak hits every enemy in a line (not through walls).
       **RAVEN** sends a violet raven that circles and dives for 6.
+- [ ] **Reliquary** (title card): a silver knight with a sword and shield,
+      110 health. **BLESS** flashes a blue ring, hurts what is close and
+      heals. **LANTERN** sets a glowing lantern whose ring pulses. **JUDGE**
+      costs health (the bar drops a little) and smites a group for big
+      numbers; below a fifth of health it does nothing.
+- [ ] **Gravecaller** (title card): a green-robed mage with a book, 85
+      health. **RAISE** brings up two glowing teal skeletons that fight
+      enemies and crumble after 15 s. **WRAITHS** streaks to the nearest
+      enemies and marks them. Enemies dying nearby fill the **HARVEST**
+      badge; tapping it spends the souls in a burst.
 - [ ] After clearing the crypt once, the title screen's **The Forgotten
       Catacombs** button can be chosen and the way in reads **Enter the
       catacombs**. Inside: cyan fires, a teal fog. Small green **Ghouls**

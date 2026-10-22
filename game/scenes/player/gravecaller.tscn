@@ -1,0 +1,127 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1_controller"]
+[ext_resource type="Resource" path="res://resources/player/gravecaller_movement.tres" id="2_stats"]
+[ext_resource type="Script" path="res://scripts/combat/ranged_attack.gd" id="5_attack"]
+[ext_resource type="Resource" path="res://resources/combat/gravecaller_bolt.tres" id="6_attack_data"]
+[ext_resource type="PackedScene" path="res://scenes/combat/soul_bolt.tscn" id="7_bolt"]
+[ext_resource type="Script" path="res://scripts/combat/health.gd" id="9_health"]
+[ext_resource type="Script" path="res://scripts/combat/hit_feedback.gd" id="10_feedback"]
+[ext_resource type="Material" path="res://resources/materials/hit_flash.tres" id="11_flash"]
+[ext_resource type="Script" path="res://scripts/combat/dodge.gd" id="12_dodge"]
+[ext_resource type="Resource" path="res://resources/combat/gravecaller_dodge.tres" id="13_dodge_data"]
+[ext_resource type="Script" path="res://scripts/abilities/raise_forsaken_ability.gd" id="14_raise"]
+[ext_resource type="Script" path="res://scripts/abilities/wraith_swarm_ability.gd" id="15_wraiths"]
+[ext_resource type="Script" path="res://scripts/abilities/soul_harvest_ability.gd" id="16_harvest"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/characters/Mage.glb" id="21_model"]
+[ext_resource type="Script" path="res://scripts/presentation/model_dressing.gd" id="22_dressing"]
+[ext_resource type="Material" path="res://resources/materials/gravecaller_model.tres" id="23_model_material"]
+[ext_resource type="Script" path="res://scripts/presentation/character_animator.gd" id="24_animator"]
+[ext_resource type="Script" path="res://scripts/presentation/occlusion_focus.gd" id="25_occlusion"]
+[ext_resource type="Script" path="res://scripts/player/character_stats.gd" id="26_stats"]
+[ext_resource type="Resource" path="res://resources/skills/gravecaller_tree.tres" id="27_tree"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.38
+height = 1.75
+
+[node name="Gravecaller" type="CharacterBody3D" node_paths=PackedStringArray("visual", "attack", "health", "dodge", "abilities")]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1_controller")
+stats = ExtResource("2_stats")
+visual = NodePath("Visual")
+attack = NodePath("SoulBolt")
+health = NodePath("Health")
+dodge = NodePath("Dodge")
+abilities = [NodePath("RaiseForsaken"), NodePath("WraithSwarm"), NodePath("SoulHarvest")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Model" parent="Visual" instance=ExtResource("21_model")]
+transform = Transform3D(-0.78, 0, 0, 0, 0.78, 0, 0, 0, -0.78, 0, 0, 0)
+
+[node name="SoulLight" type="OmniLight3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0.6)
+light_color = Color(0.35, 1, 0.75, 1)
+light_energy = 1.5
+omni_range = 6.0
+omni_attenuation = 1.4
+
+[node name="SoulBolt" type="Node" parent="."]
+script = ExtResource("5_attack")
+data = ExtResource("6_attack_data")
+projectile_scene = ExtResource("7_bolt")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("9_health")
+max_health = 85
+
+[node name="HitFeedback" type="Node" parent="." node_paths=PackedStringArray("health", "visual")]
+script = ExtResource("10_feedback")
+health = NodePath("../Health")
+visual = NodePath("../Visual")
+flash_material = ExtResource("11_flash")
+number_height = 2.2
+number_color = Color(1, 0.35, 0.3, 1)
+spark_color = Color(1, 0.25, 0.2, 1)
+death_burst = false
+
+[node name="Dodge" type="Node" parent="." node_paths=PackedStringArray("health")]
+script = ExtResource("12_dodge")
+data = ExtResource("13_dodge_data")
+health = NodePath("../Health")
+
+[node name="RaiseForsaken" type="Node" parent="."]
+script = ExtResource("14_raise")
+display_name = "RAISE"
+action = &"ability_1"
+cooldown = 14.0
+hud_color = Color(0.35, 1, 0.75, 1)
+
+[node name="WraithSwarm" type="Node" parent="."]
+script = ExtResource("15_wraiths")
+display_name = "WRAITHS"
+action = &"ability_2"
+cooldown = 7.0
+hud_color = Color(0.55, 1, 0.85, 1)
+
+[node name="SoulHarvest" type="Node" parent="." node_paths=PackedStringArray("health")]
+script = ExtResource("16_harvest")
+display_name = "HARVEST"
+action = &"ability_3"
+cooldown = 3.0
+hud_color = Color(0.25, 0.85, 0.6, 1)
+health = NodePath("../Health")
+
+[node name="ModelDressing" type="Node" parent="." node_paths=PackedStringArray("model")]
+script = ExtResource("22_dressing")
+model = NodePath("../Visual/Model")
+material = ExtResource("23_model_material")
+hidden_parts = PackedStringArray("2H_Staff", "Spellbook")
+outline_width = 0.018
+
+[node name="Animator" type="Node" parent="." node_paths=PackedStringArray("body", "animation_player", "health", "dodge", "attacks", "abilities")]
+script = ExtResource("24_animator")
+body = NodePath("..")
+animation_player = NodePath("../Visual/Model/AnimationPlayer")
+health = NodePath("../Health")
+dodge = NodePath("../Dodge")
+attacks = [NodePath("../SoulBolt")]
+attack_animations = Array[StringName]([&"Spellcast_Shoot"])
+abilities = [NodePath("../RaiseForsaken"), NodePath("../WraithSwarm"), NodePath("../SoulHarvest")]
+ability_animations = Array[StringName]([&"Spellcast_Long", &"Spellcast_Shoot", &"Spellcast_Raise"])
+run_reference_speed = 6.1
+
+[node name="OcclusionFocus" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+script = ExtResource("25_occlusion")
+
+[node name="Stats" type="Node" parent="." node_paths=PackedStringArray("player")]
+script = ExtResource("26_stats")
+player = NodePath("..")
+skill_tree = ExtResource("27_tree")
