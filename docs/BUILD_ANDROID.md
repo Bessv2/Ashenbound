@@ -221,6 +221,12 @@ checklist below is the full manual pass.
       **SKILLS** opens the trees: learning Stalwart raises max health at once;
       **Reset** gives the points back. The Reaver and Hexbinder tabs are
       previews.
+- [ ] **SKILLS** → Reaver tab → **Play Reaver** starts a new run as the
+      Reaver (hooded, two knives, 85 health). **VEIL** dashes through a group,
+      numbers pop on each one passed and a crimson ring marks them; hits on a
+      marked enemy are bigger. **FAN** hits all around; **BLEED** puts a
+      crimson mark on the nearest enemy that ticks. The Warden's tab offers
+      **Play Warden** back.
 - [ ] After clearing the crypt once, send the app to the background (or
       close it) for more than 5 minutes: coming back shows **While you were
       away** with XP, gold and Ash; **Collect** adds them once. (Changing the

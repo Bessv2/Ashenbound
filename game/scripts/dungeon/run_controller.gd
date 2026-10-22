@@ -32,12 +32,26 @@ var run_id: String = ""
 
 func _ready() -> void:
 	run_id = "%d-%d" % [Time.get_unix_time_from_system() * 1000.0, randi()]
-	if player_health:
-		player_health.died.connect(_finish.bind(Result.DEFEAT))
-		player_health.damaged.connect(_on_player_damaged.unbind(1))
+	track_player(player_health)
 	var listed := encounters.duplicate()
 	encounters.clear()
 	watch(listed)
+
+
+## Follows `health` as the hero's (Main swaps the hero for the chosen class
+## before the run starts).
+func track_player(health: Health) -> void:
+	if player_health and player_health != health and player_health.died.is_connected(_on_player_died):
+		player_health.died.disconnect(_on_player_died)
+		player_health.damaged.disconnect(_on_player_damaged)
+	player_health = health
+	if player_health and not player_health.died.is_connected(_on_player_died):
+		player_health.died.connect(_on_player_died)
+		player_health.damaged.connect(_on_player_damaged)
+
+
+func _on_player_died() -> void:
+	_finish(Result.DEFEAT)
 
 
 ## Adds `list` to the encounters that must be cleared to win.
@@ -79,7 +93,7 @@ func _on_enemy_killed(enemy: Node3D) -> void:
 	kill_counted.emit(enemy)
 
 
-func _on_player_damaged(amount: int) -> void:
+func _on_player_damaged(amount: int, _remaining: int) -> void:
 	if result == Result.RUNNING:
 		damage_taken += amount
 

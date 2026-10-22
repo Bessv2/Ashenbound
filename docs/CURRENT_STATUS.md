@@ -47,6 +47,7 @@ Status labels follow the charter:
 | Crypt tiers | Validated, verified in runtime | [dungeons/tiers.md](dungeons/tiers.md): ten tiers, unlocked by clears, scaling enemies and rewards. PR stacked on the visual pass. |
 | Gold, salvage and upgrades | Validated, verified in runtime | [LOOT.md](LOOT.md#gold-salvage-and-upgrades). PR stacked on the crypt tiers. |
 | Offline rewards | Validated, verified in runtime; **provisional** (device clock) | [OFFLINE_REWARDS.md](OFFLINE_REWARDS.md): highest tier cleared, half a run per hour, 8-hour cap. Milestone 6 groundwork, ahead of Milestone 5. |
+| Second class: Reaver | Validated, verified in runtime | [characters/reaver.md](characters/reaver.md): Twin Slash, Veil Rend, Fan of Blades, Hemorrhage; playable tree; class switch. |
 | 5 to 7 | Not started | Offline rewards above are early Milestone 6 work. |
 
 ### Milestone 2 progress
@@ -95,11 +96,11 @@ owner's request, so the web preview could be published from `main`.
 
 ## Next task
 
-**A second playable class: the Reaver** (charter 13.9 step 3: a class with a
-different range and mobility profile, to prove the combat framework is
-shared). First a combat abstraction review of the Warden's code, then the
-Reaver's kit (basic attack chain, Veil Rend, two more abilities), its tree
-made playable, and class selection.
+The owner's playtest of the stack in the [web preview](WEB_PREVIEW.md), and
+merging PRs #15 onward in order. Then, by the charter's order (13.9): the
+**Hexbinder** (status effects, durations, area spells), or a second dungeon
+in the Fallen Marches, whichever the owner prefers; and Milestone 5 (the
+backend) to make progression durable and the offline rewards trusted.
 
 Device checks for Milestones 1 to 4 are still open: they need the Android app
 on a phone ([DEVICE_TESTING.md](DEVICE_TESTING.md)). The owner's playtests so

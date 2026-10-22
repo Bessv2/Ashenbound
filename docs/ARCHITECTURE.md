@@ -400,6 +400,18 @@ Milestone 3, step 1 ([dungeons/ashen_crypt.md](dungeons/ashen_crypt.md)).
   replaceable `clock`), saves the bank and pays it once
   (`claim_offline()`); `OfflinePanel` ("Offline" in Main) shows it and
   pauses the game until collected.
+- **Classes:** a class is a hero scene (`scenes/player/warden.tscn`,
+  `reaver.tscn`) built from the same parts: `PlayerController`, a
+  `MeleeAttack`, `Dodge`, three `Ability` nodes, `CharacterStats` with its
+  tree. Each ability applies its own skill stats (`Ability.apply_stats()`),
+  so `CharacterStats` knows no class. `Main.HERO_SCENES` lists the playable
+  classes; `Main` swaps the scene's Warden for `Profile.hero_class` before
+  the run starts (`_use_chosen_hero()`), and the skill screen's **Play …**
+  asks `Main.play_class()`. Reaver parts: `VeilRendAbility` (dash via
+  `PlayerController.push()`, enemy layer off the mask while dashing, a box
+  query along the path), `Marked` (multiplies `Health.damage_multiplier` and
+  restores it), `BleedAbility` (Ember Brand's damage over time as a separate
+  effect).
 - **`Forge`** (`scripts/items/forge.gd`): salvage values, upgrade prices and
   the +10% per rank rule ([LOOT.md](LOOT.md#gold-salvage-and-upgrades)).
   `Profile.salvage()` and `Profile.upgrade_item()` apply them; an item's

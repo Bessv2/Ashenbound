@@ -1163,3 +1163,37 @@ Commands run:
 Not tested:
 - On a phone (tab size on small screens).
 ```
+
+## 28. The Reaver, second playable class (branch `feature/reaver`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: roster (charter 13.9 steps 2 and 3: combat abstraction review, then a second class)
+Status: Validated, verified in runtime (desktop software Vulkan); not verified on device
+
+Changes:
+- Abstraction review, driven by the second class: each Ability applies its
+  own skill stats (apply_stats); CharacterStats no longer names Warden nodes.
+  Burning takes an effect name and colour (a bleed is not a burn).
+- Reaver scene (KayKit Rogue, CC0), Twin Slash, faster dodge, 85 health.
+- VeilRendAbility (dash through enemies, unhurt; cut and mark on the path),
+  Marked, BleedAbility; Fan of Blades reuses CleaveAbility with its own data.
+- Reaver tree playable. Profile.hero_class (saved); Main swaps the hero;
+  the skill screen opens on the played class and offers "Play …".
+- docs/characters/reaver.md.
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 245 passed, 0 failed (8 new in test_reaver.gd; the refactor kept
+  every Warden test green); probes that keep the enemy layer during the dash
+  or skip the hero swap fail the matching tests
+- Command: the Reaver in the crypt rendered under Xvfb
+  Exit code: 0
+  Result: Veil Rend through two skeletons: 14 each, both marked
+
+Not tested:
+- On a phone: dash feel, the mark's readability.
+- Balance against the Warden in full runs.
+```

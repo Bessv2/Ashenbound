@@ -19,17 +19,20 @@ var _until_tick: float = 0.0
 
 
 ## Burns `target`'s body, or restarts the burn already on it. Returns the burn.
-static func apply(target: Health, damage_per_tick: int, tick_interval: float, tick_count: int) -> Burning:
+## `effect` names the kind of damage over time (a bleed is another effect, so
+## it does not replace a burn); `color` tints its mark.
+static func apply(target: Health, damage_per_tick: int, tick_interval: float, tick_count: int,
+		effect: String = "Burning", color: Color = MARK_COLOR) -> Burning:
 	var body := target.get_parent()
 	var burn: Burning = null
 	for child in body.get_children():
-		if child is Burning:
+		if child is Burning and child.name == effect:
 			burn = child
 	if burn == null:
 		burn = Burning.new()
-		burn.name = "Burning"
+		burn.name = effect
 		burn._health = target
-		burn.add_child(_build_mark())
+		burn.add_child(_build_mark(color))
 		body.add_child(burn)
 	burn.damage = damage_per_tick
 	burn.interval = tick_interval
@@ -53,7 +56,7 @@ func _physics_process(delta: float) -> void:
 		queue_free()
 
 
-static func _build_mark() -> MeshInstance3D:
+static func _build_mark(color: Color) -> MeshInstance3D:
 	var mark := MeshInstance3D.new()
 	var sphere := SphereMesh.new()
 	sphere.radius = 0.12
@@ -64,9 +67,9 @@ static func _build_mark() -> MeshInstance3D:
 	mark.position.y = MARK_HEIGHT
 	mark.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var material := StandardMaterial3D.new()
-	material.albedo_color = MARK_COLOR
+	material.albedo_color = color
 	material.emission_enabled = true
-	material.emission = MARK_COLOR
+	material.emission = color
 	material.emission_energy_multiplier = 2.0
 	mark.material_override = material
 	return mark

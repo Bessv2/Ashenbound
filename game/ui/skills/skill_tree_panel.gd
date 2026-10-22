@@ -3,12 +3,16 @@ extends CanvasLayer
 ## The skill trees (docs/SKILL_TREES.md): a tab per class, the three branches
 ## as columns of nodes by tier, and the selected node's card with Learn.
 ## Points left and Reset at the top. Classes that are not playable yet are
-## shown read-only. Learning and resetting go through Profile.
+## shown read-only. Learning and resetting go through Profile. A playable
+## class other than the one being played offers "Play as …", which asks Main
+## to switch (a new run).
 ##
 ## Built in code from the theme's controls, touch first (88 px targets).
 ## Processes while the game is paused (Main pauses it).
 
 signal close_requested
+## The player chose to play `class_id`.
+signal class_chosen(class_id: String)
 
 const TREE_PATHS := [
 	"res://resources/skills/warden_tree.tres",
@@ -35,6 +39,7 @@ var _card_title: Label
 var _card_text: Label
 var _learn_button: Button
 var _reset_button: Button
+var _play_button: Button
 
 
 func _ready() -> void:
@@ -51,6 +56,9 @@ func _ready() -> void:
 
 func open() -> void:
 	_tree_index = 0
+	for i in trees.size():
+		if trees[i].class_id == profile.hero_class:
+			_tree_index = i
 	_selected = ""
 	_refresh()
 	show()
@@ -121,6 +129,10 @@ func _build() -> void:
 	_points = Label.new()
 	_points.theme_type_variation = &"HeaderLabel"
 	header.add_child(_points)
+	_play_button = Button.new()
+	_play_button.custom_minimum_size = Vector2(170, 72)
+	_play_button.pressed.connect(func() -> void: class_chosen.emit(current_tree().class_id))
+	header.add_child(_play_button)
 	_reset_button = Button.new()
 	_reset_button.text = "Reset"
 	_reset_button.custom_minimum_size = Vector2(130, 72)
@@ -170,6 +182,8 @@ func _refresh() -> void:
 		(_tabs.get_child(i) as Button).modulate = Color.WHITE if i == _tree_index else Color(1, 1, 1, 0.55)
 	_points.text = ("%d points" % points) if tree.playable else "Preview"
 	_reset_button.visible = tree.playable
+	_play_button.visible = tree.playable and tree.class_id != profile.hero_class
+	_play_button.text = "Play %s" % tree.class_title
 	for child in _columns.get_children():
 		child.queue_free()
 	for branch in tree.branches.size():

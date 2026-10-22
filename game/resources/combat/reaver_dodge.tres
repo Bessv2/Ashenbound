@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="DodgeData" format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/dodge_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+distance = 4.5
+duration = 0.28
+invulnerable_time = 0.25
+cooldown = 0.7
+input_buffer = 0.2

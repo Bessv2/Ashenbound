@@ -172,6 +172,6 @@ requires = "coup_de_grace"
 script = ExtResource("1_tree")
 class_id = "reaver"
 class_title = "Reaver"
-playable = false
+playable = true
 branches = PackedStringArray("Bloodletting", "Shadowstep", "Executioner")
 nodes = Array[ExtResource("2_node")]([SubResource("Node_open_veins"), SubResource("Node_hemorrhage"), SubResource("Node_crimson_thirst"), SubResource("Node_deep_cuts"), SubResource("Node_exsanguinate"), SubResource("Node_light_feet"), SubResource("Node_phantom_step"), SubResource("Node_flanker"), SubResource("Node_smoke_veil"), SubResource("Node_veil_rend_mastery"), SubResource("Node_mark_for_death"), SubResource("Node_coup_de_grace"), SubResource("Node_cold_focus"), SubResource("Node_relentless"), SubResource("Node_final_verdict")])
