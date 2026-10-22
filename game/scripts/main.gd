@@ -58,12 +58,27 @@ func _load_level() -> void:
 	_run.watch(level.encounters)
 
 
+## Seconds between the killing blow that wins the run and the summary.
+const VICTORY_SUMMARY_DELAY := 2.0
+
+
 func _on_run_ended(victory: bool) -> void:
 	GameplayActions.release_all()
+	# The reward is paid once, at the end of the run; claim_reward() refuses
+	# any second attempt for the same run.
+	_run.claim_reward()
 	if not victory:
-		_death_screen.open()
+		_death_screen.open("", "", "", summary_text())
 		return
 	# The run is won: nothing can hurt or move the Warden any more.
 	_player.input_enabled = false
 	_player.health.invulnerable = true
-	_death_screen.open(level.victory_title, "The ash settles, for now.", "Play again")
+	_death_screen.open(level.victory_title, "The ash settles, for now.", "Play again",
+			summary_text(), VICTORY_SUMMARY_DELAY)
+
+
+## The run's summary, as shown on the end screen.
+func summary_text() -> String:
+	var seconds := int(_run.elapsed)
+	return "Time %d:%02d    Enemies slain %d    Damage taken %d\nAsh earned %d    Ash held %d" % [
+			seconds / 60, seconds % 60, _run.kills, _run.damage_taken, _run.ash, Profile.ash]

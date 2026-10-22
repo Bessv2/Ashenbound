@@ -214,8 +214,10 @@ checklist below is the full manual pass.
 - [ ] Walking behind a tall wall (in each corridor) the Warden stays visible
       through a small see-through patch in the wall.
 - [ ] The Chapel and the Throne seal and open the same way. Killing the Lord
-      shows "The crypt is cleared"; **Play again** starts over in the
-      Gatehouse.
+      shows "The crypt is cleared" about 2 s later, with time, enemies slain,
+      damage taken and the Ash earned (76 for a full run); **Play again**
+      starts over in the Gatehouse. Dying shows the same summary with the Ash
+      earned so far.
 - [ ] The health bar drops when you are hit. At zero the player falls,
       "You have fallen" appears, and **Rise again** restarts with full health.
 

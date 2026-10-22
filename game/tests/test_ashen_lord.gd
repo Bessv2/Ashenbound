@@ -165,3 +165,15 @@ func test_the_boss_bar_follows_the_lord_in_the_throne() -> void:
 	_hit(lord, 1000)
 	await wait_process_frames(3)
 	check(not bar.visible, "gone when he dies")
+
+
+func test_a_killing_blow_starts_no_phase() -> void:
+	_setup()
+	player.health.invulnerable = true
+	var encounter := _lord_encounter()
+	var lord := _lord(encounter)
+	await wait_physics_frames(30)  # Past his rise.
+	var phases: Array[int] = []
+	lord.phase_changed.connect(func(p: int) -> void: phases.append(p))
+	_hit(lord, 1000)
+	check(phases.is_empty() and lord.adds.is_empty(), "no roar, no adds from the blow that kills him: %s" % [phases])

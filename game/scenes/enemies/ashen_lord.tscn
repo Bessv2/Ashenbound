@@ -38,6 +38,7 @@ navigation = NodePath("NavigationAgent")
 slam_attack = NodePath("AshSlam")
 add_scene = ExtResource("24_add")
 animator = NodePath("Animator")
+ash_value = 50
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
