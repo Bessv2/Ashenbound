@@ -97,8 +97,12 @@ func _strike() -> Array[Health]:
 	for target in _living_targets_within(data.reach):
 		var body := target.get_parent() as Node3D
 		if is_in_arc(body.global_position - origin, direction, data.arc_degrees) \
-				and target.apply_damage(data.damage) > 0:
+				and target.apply_damage(data.damage, origin) > 0:
 			hits.append(target)
+			if data.knockback > 0.0 and body.has_method(&"push"):
+				var away := body.global_position - origin
+				away.y = 0.0
+				body.push((away.normalized() if not away.is_zero_approx() else direction) * data.knockback)
 	return hits
 
 

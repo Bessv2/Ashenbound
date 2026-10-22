@@ -22,6 +22,10 @@ var invulnerable: bool = false
 ## Share of each hit that is dealt, rounded to the nearest whole point. Set by
 ## Bulwark Guard while it is up.
 var damage_multiplier: float = 1.0
+## Optional: returns an extra damage factor for a hit coming from a world
+## position, e.g. a shield that halves hits from the front (FrontalGuard).
+## Called only for hits that say where they come from.
+var direction_multiplier: Callable
 
 
 func _ready() -> void:
@@ -33,14 +37,18 @@ func is_dead() -> bool:
 
 
 ## Applies damage and returns the amount actually dealt: `amount` scaled by
-## `damage_multiplier`, and no more than the remaining health. Dead and
-## invulnerable targets take none.
-func apply_damage(amount: int) -> int:
+## `damage_multiplier` (and by `direction_multiplier` when `from`, the world
+## position the hit comes from, is given), and no more than the remaining
+## health. Dead and invulnerable targets take none.
+func apply_damage(amount: int, from: Vector3 = Vector3.INF) -> int:
 	if is_dead() or invulnerable or amount <= 0:
 		return 0
+	var multiplier := damage_multiplier
+	if from != Vector3.INF and direction_multiplier.is_valid():
+		multiplier *= direction_multiplier.call(from)
 	# Fixed before `hit` is emitted, so a handler that changes the multiplier
 	# (a guard ending, for one) does not change this hit.
-	var mitigated := maxi(roundi(amount * damage_multiplier), 0)
+	var mitigated := maxi(roundi(amount * multiplier), 0)
 	hit.emit(amount)
 	if mitigated == 0 or is_dead():
 		return 0

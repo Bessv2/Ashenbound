@@ -34,6 +34,9 @@ const GROUP := &"player"
 
 ## Time left in which a dodge press waits for the dodge to become ready.
 var _dodge_buffer_left: float = 0.0
+## A shove in progress (see push()): its velocity and the time it has left.
+var _push_velocity: Vector3 = Vector3.ZERO
+var _push_left: float = 0.0
 
 
 func _ready() -> void:
@@ -46,6 +49,19 @@ func _ready() -> void:
 
 func is_alive() -> bool:
 	return health == null or not health.is_dead()
+
+
+## Shoves the character by `offset` (flat) over `seconds`, overriding its own
+## movement but not a dodge. Walls stop it as usual. A new push replaces one
+## in progress.
+func push(offset: Vector3, seconds: float = 0.2) -> void:
+	seconds = maxf(seconds, 0.01)
+	_push_velocity = Vector3(offset.x, 0.0, offset.z) / seconds
+	_push_left = seconds
+
+
+func is_being_pushed() -> bool:
+	return _push_left > 0.0
 
 
 func _physics_process(delta: float) -> void:
@@ -63,7 +79,11 @@ func _physics_process(delta: float) -> void:
 		attack.try_start(_facing())
 
 	var horizontal := dash
-	if not dodging:
+	if _push_left > 0.0 and not dodging:
+		# The last tick covers only what is left, so the distance is exact.
+		horizontal = _push_velocity * minf(delta, _push_left) / delta
+		_push_left -= delta
+	elif not dodging:
 		var speed := stats.move_speed * (attack.movement_multiplier() if attack else 1.0)
 		if busy_ability:
 			speed = stats.move_speed * busy_ability.movement_multiplier()

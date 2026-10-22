@@ -39,7 +39,7 @@ Status labels follow the charter:
 | 0: Repository and toolchain baseline | Verified in runtime | Imports cleanly, runs, tests pass, a debug APK exports and its signature verifies. |
 | 1: Movement and camera | Verified in runtime | **Device gate blocked:** there is no Android device, and no `/dev/kvm` for an emulator. The manual checklist is in [BUILD_ANDROID.md](BUILD_ANDROID.md#manual-device-checklist). |
 | 2: Combat foundation | In progress | See below. |
-| 3: First dungeon | In progress | Spec: [dungeons/ashen_crypt.md](dungeons/ashen_crypt.md). Steps 1 (encounters), 2 (the crypt) and 3 (the Dark Cultist) of 6 validated and verified in runtime. |
+| 3: First dungeon | In progress | Spec: [dungeons/ashen_crypt.md](dungeons/ashen_crypt.md). Steps 1 to 4 of 6 (encounters, the crypt, the Dark Cultist, the Fallen Knight) validated and verified in runtime. |
 | 4: First loot loop | Parked | PR #6 |
 | 5 to 7 | Not started | |
 
@@ -83,10 +83,10 @@ owner's request, so the web preview could be published from `main`.
 
 ## Next task
 
-Milestone 3, step 4 of 6: **the Fallen Knight**, the elite: a heavy cleave,
-a shield bash every third attack that pushes the player back, half damage from
-the front while it is not attacking, and its own health bar and name. It
-leads the Chapel's second wave. The spec and the
+Milestone 3, step 5 of 6: **the Ashen Lord**, the boss of the Throne: 600 HP,
+three phases (Cinder Cleave and Ash Slam; then a roar, three summoned
+Skeleton Warriors and the Ember Ring; then faster everything), and a boss bar
+across the top of the screen. The spec and the
 build order are in [dungeons/ashen_crypt.md](dungeons/ashen_crypt.md).
 
 After Milestone 3: Milestone 4, the loot loop (items, rarities, affixes,

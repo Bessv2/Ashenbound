@@ -30,7 +30,7 @@ appreciated but not required. The licence texts are in
 | Pack | Source | Commit | Files used | Used for |
 |---|---|---|---|---|
 | KayKit Character Pack: Adventurers 1.0 | github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0 | `672074b` | `Characters/gltf/Knight.glb`, `knight_texture.png` (as the recolour source) | The Warden |
-| KayKit Character Pack: Skeletons 1.0 | github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0 | `15b62b9` | `Characters/gltf/Skeleton_Warrior.glb`, `Characters/gltf/Skeleton_Mage.glb`, `Assets/gltf/Skeleton_Blade.gltf` and `Skeleton_Staff.gltf` + `.bin` + `skeleton_texture.png` | The Skeleton Warrior enemy, the training targets (as stone statues), and the Dark Cultist (Skeleton Mage) |
+| KayKit Character Pack: Skeletons 1.0 | github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0 | `15b62b9` | `Characters/gltf/Skeleton_Warrior.glb`, `Characters/gltf/Skeleton_Mage.glb`, `Assets/gltf/Skeleton_Blade.gltf`, `Skeleton_Staff.gltf`, `Skeleton_Axe.gltf`, `Skeleton_Shield_Large_A.gltf` + `.bin` + `skeleton_texture.png` | The Skeleton Warrior enemy, the training targets (as stone statues), the Dark Cultist (Skeleton Mage) and the Fallen Knight (Skeleton Warrior at 1.25×, darkened by its material) |
 | KayKit Dungeon Remastered 1.0 | github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0 | `b0ca9bd` | 9 pieces in `game/assets/third_party/kaykit/dungeon/`: floor_tile_large, wall, wall_cracked, wall_doorway, column, pillar_decorated, torch_mounted, banner_red, barrel_large | The arena and the Ashen Crypt |
 
 The dungeon files were renamed from `<name>.gltf.glb` to `<name>.glb`.

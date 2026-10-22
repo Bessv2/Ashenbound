@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://scripts/encounters/wave_data.gd" id="2_wave"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/skeleton_warrior.tscn" id="3_skeleton"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/dark_cultist.tscn" id="4_cultist"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/fallen_knight.tscn" id="5_knight"]
 
 [sub_resource type="Resource" id="Resource_wave1"]
 script = ExtResource("2_wave")
@@ -12,8 +13,8 @@ markers = PackedStringArray("NorthEast", "NorthWest", "East", "West")
 
 [sub_resource type="Resource" id="Resource_wave2"]
 script = ExtResource("2_wave")
-enemies = Array[PackedScene]([ExtResource("3_skeleton"), ExtResource("3_skeleton"), ExtResource("3_skeleton"), ExtResource("3_skeleton")])
-markers = PackedStringArray("North", "SouthEast", "SouthWest", "NorthEast")
+enemies = Array[PackedScene]([ExtResource("5_knight"), ExtResource("3_skeleton"), ExtResource("3_skeleton")])
+markers = PackedStringArray("North", "SouthEast", "SouthWest")
 
 [resource]
 script = ExtResource("1_encounter")
