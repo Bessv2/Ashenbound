@@ -9,6 +9,9 @@ signal dropped(pickup: LootPickup)
 signal collected(item: ItemInstance)
 
 @export_range(1, 100, 1) var item_level: int = 1
+## Set from the crypt tier: more drops, and rarer ones.
+var chance_scale: float = 1.0
+var rarity_scale: float = 1.0
 
 var inventory: Inventory
 var catalog: ItemCatalog
@@ -28,7 +31,7 @@ func on_enemy_killed(enemy: Node3D) -> void:
 	if not enemy is EnemyController or (enemy as EnemyController).drop_table == null:
 		return
 	var table: DropTable = (enemy as EnemyController).drop_table
-	var items := table.roll(catalog, item_level, _rng)
+	var items := table.roll(catalog, item_level, _rng, chance_scale, rarity_scale)
 	for i in items.size():
 		var angle := TAU * i / maxf(items.size(), 1.0)
 		drop(items[i], enemy.global_position + Vector3(cos(angle), 0.0, sin(angle)) * (0.0 if items.size() == 1 else 1.0))

@@ -20,7 +20,7 @@ func _strike() -> Array[Health]:
 	var projectile := projectile_scene.instantiate() as Projectile
 	projectile.direction = direction
 	projectile.speed = settings.speed
-	projectile.damage = settings.damage
+	projectile.damage = roll_damage()
 	projectile.max_distance = settings.reach
 	projectile.target_mask = target_mask
 	if shooter is CollisionObject3D:

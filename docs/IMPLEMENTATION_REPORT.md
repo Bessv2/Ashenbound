@@ -1040,3 +1040,37 @@ Commands run:
 Not tested:
 - On a phone: effect cost on mobile GPUs, and whether the shake feels right.
 ```
+
+## 24. Crypt tiers (branch `feature/crypt-tiers`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: gameplay loop (owner request 2026-10-22: "Up the gameplay loop")
+Status: Validated, verified in runtime (desktop software Vulkan); not verified on device
+
+Changes:
+- docs/dungeons/tiers.md: tiers 1 to 10, unlock and choice rules, scaling.
+- Difficulty: one place for the numbers; scales enemies as they spawn
+  (health, every attack's damage_scale, Ash, XP).
+- Bolts and the Lord's ring now deal damage through roll_damage(), so they
+  scale like melee hits.
+- Drops: item level, drop chance and rarity follow the tier.
+- Profile: tier_unlocked and tier, complete_tier(), select_tier(); save
+  version 3, older saves at tier 1.
+- End screen: a second button; descend / replay after a win, retry / lower
+  after a fall. The summary names the tier.
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 225 passed, 0 failed (6 new in test_crypt_tiers.gd); probes that
+  drop the damage scaling, the unlock, or the saved tier fail the matching
+  tests
+- Command: a tier 3 crypt run rendered under Xvfb
+  Exit code: 0
+  Result: 152 Ash (2 × 76), "Descend to tier 4" and "Replay tier 3" shown
+
+Not tested:
+- On a phone; balance of the higher tiers in real play.
+```

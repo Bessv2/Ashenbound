@@ -10,6 +10,8 @@ extends Node3D
 @export var encounters_start_by_themselves: bool = true
 
 var level: Level
+## The crypt tier of this run, from Profile.tier when the scene starts.
+var difficulty: Difficulty
 
 @onready var _pause_controller: PauseController = $PauseController
 @onready var _player: PlayerController = $Player
@@ -45,7 +47,10 @@ func _ready() -> void:
 	Profile.leveled_up.connect(_on_leveled_up)
 	_run.kill_counted.connect(_loot.on_enemy_killed)
 	_loot.collected.connect(_on_loot_collected)
-	_death_screen.restart_requested.connect(restart)
+	_death_screen.restart_requested.connect(_on_restart_chosen)
+	_death_screen.alternate_requested.connect(_on_alternate_chosen)
+	if difficulty.tier > 1:
+		_hud.show_toast("Tier %d: the dead grow stronger" % difficulty.tier, Color("#D9A44C"))
 
 
 ## Shakes the camera when the hero is hurt, lands a critical hit or kills an
@@ -107,9 +112,11 @@ func _load_level() -> void:
 		return
 	level = level_scene.instantiate() as Level
 	level.name = "Level"
-	if not encounters_start_by_themselves:
-		for node in level.find_children("*", "Node3D", true, false):
-			if node is EncounterController:
+	difficulty = Difficulty.new(Profile.tier)
+	for node in level.find_children("*", "Node3D", true, false):
+		if node is EncounterController:
+			node.difficulty = difficulty
+			if not encounters_start_by_themselves:
 				node.auto_start = false
 	add_child(level)
 	move_child(level, 0)
@@ -118,7 +125,9 @@ func _load_level() -> void:
 		_player.reset_physics_interpolation()
 		_camera_rig.snap_to_target()
 	_run.watch(level.encounters)
-	_loot.item_level = level.item_level
+	_loot.item_level = difficulty.item_level(level.item_level)
+	_loot.chance_scale = difficulty.drop_chance_scale()
+	_loot.rarity_scale = difficulty.rarity_scale()
 
 
 func _on_loot_collected(item: ItemInstance) -> void:
@@ -150,19 +159,46 @@ func _on_run_ended(victory: bool) -> void:
 	# any second attempt for the same run.
 	_run.claim_reward()
 	if not victory:
-		_death_screen.open("", "", "", summary_text())
+		_death_screen.open("", "", "", summary_text(), -1.0,
+				"Lower to tier %d" % (difficulty.tier - 1) if difficulty.tier > 1 else "")
 		return
+	Profile.complete_tier(difficulty.tier)
 	# The run is won: nothing can hurt or move the Warden any more, so what
 	# still lies on the floor is gathered for him.
 	_loot.collect_all()
 	_player.input_enabled = false
 	_player.health.invulnerable = true
-	_death_screen.open(level.victory_title, "The ash settles, for now.", "Play again",
-			summary_text(), VICTORY_SUMMARY_DELAY)
+	if difficulty.tier < Profile.tier_unlocked:
+		_death_screen.open(level.victory_title, "Deeper, the dead stir.", "Descend to tier %d" % (difficulty.tier + 1),
+				summary_text(), VICTORY_SUMMARY_DELAY, "Replay tier %d" % difficulty.tier)
+	else:
+		_death_screen.open(level.victory_title, "The ash settles, for now.", "Play again",
+				summary_text(), VICTORY_SUMMARY_DELAY)
+
+
+## The tier an end-screen button leads to: the main button goes deeper after
+## a win and retries the tier after a fall; the second button replays the
+## tier after a win and goes one lower after a fall. Profile keeps it within
+## the open tiers.
+func tier_after(main_button: bool) -> int:
+	var won := _run.result == RunController.Result.VICTORY
+	if main_button:
+		return difficulty.tier + 1 if won else difficulty.tier
+	return difficulty.tier if won else difficulty.tier - 1
+
+
+func _on_restart_chosen() -> void:
+	Profile.select_tier(tier_after(true))
+	restart()
+
+
+func _on_alternate_chosen() -> void:
+	Profile.select_tier(tier_after(false))
+	restart()
 
 
 ## The run's summary, as shown on the end screen.
 func summary_text() -> String:
 	var seconds := int(_run.elapsed)
-	return "Time %d:%02d    Enemies slain %d    Damage taken %d\nAsh earned %d    Ash held %d    Items found %d" % [
-			seconds / 60, seconds % 60, _run.kills, _run.damage_taken, _run.ash, Profile.ash, _loot_found]
+	return "Tier %d    Time %d:%02d    Enemies slain %d    Damage taken %d\nAsh earned %d    Ash held %d    Items found %d" % [
+			difficulty.tier, seconds / 60, seconds % 60, _run.kills, _run.damage_taken, _run.ash, Profile.ash, _loot_found]

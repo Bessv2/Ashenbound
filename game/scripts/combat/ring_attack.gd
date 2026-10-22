@@ -15,7 +15,7 @@ func _strike() -> Array[Health]:
 		push_error("%s: a RingAttack needs a ring scene." % attacker.name)
 		return []
 	var ring := ring_scene.instantiate() as EmberRing
-	ring.damage = data.damage
+	ring.damage = roll_damage()
 	ring.max_radius = data.reach
 	ring.duration = expand_seconds
 	ring.target_mask = target_mask

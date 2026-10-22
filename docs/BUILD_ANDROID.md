@@ -221,6 +221,10 @@ checklist below is the full manual pass.
       **SKILLS** opens the trees: learning Stalwart raises max health at once;
       **Reset** gives the points back. The Reaver and Hexbinder tabs are
       previews.
+- [ ] After clearing the crypt, **Descend to tier 2** starts a harder run
+      ("Tier 2" message, tougher enemies, more Ash); **Replay** keeps the
+      tier. After a fall at tier 2, **Lower to tier 1** goes back. The tier
+      survives closing the app.
 - [ ] Each hit throws sparks and the swing leaves an ember arc (gold on a
       critical hit); an enemy dying bursts into ash and embers. Taking a hit,
       a critical hit and killing the Knight or the Lord shake the camera;

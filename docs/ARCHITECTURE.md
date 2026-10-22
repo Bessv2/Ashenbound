@@ -394,6 +394,13 @@ Milestone 3, step 1 ([dungeons/ashen_crypt.md](dungeons/ashen_crypt.md)).
   counts as gone when its Health dies (the corpse may linger). When a wave is
   dead the next one starts after the delay; after the last, `cleared` fires
   once. It also emits `wave_started(index)` and `enemy_killed(enemy)`.
+- **`Difficulty`** (`scripts/dungeon/difficulty.gd`): the crypt tier of a
+  run ([dungeons/tiers.md](dungeons/tiers.md)). `Main` makes one from
+  `Profile.tier`, gives it to every `EncounterController` (which scales each
+  enemy as it spawns or is adopted) and sets the `LootDropper`'s item level,
+  drop chance and rarity from it. A win calls `Profile.complete_tier()`; the
+  end screen's buttons choose the next run's tier through
+  `Main.tier_after()` and `Profile.select_tier()`.
 - **`RunController`** (Node, `Run` in the main scene): the run is won when
   every listed encounter is cleared and lost when the player dies. The first
   result stands; anything after is ignored. Counts kills and play time
