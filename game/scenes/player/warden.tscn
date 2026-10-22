@@ -26,6 +26,8 @@
 
 [ext_resource type="Resource" path="res://resources/skills/warden_tree.tres" id="27_tree"]
 
+[ext_resource type="Script" path="res://scripts/presentation/attack_swoosh.gd" id="28_swoosh"]
+
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
 height = 1.8
@@ -84,6 +86,8 @@ visual = NodePath("../Visual")
 flash_material = ExtResource("11_flash")
 number_height = 2.3
 number_color = Color(1, 0.35, 0.3, 1)
+spark_color = Color(1, 0.25, 0.2, 1)
+death_burst = false
 
 [node name="Dodge" type="Node" parent="." node_paths=PackedStringArray("health")]
 script = ExtResource("12_dodge")
@@ -146,3 +150,7 @@ script = ExtResource("25_occlusion")
 script = ExtResource("26_stats")
 player = NodePath("..")
 skill_tree = ExtResource("27_tree")
+
+[node name="Swoosh" type="Node" parent="." node_paths=PackedStringArray("attacks")]
+script = ExtResource("28_swoosh")
+attacks = [NodePath("../MeleeAttack"), NodePath("../CleaveAttack"), NodePath("../CounterAttack")]

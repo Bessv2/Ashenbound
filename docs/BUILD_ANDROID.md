@@ -221,6 +221,10 @@ checklist below is the full manual pass.
       **SKILLS** opens the trees: learning Stalwart raises max health at once;
       **Reset** gives the points back. The Reaver and Hexbinder tabs are
       previews.
+- [ ] Each hit throws sparks and the swing leaves an ember arc (gold on a
+      critical hit); an enemy dying bursts into ash and embers. Taking a hit,
+      a critical hit and killing the Knight or the Lord shake the camera;
+      **Screen shake** in the pause menu turns that off.
 - [ ] Walking behind a tall wall (in each corridor) the Warden stays visible
       through a small see-through patch in the wall.
 - [ ] The Chapel and the Throne seal and open the same way. Killing the Lord

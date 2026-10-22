@@ -21,6 +21,17 @@ const ISOMETRIC_PITCH_DEGREES := -35.264
 ## Point on the target to keep centered, relative to its origin.
 @export var target_offset: Vector3 = Vector3(0.0, 1.0, 0.0)
 
+## Largest shake offset, in metres, at full trauma.
+@export_range(0.0, 2.0, 0.01, "suffix:m") var shake_offset: float = 0.35
+## Trauma lost per second.
+@export_range(0.1, 10.0, 0.1) var shake_decay: float = 2.2
+## Turned off by the player's settings (accessibility).
+var shake_enabled: bool = true
+
+## 0 to 1; the shake grows with its square, so small hits stay subtle.
+var trauma: float = 0.0
+var _shake_time: float = 0.0
+
 @onready var camera: Camera3D = $Camera3D
 
 
@@ -33,11 +44,30 @@ func _ready() -> void:
 	snap_to_target()
 
 
+## Shakes the camera; `amount` (0 to 1) adds up and decays over time.
+func add_trauma(amount: float) -> void:
+	if shake_enabled:
+		trauma = clampf(trauma + amount, 0.0, 1.0)
+
+
 func _process(delta: float) -> void:
+	_update_shake(delta)
 	if target == null:
 		return
 	var weight := 1.0 - exp(-follow_sharpness * delta)
 	global_position = global_position.lerp(_focus_point(), weight)
+
+
+func _update_shake(delta: float) -> void:
+	if get_tree().paused:
+		return
+	trauma = maxf(trauma - shake_decay * delta, 0.0)
+	_shake_time += delta
+	var strength := trauma * trauma * shake_offset
+	# Smooth pseudo-noise from two sines per axis; the camera only moves
+	# sideways and up in its own plane, never rotates.
+	camera.position.x = strength * sin(_shake_time * 47.0) * cos(_shake_time * 23.0)
+	camera.position.y = strength * sin(_shake_time * 39.0 + 1.3) * cos(_shake_time * 17.0)
 
 
 ## Jumps to the target without smoothing, e.g. after spawning or teleporting.

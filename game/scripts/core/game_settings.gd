@@ -19,6 +19,8 @@ const GRAPHICS := "graphics"
 @export_range(0.5, 1.0, 0.05) var render_scale: float = 1.0
 ## Frame rate cap. 0 means uncapped (still limited by V-Sync).
 @export_range(0, 240, 1) var max_fps: int = 60
+## Camera shake on heavy hits. Off for players it bothers.
+@export var screen_shake: bool = true
 
 
 func write_to(config: ConfigFile) -> void:
@@ -26,6 +28,7 @@ func write_to(config: ConfigFile) -> void:
 	config.set_value(CONTROLS, "joystick_sensitivity", joystick_sensitivity)
 	config.set_value(GRAPHICS, "render_scale", render_scale)
 	config.set_value(GRAPHICS, "max_fps", max_fps)
+	config.set_value(GRAPHICS, "screen_shake", screen_shake)
 
 
 ## Reads known keys from config. Missing or malformed values keep their
@@ -35,6 +38,8 @@ func read_from(config: ConfigFile) -> void:
 	joystick_sensitivity = _read_number(config, CONTROLS, "joystick_sensitivity", joystick_sensitivity, 0.5, 2.0)
 	render_scale = _read_number(config, GRAPHICS, "render_scale", render_scale, 0.5, 1.0)
 	max_fps = int(_read_number(config, GRAPHICS, "max_fps", max_fps, 0, 240))
+	var shake: Variant = config.get_value(GRAPHICS, "screen_shake", screen_shake)
+	screen_shake = shake if shake is bool else screen_shake
 
 
 static func _read_number(
