@@ -22,7 +22,8 @@ func _give_points(points: int) -> void:
 		Profile.add_xp(Profile.xp_to_next(Profile.level))
 
 
-func test_the_three_trees_are_complete() -> void:
+func test_all_six_trees_are_complete() -> void:
+	check(SkillTreePanel.TREE_PATHS.size() == 6, "one tree per class of the roster")
 	for path in SkillTreePanel.TREE_PATHS:
 		var tree: SkillTree = load(path)
 		check(tree.validate().is_empty(), "%s: %s" % [tree.class_id, tree.validate()])
@@ -30,8 +31,8 @@ func test_the_three_trees_are_complete() -> void:
 		for branch in 3:
 			check(tree.nodes.filter(func(n: SkillNode) -> bool: return n.branch == branch).size() == 5, "%s branch %d" % [tree.class_id, branch])
 	check(WARDEN_TREE.playable, "the Warden's tree is playable")
-	check(not (load(SkillTreePanel.TREE_PATHS[1]) as SkillTree).playable and not (load(SkillTreePanel.TREE_PATHS[2]) as SkillTree).playable,
-			"the Reaver and Hexbinder trees are previews")
+	for path in SkillTreePanel.TREE_PATHS.slice(1):
+		check(not (load(path) as SkillTree).playable, "%s is a preview" % path.get_file())
 
 
 func test_xp_levels_up_along_the_curve_and_each_level_gives_a_point() -> void:

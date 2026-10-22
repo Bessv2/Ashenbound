@@ -16,6 +16,9 @@ const KNOWN := [
 	# Future classes.
 	"bleed_damage_pct", "veil_rend_damage_pct", "dash_cooldown_pct", "mark_damage_pct",
 	"curse_duration_pct", "curse_damage_pct", "soul_siphon_pct", "detonation_damage_pct", "black_testament_pct",
+	"charged_shot_damage_pct", "trap_duration_pct", "trap_damage_pct", "deadfall_bolts", "companion_damage_pct",
+	"healing_pct", "radiance_damage_pct", "martyr_damage_pct", "benediction_heal_pct",
+	"summon_count", "summon_health_pct", "summon_damage_pct", "summon_duration_pct", "soul_harvest_pct",
 ]
 
 

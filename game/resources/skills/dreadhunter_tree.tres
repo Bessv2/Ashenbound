@@ -1,0 +1,177 @@
+[gd_resource type="Resource" script_class="SkillTree" format=3]
+
+[ext_resource type="Script" path="res://scripts/progression/skill_tree.gd" id="1_tree"]
+[ext_resource type="Script" path="res://scripts/progression/skill_node.gd" id="2_node"]
+
+[sub_resource type="Resource" id="Node_steady_aim"]
+script = ExtResource("2_node")
+id = "steady_aim"
+display_name = "Steady Aim"
+description = "+2% critical chance per rank."
+branch = 0
+tier = 0
+max_rank = 5
+per_rank = Dictionary[String, int]({"crit_chance": 2})
+requires = ""
+
+[sub_resource type="Resource" id="Node_drawn_shaft"]
+script = ExtResource("2_node")
+id = "drawn_shaft"
+display_name = "Drawn Shaft"
+description = "Charged shots deal +15% damage per rank."
+branch = 0
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"charged_shot_damage_pct": 15})
+requires = "steady_aim"
+
+[sub_resource type="Resource" id="Node_weak_point"]
+script = ExtResource("2_node")
+id = "weak_point"
+display_name = "Weak Point"
+description = "+15% critical damage per rank."
+branch = 0
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"crit_damage": 15})
+requires = "steady_aim"
+
+[sub_resource type="Resource" id="Node_piercing_volley"]
+script = ExtResource("2_node")
+id = "piercing_volley"
+display_name = "Piercing Volley"
+description = "Charged shots deal +20% damage per rank and pierce."
+branch = 0
+tier = 2
+max_rank = 3
+per_rank = Dictionary[String, int]({"charged_shot_damage_pct": 20})
+requires = "drawn_shaft"
+
+[sub_resource type="Resource" id="Node_deadeye"]
+script = ExtResource("2_node")
+id = "deadeye"
+display_name = "Deadeye"
+description = "+5% damage per rank."
+branch = 0
+tier = 2
+max_rank = 2
+per_rank = Dictionary[String, int]({"damage_pct": 5})
+requires = "weak_point"
+
+[sub_resource type="Resource" id="Node_snare_craft"]
+script = ExtResource("2_node")
+id = "snare_craft"
+display_name = "Snare Craft"
+description = "Traps last 10% longer per rank."
+branch = 1
+tier = 0
+max_rank = 5
+per_rank = Dictionary[String, int]({"trap_duration_pct": 10})
+requires = ""
+
+[sub_resource type="Resource" id="Node_fleet_hunter"]
+script = ExtResource("2_node")
+id = "fleet_hunter"
+display_name = "Fleet Hunter"
+description = "+3% move speed per rank."
+branch = 1
+tier = 0
+max_rank = 3
+per_rank = Dictionary[String, int]({"move_speed_pct": 3})
+requires = ""
+
+[sub_resource type="Resource" id="Node_bramble_spikes"]
+script = ExtResource("2_node")
+id = "bramble_spikes"
+display_name = "Bramble Spikes"
+description = "Traps deal +15% damage per rank."
+branch = 1
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"trap_damage_pct": 15})
+requires = "snare_craft"
+
+[sub_resource type="Resource" id="Node_deadfall_mastery"]
+script = ExtResource("2_node")
+id = "deadfall_mastery"
+display_name = "Deadfall Mastery"
+description = "Deadfall erupts with 2 more bolts per rank."
+branch = 1
+tier = 2
+max_rank = 3
+per_rank = Dictionary[String, int]({"deadfall_bolts": 2})
+requires = "bramble_spikes"
+
+[sub_resource type="Resource" id="Node_killing_ground"]
+script = ExtResource("2_node")
+id = "killing_ground"
+display_name = "Killing Ground"
+description = "+4% damage per rank."
+branch = 1
+tier = 2
+max_rank = 2
+per_rank = Dictionary[String, int]({"damage_pct": 4})
+requires = "bramble_spikes"
+
+[sub_resource type="Resource" id="Node_hunters_bond"]
+script = ExtResource("2_node")
+id = "hunters_bond"
+display_name = "Hunter's Bond"
+description = "Your companion deals +10% damage per rank."
+branch = 2
+tier = 0
+max_rank = 5
+per_rank = Dictionary[String, int]({"companion_damage_pct": 10})
+requires = ""
+
+[sub_resource type="Resource" id="Node_thick_hide"]
+script = ExtResource("2_node")
+id = "thick_hide"
+display_name = "Thick Hide"
+description = "+8 max health per rank."
+branch = 2
+tier = 0
+max_rank = 5
+per_rank = Dictionary[String, int]({"max_health": 8})
+requires = ""
+
+[sub_resource type="Resource" id="Node_pack_instinct"]
+script = ExtResource("2_node")
+id = "pack_instinct"
+display_name = "Pack Instinct"
+description = "+4% attack speed per rank."
+branch = 2
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"attack_speed_pct": 4})
+requires = "hunters_bond"
+
+[sub_resource type="Resource" id="Node_wild_heart"]
+script = ExtResource("2_node")
+id = "wild_heart"
+display_name = "Wild Heart"
+description = "Each kill heals 2 per rank."
+branch = 2
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"health_on_kill": 2})
+requires = "thick_hide"
+
+[sub_resource type="Resource" id="Node_savage_bite"]
+script = ExtResource("2_node")
+id = "savage_bite"
+display_name = "Savage Bite"
+description = "Your companion deals +20% damage per rank."
+branch = 2
+tier = 2
+max_rank = 3
+per_rank = Dictionary[String, int]({"companion_damage_pct": 20})
+requires = "pack_instinct"
+
+[resource]
+script = ExtResource("1_tree")
+class_id = "dreadhunter"
+class_title = "Dreadhunter"
+playable = false
+branches = PackedStringArray("Precision", "Trapper", "Beastcraft")
+nodes = Array[ExtResource("2_node")]([SubResource("Node_steady_aim"), SubResource("Node_drawn_shaft"), SubResource("Node_weak_point"), SubResource("Node_piercing_volley"), SubResource("Node_deadeye"), SubResource("Node_snare_craft"), SubResource("Node_fleet_hunter"), SubResource("Node_bramble_spikes"), SubResource("Node_deadfall_mastery"), SubResource("Node_killing_ground"), SubResource("Node_hunters_bond"), SubResource("Node_thick_hide"), SubResource("Node_pack_instinct"), SubResource("Node_wild_heart"), SubResource("Node_savage_bite")])

@@ -14,6 +14,9 @@ const TREE_PATHS := [
 	"res://resources/skills/warden_tree.tres",
 	"res://resources/skills/reaver_tree.tres",
 	"res://resources/skills/hexbinder_tree.tres",
+	"res://resources/skills/dreadhunter_tree.tres",
+	"res://resources/skills/reliquary_tree.tres",
+	"res://resources/skills/gravecaller_tree.tres",
 ]
 const NODE_SIZE := Vector2(190, 84)
 const LEARNED := Color("#D9A44C")
@@ -108,7 +111,8 @@ func _build() -> void:
 	for i in trees.size():
 		var tab := Button.new()
 		tab.text = trees[i].class_title
-		tab.custom_minimum_size = Vector2(170, 72)
+		tab.custom_minimum_size = Vector2(118, 72)
+		tab.add_theme_font_size_override(&"font_size", 18)
 		tab.pressed.connect(show_tree.bind(i))
 		_tabs.add_child(tab)
 	var spacer := Control.new()

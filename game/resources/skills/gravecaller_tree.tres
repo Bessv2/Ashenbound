@@ -1,0 +1,177 @@
+[gd_resource type="Resource" script_class="SkillTree" format=3]
+
+[ext_resource type="Script" path="res://scripts/progression/skill_tree.gd" id="1_tree"]
+[ext_resource type="Script" path="res://scripts/progression/skill_node.gd" id="2_node"]
+
+[sub_resource type="Resource" id="Node_grave_discipline"]
+script = ExtResource("2_node")
+id = "grave_discipline"
+display_name = "Grave Discipline"
+description = "Summons have +8% health per rank."
+branch = 0
+tier = 0
+max_rank = 5
+per_rank = Dictionary[String, int]({"summon_health_pct": 8})
+requires = ""
+
+[sub_resource type="Resource" id="Node_shieldbearers"]
+script = ExtResource("2_node")
+id = "shieldbearers"
+display_name = "Shieldbearers"
+description = "Summons have +15% health per rank."
+branch = 0
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"summon_health_pct": 15})
+requires = "grave_discipline"
+
+[sub_resource type="Resource" id="Node_mass_grave"]
+script = ExtResource("2_node")
+id = "mass_grave"
+display_name = "Mass Grave"
+description = "Raise the Forsaken calls 1 more skeleton per rank."
+branch = 0
+tier = 1
+max_rank = 2
+per_rank = Dictionary[String, int]({"summon_count": 1})
+requires = "grave_discipline"
+
+[sub_resource type="Resource" id="Node_phalanx"]
+script = ExtResource("2_node")
+id = "phalanx"
+display_name = "Phalanx"
+description = "Summons deal +15% damage per rank."
+branch = 0
+tier = 2
+max_rank = 3
+per_rank = Dictionary[String, int]({"summon_damage_pct": 15})
+requires = "shieldbearers"
+
+[sub_resource type="Resource" id="Node_forsaken_host"]
+script = ExtResource("2_node")
+id = "forsaken_host"
+display_name = "Forsaken Host"
+description = "Summons last 20% longer per rank."
+branch = 0
+tier = 2
+max_rank = 2
+per_rank = Dictionary[String, int]({"summon_duration_pct": 20})
+requires = "mass_grave"
+
+[sub_resource type="Resource" id="Node_restless_dead"]
+script = ExtResource("2_node")
+id = "restless_dead"
+display_name = "Restless Dead"
+description = "Summons deal +5% damage per rank."
+branch = 1
+tier = 0
+max_rank = 5
+per_rank = Dictionary[String, int]({"summon_damage_pct": 5})
+requires = ""
+
+[sub_resource type="Resource" id="Node_chill_touch"]
+script = ExtResource("2_node")
+id = "chill_touch"
+display_name = "Chill Touch"
+description = "+4% attack speed per rank."
+branch = 1
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"attack_speed_pct": 4})
+requires = "restless_dead"
+
+[sub_resource type="Resource" id="Node_wailing"]
+script = ExtResource("2_node")
+id = "wailing"
+display_name = "Wailing"
+description = "+4% cooldown reduction per rank."
+branch = 1
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"cooldown_reduction": 4})
+requires = "restless_dead"
+
+[sub_resource type="Resource" id="Node_phantom_swarm"]
+script = ExtResource("2_node")
+id = "phantom_swarm"
+display_name = "Phantom Swarm"
+description = "One more wraith per rank."
+branch = 1
+tier = 2
+max_rank = 2
+per_rank = Dictionary[String, int]({"summon_count": 1})
+requires = "chill_touch"
+
+[sub_resource type="Resource" id="Node_dread_aura"]
+script = ExtResource("2_node")
+id = "dread_aura"
+display_name = "Dread Aura"
+description = "+4% damage per rank."
+branch = 1
+tier = 2
+max_rank = 3
+per_rank = Dictionary[String, int]({"damage_pct": 4})
+requires = "wailing"
+
+[sub_resource type="Resource" id="Node_reaping"]
+script = ExtResource("2_node")
+id = "reaping"
+display_name = "Reaping"
+description = "Each kill heals 1 per rank."
+branch = 2
+tier = 0
+max_rank = 5
+per_rank = Dictionary[String, int]({"health_on_kill": 1})
+requires = ""
+
+[sub_resource type="Resource" id="Node_bone_ward"]
+script = ExtResource("2_node")
+id = "bone_ward"
+display_name = "Bone Ward"
+description = "+4 armour per rank."
+branch = 2
+tier = 0
+max_rank = 5
+per_rank = Dictionary[String, int]({"armor": 4})
+requires = ""
+
+[sub_resource type="Resource" id="Node_soul_well"]
+script = ExtResource("2_node")
+id = "soul_well"
+display_name = "Soul Well"
+description = "Souls from nearby deaths are worth 15% more per rank."
+branch = 2
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"soul_harvest_pct": 15})
+requires = "reaping"
+
+[sub_resource type="Resource" id="Node_hungry_grave"]
+script = ExtResource("2_node")
+id = "hungry_grave"
+display_name = "Hungry Grave"
+description = "Souls are worth 20% more per rank."
+branch = 2
+tier = 2
+max_rank = 3
+per_rank = Dictionary[String, int]({"soul_harvest_pct": 20})
+requires = "soul_well"
+
+[sub_resource type="Resource" id="Node_lich_veil"]
+script = ExtResource("2_node")
+id = "lich_veil"
+display_name = "Lich Veil"
+description = "+15 max health per rank."
+branch = 2
+tier = 2
+max_rank = 2
+per_rank = Dictionary[String, int]({"max_health": 15})
+requires = "bone_ward"
+
+[resource]
+script = ExtResource("1_tree")
+class_id = "gravecaller"
+class_title = "Gravecaller"
+playable = false
+branches = PackedStringArray("Bone Legion", "Wraiths", "Soul Harvest")
+nodes = Array[ExtResource("2_node")]([SubResource("Node_grave_discipline"), SubResource("Node_shieldbearers"), SubResource("Node_mass_grave"), SubResource("Node_phalanx"), SubResource("Node_forsaken_host"), SubResource("Node_restless_dead"), SubResource("Node_chill_touch"), SubResource("Node_wailing"), SubResource("Node_phantom_swarm"), SubResource("Node_dread_aura"), SubResource("Node_reaping"), SubResource("Node_bone_ward"), SubResource("Node_soul_well"), SubResource("Node_hungry_grave"), SubResource("Node_lich_veil")])
