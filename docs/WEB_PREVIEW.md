@@ -61,6 +61,13 @@ Single-threaded needs no special server headers, so any static host works.
 `tools/export-web.sh` also adds the rotate hint and Fullscreen button
 (`tools/web/preview_overlay.html`).
 
+## Known export pitfall
+
+Exported builds used to lose every list of text (`PackedStringArray`) in the
+game data: in the crypt no enemy rose, so no room could be cleared and its
+doors stayed shut. The cause and the guard are in
+[BUILD_ANDROID.md](BUILD_ANDROID.md#troubleshooting).
+
 ## Publishing
 
 CI builds the preview on every run and uploads it as the **ashenbound-web**
