@@ -5,20 +5,19 @@ extends Node
 ## suite, after the instance has been added to the scene tree. Tests may await.
 
 const MainScene := preload("res://scenes/main.tscn")
+const ArenaScene := preload("res://scenes/arena/test_arena.tscn")
 const GroundNavigationMesh := preload("res://resources/navigation/ground_navigation_mesh.tres")
 
 var failures: PackedStringArray = []
 
 
-## A fresh, not yet added main scene. Its encounters do not start by
-## themselves unless `with_enemies` is true, so tests that are not about
-## enemies run in a quiet arena.
-func instantiate_main(with_enemies: bool = false) -> Node3D:
+## A fresh, not yet added main scene playing `level` (the test arena unless
+## given). Its encounters do not start by themselves unless `with_enemies` is
+## true, so tests that are not about enemies run in a quiet level.
+func instantiate_main(with_enemies: bool = false, level: PackedScene = ArenaScene) -> Node3D:
 	var main: Node3D = MainScene.instantiate()
-	if not with_enemies:
-		for node in main.find_children("*", "Node3D", true, false):
-			if node is EncounterController:
-				node.auto_start = false
+	main.level_scene = level
+	main.encounters_start_by_themselves = with_enemies
 	return main
 
 

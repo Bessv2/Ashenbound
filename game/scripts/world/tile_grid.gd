@@ -21,6 +21,8 @@ extends Node3D
 @export var seed: int = 1
 @export_range(1, 64, 1) var chunk_cells: int = 5
 @export var cast_shadow: GeometryInstance3D.ShadowCastingSetting = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+## Replaces the pieces' own material when set (see-through walls).
+@export var material_override: Material
 
 ## Every piece placed, as [piece index, transform relative to this node]. The
 ## same data the MultiMeshes hold, readable without a renderer (tests run
@@ -74,6 +76,7 @@ func _ready() -> void:
 			instance.name = "Chunk_%d_%d_%d" % [key.x, key.y, piece]
 			instance.multimesh = multimesh
 			instance.cast_shadow = cast_shadow
+			instance.material_override = material_override
 			add_child(instance)
 
 

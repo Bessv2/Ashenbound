@@ -600,3 +600,75 @@ Acceptance criteria (spec, so far):
 - [x] 8. Victory and defeat are mutually exclusive
 - [ ] The rest: later steps
 ```
+
+## 14. Milestone 3, step 2: the crypt (branch `feature/m3-crypt`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: 3 (first dungeon), step 2 of 6: the crypt
+Status: Validated, verified in runtime (desktop software Vulkan and the web
+build in headless Chromium); not verified on device
+
+Changes:
+- Level (scripts/world/level.gd): a level scene names its player start and the
+  encounters that win the run. main.tscn no longer contains a level; Main
+  instances `level_scene` as "Level". The game plays the Ashen Crypt; tests
+  play the old arena, which became a Level holding its dummies and encounter.
+- The Ashen Crypt (scenes/dungeon/crypt.tscn): Gatehouse 12×12, Ossuary Hall
+  20×20, Cultist Chapel 20×24, Ashen Throne 28×28, joined by 4×8 m corridors.
+  CryptRoom builds floors, walls, collision and torches from a size and the
+  kind of north/south edge.
+- CryptGate: KayKit doorway with a door; a closed door blocks bodies and the
+  navigation mesh, which rebakes (threaded where the build has threads).
+- CombatRoom: entering shuts the door behind and the exit, starts the
+  encounter; clearing opens both and heals 30 (new Health.heal(), shown by the
+  HUD).
+- See-through walls: a cutout shader on north walls, gates and tall pillars
+  opens a dithered hole around the hero (OcclusionFocus on the Warden).
+- Placeholder encounters until steps 3 to 5: Chapel 4 + 4 and Throne 4 + 6
+  Skeleton Warriors. Victory reads "The crypt is cleared".
+- The test runner now fails a suite that does not load; before, a parse error
+  in a test file dropped its tests and only logged an error.
+
+Commands run:
+- Command: tools/test.sh (several runs)
+  Exit code: 0
+  Result: 163 passed, 0 failed (6 new in test_crypt.gd)
+- Command: probes: a door that never stops blocking; no heal on clear; no
+  rebake; a test file that does not parse
+  Exit code: 1
+  Result: the matching tests failed; files restored and compared byte for byte
+- Command: rendered walk through every room under Xvfb (software Vulkan)
+  Exit code: 0
+  Result: rooms, doors, torches and banners in place; the hero shows through
+  the tall wall in each corridor; the Ossuary door is shut while it is fought
+- Command: tools/export-web.sh, then tools/web/smoke.js
+  Exit code: 0
+  Result: the crypt draws in the Compatibility renderer with the cutout shader
+- Command: cost probe in the rendered crypt
+  Exit code: 0
+  Result: 151 to 234 draw calls depending on the room (old arena about 192);
+  a full navigation rebake takes 12 to 17 ms on this desktop CPU
+
+Not tested:
+- On a phone (frame rate, readability of the see-through patch).
+- Doors and rebakes in the browser: the web smoke test only loads the game.
+
+Known risks:
+- An intermittent Jolt warning ("job system exceeded the maximum number of
+  jobs") appeared in about half of the full test runs, in a Guard test this
+  change does not touch. It is not a failure; likely thread contention in the
+  sandbox.
+- The draw-call count rose; profile on a phone before adding more lights.
+
+Recommended next task:
+- Step 3: the Dark Cultist.
+
+Acceptance criteria (spec, so far):
+- [x] 1. Waves advance in order, only when the current wave is fully dead
+- [x] 2. A room's gates close on entry and open only when it is cleared
+- [x] 3. Rising enemies cannot deal or take damage
+- [x] 8. Victory and defeat are mutually exclusive
+- [ ] The rest: later steps
+```

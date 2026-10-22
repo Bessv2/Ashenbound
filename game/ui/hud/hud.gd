@@ -33,6 +33,7 @@ func _ready() -> void:
 func track_health(health: Health) -> void:
 	_health = health
 	health.damaged.connect(_update_health.unbind(2))
+	health.healed.connect(_update_health.unbind(2))
 	health.revived.connect(_update_health)
 	_update_health()
 

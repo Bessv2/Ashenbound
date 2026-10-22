@@ -34,6 +34,12 @@ func _run() -> void:
 	var failed := 0
 	for file in _suite_files():
 		var suite_script: GDScript = load(SUITE_DIR.path_join(file))
+		if suite_script == null or not suite_script.can_instantiate():
+			# A suite that does not parse would otherwise drop its tests silently.
+			failed += 1
+			print("  FAIL  %s :: (the suite does not load)" % file.get_basename())
+			_error_counter.take_errors()
+			continue
 		for test_name in _test_names(suite_script):
 			var failures := await _run_test(suite_script, test_name)
 			if failures.is_empty():

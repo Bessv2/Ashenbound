@@ -29,6 +29,7 @@ Status labels follow the charter:
 | 2026-10-21 | Test a demo build on an Android device before Milestone 3 work starts. The owner's phone is their daily driver, so cloud options were explored: the CI emulator proves the game starts without crashing but cannot draw it. |
 | 2026-10-21 | **Art pass now**, ahead of Milestone 3, with free CC0 assets (KayKit), keeping Godot. |
 | 2026-10-21 | Owner playtest of the art pass in the web preview on their phone: "The play tests were great!" Continue with the milestones. |
+| 2026-10-21 | **Long-term vision:** "a Diablo 4 style game with Torchlight levels of classes and a full loot system", where being offline still earns XP, gold and loot resources. Work through the milestones in order to a working gameplay loop first, then add skills, attacks and systems. Offline XP extends the charter's offline rewards (Milestone 6). |
 | 2026-10-21 | **A browser build is a playtest preview** ([WEB_PREVIEW.md](WEB_PREVIEW.md)), not a platform change: Android stays the target. |
 
 ## Milestones
@@ -38,7 +39,7 @@ Status labels follow the charter:
 | 0: Repository and toolchain baseline | Verified in runtime | Imports cleanly, runs, tests pass, a debug APK exports and its signature verifies. |
 | 1: Movement and camera | Verified in runtime | **Device gate blocked:** there is no Android device, and no `/dev/kvm` for an emulator. The manual checklist is in [BUILD_ANDROID.md](BUILD_ANDROID.md#manual-device-checklist). |
 | 2: Combat foundation | In progress | See below. |
-| 3: First dungeon | In progress | Spec: [dungeons/ashen_crypt.md](dungeons/ashen_crypt.md). Step 1 of 6 (encounters) validated. |
+| 3: First dungeon | In progress | Spec: [dungeons/ashen_crypt.md](dungeons/ashen_crypt.md). Steps 1 (encounters) and 2 (the crypt) of 6 validated and verified in runtime. |
 | 4: First loot loop | Parked | PR #6 |
 | 5 to 7 | Not started | |
 
@@ -82,10 +83,14 @@ owner's request, so the web preview could be published from `main`.
 
 ## Next task
 
-Milestone 3, step 2 of 6: **the crypt**. Four rooms (Gatehouse, Ossuary Hall,
-Cultist Chapel, Ashen Throne) joined by corridors, with gates that seal a room
-during its encounter. The spec and the build order are in
-[dungeons/ashen_crypt.md](dungeons/ashen_crypt.md).
+Milestone 3, step 3 of 6: **the Dark Cultist**, a ranged enemy with a
+telegraphed, dodgeable shadow bolt that walls stop, and keep-away movement.
+It joins the Ossuary's second wave and the Chapel's first. The spec and the
+build order are in [dungeons/ashen_crypt.md](dungeons/ashen_crypt.md).
+
+After Milestone 3: Milestone 4, the loot loop (items, rarities, affixes,
+equipment, drops, save/load), then character progression (XP and levels,
+gold) so offline rewards (Milestone 6) have something to grant.
 
 Device checks for Milestones 1 and 2 are still open: they need the Android app
 on a phone ([DEVICE_TESTING.md](DEVICE_TESTING.md)). The owner's playtests so

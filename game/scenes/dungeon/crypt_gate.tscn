@@ -1,0 +1,40 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/dungeon/crypt_gate.gd" id="1_gate"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/dungeon/wall_doorway.glb" id="2_doorway"]
+[ext_resource type="Script" path="res://scripts/presentation/model_dressing.gd" id="3_dressing"]
+[ext_resource type="Material" path="res://resources/materials/dungeon_cutout.tres" id="4_cutout"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_post"]
+size = Vector3(1, 3, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_door"]
+size = Vector3(2, 3, 0.6)
+
+[node name="CryptGate" type="Node3D"]
+script = ExtResource("1_gate")
+
+[node name="Model" parent="." instance=ExtResource("2_doorway")]
+
+[node name="WestPost" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WestPost"]
+shape = SubResource("BoxShape3D_post")
+
+[node name="EastPost" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EastPost"]
+shape = SubResource("BoxShape3D_post")
+
+[node name="DoorBody" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DoorBody"]
+shape = SubResource("BoxShape3D_door")
+
+[node name="Dressing" type="Node" parent="." node_paths=PackedStringArray("model")]
+script = ExtResource("3_dressing")
+model = NodePath("../Model")
+material = ExtResource("4_cutout")

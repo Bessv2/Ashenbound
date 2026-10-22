@@ -390,8 +390,39 @@ Milestone 3, step 1 ([dungeons/ashen_crypt.md](dungeons/ashen_crypt.md)).
   (paused time excluded). It lives in the scene, so a restart starts clean.
 - **Main** listens only to `Run.ended`. On defeat it opens the death screen;
   on victory it locks the Warden's input, makes it invulnerable, and opens
-  the same screen titled "The hall is cleared" with **Play again**.
+  the same screen titled with the level's `victory_title` and **Play again**.
 - The endless `EnemySpawner` was removed with this step.
+
+### Levels and the crypt (step 2)
+
+- **`Level`** (Node3D, the root of a level scene): `player_start` (a Marker3D)
+  and `encounters`, the ones that must be cleared to win. `main.tscn` holds
+  no level of its own: Main instances its `level_scene` as the child `Level`
+  when it starts, moves the player to the start and hands the encounters to
+  the Run. The game plays `scenes/dungeon/crypt.tscn`; tests play the old
+  arena (`scenes/arena/test_arena.tscn`, now a Level with the training dummies
+  and one encounter) unless they ask for another. `encounters_start_by_themselves
+  = false` turns off every encounter's `auto_start` (a quiet level for tests).
+- **`CryptRoom`** (Node3D) builds one room or corridor when it loads: floor,
+  walls with collision, wall torches, all on the 4 m KayKit grid. North and
+  west are the far walls (full height); south and east are the near ones (low
+  colonnades). North and south can each be a wall, a wall with a 4 m gap, or
+  absent (corridor ends). Rooms sit under the level's `BakedNavigationRegion`,
+  so they exist before it bakes.
+- **`CryptGate`** (`scenes/dungeon/crypt_gate.tscn`) fills a 4 m gap: the
+  KayKit doorway, its posts, and a 2 m door. A closed door is on the world
+  physics layer; an open one is on none. Changing it asks the region to bake
+  again (`BakedNavigationRegion.request_rebake()`, one bake per frame at most),
+  so no path leads through a closed door. The door swing is visual only.
+- **`CombatRoom`** (Area3D): when the player enters it (2 m past the doorway)
+  its `seal_gates` close and its encounter starts; when the encounter is
+  cleared, `seal_gates` and `exit_gates` open and the player heals
+  `heal_on_clear` (30) through `Health.heal()`. Each happens once.
+- **See-through walls.** North walls, gates and tall pillars use
+  `resources/materials/dungeon_cutout.tres`, a shader that draws the KayKit
+  texture but cuts a dithered hole wherever the surface is between the camera
+  and the hero. `OcclusionFocus` on the Warden sets the global shader
+  parameter `occlusion_focus` every frame. Shadows are unaffected.
 
 ### Navigation
 

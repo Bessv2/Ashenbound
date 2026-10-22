@@ -1,6 +1,10 @@
 [gd_scene format=3]
 
 [ext_resource type="Environment" path="res://resources/environment/arena_environment.tres" id="1_env"]
+[ext_resource type="Script" path="res://scripts/world/level.gd" id="19_level"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/training_dummy.tscn" id="20_dummy"]
+[ext_resource type="Script" path="res://scripts/encounters/encounter_controller.gd" id="21_encounter"]
+[ext_resource type="Resource" path="res://resources/encounters/ossuary_hall.tres" id="22_encounter_data"]
 [ext_resource type="Material" path="res://resources/materials/ember.tres" id="5_ember"]
 [ext_resource type="Script" path="res://scripts/world/baked_navigation_region.gd" id="6_navigation"]
 [ext_resource type="NavigationMesh" path="res://resources/navigation/ground_navigation_mesh.tres" id="7_navmesh"]
@@ -46,7 +50,12 @@ height = 0.56
 radial_segments = 12
 rings = 6
 
-[node name="TestArena" type="Node3D"]
+[node name="TestArena" type="Node3D" node_paths=PackedStringArray("player_start", "encounters")]
+script = ExtResource("19_level")
+player_start = NodePath("PlayerStart")
+encounters = [NodePath("Enemies/Encounter")]
+
+[node name="PlayerStart" type="Marker3D" parent="."]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource("1_env")
@@ -317,3 +326,37 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -20.5)
 
 [node name="West1" parent="Dressing/Banners" instance=ExtResource("15_banner")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -20.5, 0, -4)
+
+[node name="Enemies" type="Node3D" parent="."]
+
+[node name="TrainingDummyEast" parent="Enemies" instance=ExtResource("20_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 0)
+
+[node name="TrainingDummyNorth" parent="Enemies" instance=ExtResource("20_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
+
+[node name="TrainingDummyWest" parent="Enemies" instance=ExtResource("20_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 0)
+
+[node name="Encounter" type="Node3D" parent="Enemies"]
+script = ExtResource("21_encounter")
+data = ExtResource("22_encounter_data")
+auto_start = true
+
+[node name="North" type="Marker3D" parent="Enemies/Encounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16)
+
+[node name="NorthEast" type="Marker3D" parent="Enemies/Encounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, -12)
+
+[node name="East" type="Marker3D" parent="Enemies/Encounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 6)
+
+[node name="South" type="Marker3D" parent="Enemies/Encounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 16)
+
+[node name="West" type="Marker3D" parent="Enemies/Encounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, 4)
+
+[node name="NorthWest" type="Marker3D" parent="Enemies/Encounter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -14)

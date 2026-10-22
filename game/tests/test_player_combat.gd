@@ -12,7 +12,7 @@ func _ready() -> void:
 	main = instantiate_main()
 	add_child(main)
 	player = main.get_node("Player")
-	dummy = main.get_node("Enemies/TrainingDummyEast")
+	dummy = main.get_node("Level/Enemies/TrainingDummyEast")
 
 
 ## Puts the player `distance` meters west of the east dummy, at rest.
