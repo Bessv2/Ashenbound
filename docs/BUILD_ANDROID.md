@@ -227,6 +227,11 @@ checklist below is the full manual pass.
       marked enemy are bigger. **FAN** hits all around; **BLEED** puts a
       crimson mark on the nearest enemy that ticks. The Warden's tab offers
       **Play Warden** back.
+- [ ] **SKILLS** → Hexbinder tab → **Play Hexbinder**: a mage with a staff,
+      80 health. **ATTACK** fires violet bolts at the nearest enemy. **CURSE**
+      drops a violet ring on a group (6 each, then small ticks); **UNMAKE**
+      bursts every cursed enemy for big numbers; **GRASP** hits and slows
+      everything close.
 - [ ] After clearing the crypt once, send the app to the background (or
       close it) for more than 5 minutes: coming back shows **While you were
       away** with XP, gold and Ash; **Collect** adds them once. (Changing the

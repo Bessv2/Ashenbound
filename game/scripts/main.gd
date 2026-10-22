@@ -8,6 +8,7 @@ extends Node3D
 const HERO_SCENES := {
 	"warden": "res://scenes/player/warden.tscn",
 	"reaver": "res://scenes/player/reaver.tscn",
+	"hexbinder": "res://scenes/player/hexbinder.tscn",
 }
 
 ## The level played, instanced as the child "Level" when the scene starts.

@@ -1238,3 +1238,30 @@ Commands run:
 Not tested:
 - The Android APK on a phone (same setting; no device).
 ```
+
+## 30. The Hexbinder, third playable class (branch `feature/hexbinder`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: roster (charter 13.9 step 4: status effects, durations, area spells)
+Status: Validated, verified in runtime (desktop software Vulkan); not verified on device
+
+Changes:
+- Hexbinder hero (KayKit Mage, CC0): Hex Bolt (player-side RangedAttack with
+  aim assist), 80 health.
+- BlackTestamentAbility (area curse, a "Cursed" Burning), GraspAbility with a
+  new Slowed effect, UnmakeAbility (detonates curses for their remaining
+  damage, Soul Siphon heal). Targeting.living_around(); Vfx.ring().
+- Hexbinder tree playable; Main lists the class; docs/characters/hexbinder.md.
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 252 passed, 0 failed (7 new in test_hexbinder.gd)
+- Command: the Hexbinder in the crypt rendered under Xvfb
+  Result: a curse ring on two skeletons (6 each), then Unmake: 21 each
+
+Not tested:
+- On a phone; balance against the other classes in full runs.
+```

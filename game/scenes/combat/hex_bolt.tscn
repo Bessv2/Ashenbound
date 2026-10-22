@@ -1,0 +1,31 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/projectile.gd" id="1_projectile"]
+[ext_resource type="Material" path="res://resources/materials/hex_bolt.tres" id="2_material"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_core"]
+material = ExtResource("2_material")
+radius = 0.22
+height = 0.44
+radial_segments = 10
+rings = 5
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_trail"]
+material = ExtResource("2_material")
+radius = 0.12
+height = 0.9
+radial_segments = 8
+rings = 2
+
+[node name="HexBolt" type="Node3D"]
+script = ExtResource("1_projectile")
+
+[node name="Core" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("SphereMesh_core")
+
+[node name="Trail" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0.4)
+transparency = 0.5
+cast_shadow = 0
+mesh = SubResource("CapsuleMesh_trail")

@@ -5,8 +5,9 @@ all 6 classes". The charter (section 13) gives every class three
 specialization branches. This document defines the progression system and
 the first three trees.
 
-**Status:** the Warden's and the Reaver's trees are playable
-([characters/reaver.md](characters/reaver.md)). The other four classes' trees
+**Status:** the Warden's, the Reaver's and the Hexbinder's trees are playable
+([characters/reaver.md](characters/reaver.md),
+[characters/hexbinder.md](characters/hexbinder.md)). The other three classes' trees
 (all six of the charter's roster) are complete data, shown in the skill
 screen as previews: their nodes act on
 their own abilities, which arrive with those classes (charter 13.9: a second
@@ -63,7 +64,7 @@ Death, Coup de Grâce, Cold Focus, Relentless, Final Verdict. Stat nodes (damage
 crits, move speed, attack speed) and ability nodes (bleed, Veil Rend, the
 mark, the dash cooldown) all act.
 
-### Hexbinder (preview)
+### Hexbinder (playable)
 
 Branches from charter 13.3: **Curses**, **Soul Siphon**, **Cataclysm**. Nodes:
 Withering Word, Spreading Blight, Hex Mastery, Frailty, Black Testament

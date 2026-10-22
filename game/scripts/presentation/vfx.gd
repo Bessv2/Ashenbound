@@ -64,6 +64,31 @@ static func slash(owner: Node3D, direction: Vector3, reach: float, arc_degrees: 
 	return arc
 
 
+## A glowing ring on the floor at `at` (world) that grows to `radius` and
+## fades in `seconds`: the area of a spell. Added under `parent`.
+static func ring(parent: Node, at: Vector3, radius: float, color: Color, seconds: float = 0.45) -> MeshInstance3D:
+	var mesh := TorusMesh.new()
+	mesh.inner_radius = 0.86
+	mesh.outer_radius = 1.0
+	mesh.rings = 32
+	mesh.ring_segments = 4
+	var ring_node := MeshInstance3D.new()
+	ring_node.mesh = mesh
+	var material := _glow(color).duplicate() as StandardMaterial3D
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	material.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	ring_node.material_override = material
+	ring_node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	parent.add_child(ring_node)
+	ring_node.global_position = at + Vector3(0, 0.12, 0)
+	ring_node.scale = Vector3(radius * 0.3, 0.15, radius * 0.3)
+	var tween := ring_node.create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS).set_parallel()
+	tween.tween_property(ring_node, "scale", Vector3(radius, 0.15, radius), seconds).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	tween.tween_property(material, "albedo_color:a", 0.0, seconds).from(0.9)
+	tween.chain().tween_callback(ring_node.queue_free)
+	return ring_node
+
+
 static func _glow(color: Color) -> StandardMaterial3D:
 	if not _materials.has(color):
 		var material := StandardMaterial3D.new()
