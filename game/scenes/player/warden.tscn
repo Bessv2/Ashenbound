@@ -129,6 +129,7 @@ script = ExtResource("22_dressing")
 model = NodePath("../Visual/Model")
 material = ExtResource("23_model_material")
 hidden_parts = PackedStringArray("1H_Sword", "1H_Sword_Offhand", "Badge_Shield", "Rectangle_Shield", "Round_Shield", "Spike_Shield")
+outline_width = 0.018
 
 [node name="Animator" type="Node" parent="." node_paths=PackedStringArray("body", "animation_player", "health", "dodge", "attacks", "abilities")]
 script = ExtResource("24_animator")

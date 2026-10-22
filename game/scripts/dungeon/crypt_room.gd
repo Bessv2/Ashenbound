@@ -63,6 +63,46 @@ func _ready() -> void:
 	_near_wall_along_z(_half.x + 0.5, -_half.y, _half.y)
 	if torches:
 		_place_torches()
+	_add_dust()
+
+
+## Motes of dust and ash hanging in the air of the room, catching the torch
+## light. Visual only; a few dozen slow CPU particles.
+func _add_dust() -> void:
+	var dust := CPUParticles3D.new()
+	dust.name = "Dust"
+	dust.amount = clampi(int(size.x * size.y / 12.0), 12, 60)
+	dust.lifetime = 9.0
+	dust.preprocess = 9.0
+	dust.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+	dust.emission_box_extents = Vector3(_half.x, 1.6, _half.y)
+	dust.position = Vector3(0.0, 1.9, 0.0)
+	dust.direction = Vector3(0.3, 1.0, 0.1)
+	dust.spread = 60.0
+	dust.gravity = Vector3(0.0, 0.02, 0.0)
+	dust.initial_velocity_min = 0.05
+	dust.initial_velocity_max = 0.2
+	dust.scale_amount_min = 0.5
+	dust.scale_amount_max = 1.4
+	var fade := Gradient.new()
+	fade.set_color(0, Color(1, 1, 1, 0))
+	fade.set_color(1, Color(1, 1, 1, 0))
+	fade.add_point(0.3, Color(1, 1, 1, 1))
+	fade.add_point(0.7, Color(1, 1, 1, 1))
+	dust.color_ramp = fade
+	var mesh := QuadMesh.new()
+	mesh.size = Vector2(0.09, 0.09)
+	var material := StandardMaterial3D.new()
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	material.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+	material.vertex_color_use_as_albedo = true
+	material.albedo_color = Color(1.0, 0.72, 0.45, 0.22)
+	material.albedo_texture = FlameFx.soft_dot()
+	mesh.material = material
+	dust.mesh = mesh
+	dust.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(dust)
 
 
 func _build_floor() -> void:
@@ -191,9 +231,16 @@ func _add_torch(at: Transform3D) -> void:
 	var light := OmniLight3D.new()
 	light.position = Vector3(0.0, 0.55, 0.45)
 	light.light_color = Color(1.0, 0.5, 0.2)
-	light.light_energy = 1.3
-	light.omni_range = 7.0
+	light.light_energy = 2.4
+	light.omni_range = 8.0
 	torch.add_child(light)
+	var flame := FlameFx.new()
+	flame.name = "Fire"
+	flame.light = light
+	flame.size = 0.42
+	flame.ember_count = 5
+	flame.position = Vector3(0.0, 0.42, 0.32)
+	torch.add_child(flame)
 	add_child(torch)
 
 

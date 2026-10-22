@@ -32,6 +32,7 @@ var difficulty: Difficulty
 @onready var _inventory: InventoryPanel = $Inventory
 @onready var _skills: SkillTreePanel = $Skills
 @onready var _offline: OfflinePanel = $Offline
+@onready var _screen_fx: ScreenFx = $ScreenFx
 
 ## Items picked up this run.
 var _loot_found: int = 0
@@ -53,6 +54,7 @@ func _ready() -> void:
 	# A method, not a lambda: the connection to the autoload goes when Main goes.
 	Profile.offline_ready.connect(open_offline_rewards)
 	_hud.track_health(_player.health)
+	_screen_fx.track(_player.health)
 	_hud.track_dodge(_player.dodge)
 	_hud.track_abilities(_player.abilities)
 	_run.ended.connect(_on_run_ended)
