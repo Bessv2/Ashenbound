@@ -7,9 +7,10 @@ const DODGE := &"dodge"
 const ABILITY_1 := &"ability_1"
 const ABILITY_2 := &"ability_2"
 const ABILITY_3 := &"ability_3"
+const POTION := &"potion"
 const ALL: Array[StringName] = [
 	MovementInput.LEFT, MovementInput.RIGHT, MovementInput.FORWARD, MovementInput.BACK,
-	ATTACK, DODGE, ABILITY_1, ABILITY_2, ABILITY_3,
+	ATTACK, DODGE, ABILITY_1, ABILITY_2, ABILITY_3, POTION,
 ]
 
 

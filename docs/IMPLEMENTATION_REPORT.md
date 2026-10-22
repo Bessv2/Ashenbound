@@ -1302,3 +1302,50 @@ Commands run:
 Not tested:
 - On a phone: frame rate with the fires, dust and frame; readability.
 ```
+
+## 32. Champions and health potions (branch `feature/champions`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: gameplay loop (owner request 2026-10-22: "keep building more of
+the gameplay")
+Status: Validated, verified in runtime (desktop software Vulkan); not verified on device
+
+Changes:
+- Champions (docs/CHAMPIONS.md): encounters raise ordinary enemies as
+  champions at the tier's chance (10% at tier 1, up to 35%), with 1 to 3
+  affixes:
+  - Hasted, Stoneskin, Vampiric;
+  - Ember-wreathed: an aura;
+  - Vengeful: a telegraphed eruption on death.
+  Champions have 2.5× health and 1.2× damage, are worth 4× XP and gold and
+  3× Ash, always drop a Rare or better, and carry a name, a bar, a ring and
+  a glow. A toast announces them, and killing one shakes the camera.
+- Health potions: three per run on F / 4 or the POTION button. Each heals
+  35% with a 1 s cooldown. Six kills, or a champion, elite or boss kill,
+  refill one. The button shows the charge count.
+- Elites and bosses are marked `champion_eligible = false`; EliteBar takes
+  a title colour.
+- The test runner takes TEST_SUITES to run only some suites.
+  `instantiate_main()` turns champions off, so tests of exact run rewards
+  stay deterministic.
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 275 passed, 0 failed (11 new in test_champions.gd, 5 in
+  test_potions.gd)
+- Probes: Stoneskin's reduction, the eruption's damage and the potion
+  cooldown were each removed in turn; the matching test failed each time,
+  then passed once the code was restored.
+- Command: the crypt at tier 4 with every ordinary enemy a champion,
+  rendered under Xvfb
+  Result: the champion names, bars and rings read clearly; the Ember aura;
+  a Vengeful kill's violet warning ring; the POTION button with its badge.
+
+Not tested:
+- On a phone: legibility of champion names, and reaching the POTION button
+  with the thumb.
+- Balance in full runs at higher tiers.
+```

@@ -5,7 +5,8 @@ extends SceneTree
 ##
 ## --fixed-fps makes every frame advance exactly 1/60 s regardless of wall time,
 ## so physics tests run as fast as the CPU allows and are deterministic.
-## Runs every res://tests/test_*.gd suite. A test fails if a check fails or if
+## Runs every res://tests/test_*.gd suite, or only those named in the
+## TEST_SUITES environment variable (comma-separated, without ".gd"). A test fails if a check fails or if
 ## any engine or script error is logged while it runs. Warnings are printed
 ## under the test that logged them but do not fail it. Exit code 0 means every
 ## test passed, 1 means at least one failed.
@@ -91,8 +92,11 @@ func _reset_global_state() -> void:
 
 func _suite_files() -> PackedStringArray:
 	var files := PackedStringArray()
+	# TEST_SUITES=test_a,test_b runs only those suites (for a quick loop).
+	var only := OS.get_environment("TEST_SUITES").split(",", false)
 	for file in DirAccess.get_files_at(SUITE_DIR):
-		if file.begins_with("test_") and file.ends_with(".gd"):
+		if file.begins_with("test_") and file.ends_with(".gd") \
+				and (only.is_empty() or only.has(file.get_basename())):
 			files.append(file)
 	files.sort()
 	return files

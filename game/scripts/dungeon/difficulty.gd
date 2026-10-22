@@ -14,8 +14,15 @@ const REWARD_PER_TIER := 0.5
 const ITEM_LEVELS_PER_TIER := 4
 const DROP_CHANCE_PER_TIER := 0.1
 const RARITY_PER_TIER := 0.25
+## Chance for each ordinary enemy of an encounter to rise as a Champion.
+const CHAMPION_CHANCE := 0.1
+const CHAMPION_CHANCE_PER_TIER := 0.03
+const CHAMPION_CHANCE_MAX := 0.35
 
 var tier: int = 1
+## When 0 or more, used instead of the tier's champion chance (0 turns
+## champions off, for runs whose rewards must be exact).
+var champion_chance_override: float = -1.0
 
 
 func _init(chosen: int = 1) -> void:
@@ -45,6 +52,18 @@ func drop_chance_scale() -> float:
 
 func rarity_scale() -> float:
 	return 1.0 + RARITY_PER_TIER * (tier - 1)
+
+
+## Chance for an ordinary enemy to rise as a Champion.
+func champion_chance() -> float:
+	if champion_chance_override >= 0.0:
+		return champion_chance_override
+	return minf(CHAMPION_CHANCE + CHAMPION_CHANCE_PER_TIER * (tier - 1), CHAMPION_CHANCE_MAX)
+
+
+## How many affixes a Champion has: one, two from tier 4, three from tier 8.
+func champion_affix_count() -> int:
+	return 1 + int(tier >= 4) + int(tier >= 8)
 
 
 ## Makes `enemy` match this tier: more health (at full), harder hits, more Ash,

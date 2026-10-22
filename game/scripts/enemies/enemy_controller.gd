@@ -61,6 +61,9 @@ const REPATH_DISTANCE := 0.5
 @export_range(0, 100000, 1) var gold_value: int = 3
 ## What it may drop when killed; none when null.
 @export var drop_table: DropTable
+## Whether an encounter may raise it as a Champion. Elites and bosses are
+## special already.
+@export var champion_eligible: bool = true
 
 var state: State = State.IDLE
 ## Scales movement speed (a boss's last phase moves faster). The movement

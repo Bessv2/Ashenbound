@@ -11,6 +11,8 @@ extends Node3D
 signal started
 signal wave_started(index: int)
 signal enemy_killed(enemy: Node3D)
+## One of its enemies rose as a Champion.
+signal champion_spawned(enemy: EnemyController)
 signal cleared
 
 enum Phase { WAITING, ACTIVE, CLEARED }
@@ -33,6 +35,7 @@ var difficulty: Difficulty
 var wave: int = -1
 
 var _living: Array[Node3D] = []
+var _rng := RandomNumberGenerator.new()
 var _start_left: float = 0.0
 var _next_wave_left: float = -1.0
 
@@ -101,15 +104,29 @@ func _spawn(scene: PackedScene, marker_name: String) -> void:
 		(enemy as EnemyController).hunting = true
 	if difficulty:
 		difficulty.apply(enemy)
+	var champion := _maybe_promote(enemy)
 	add_child(enemy)
 	if enemy is EnemyController:
 		(enemy as EnemyController).rise(data.rise_time)
+	if champion:
+		champion_spawned.emit(enemy)
 	var health := Health.of(enemy)
 	if health == null:
 		push_error("%s: %s has no Health and could never be defeated." % [name, enemy.name])
 		return
 	health.died.connect(_on_enemy_died.bind(enemy), CONNECT_ONE_SHOT)
 	_living.append(enemy)
+
+
+## Raises `enemy` as a Champion at the tier's chance, when it may be one.
+## Without a difficulty (a bare encounter in a test), none are.
+func _maybe_promote(enemy: Node3D) -> Champion:
+	if difficulty == null or not enemy is EnemyController or not (enemy as EnemyController).champion_eligible:
+		return null
+	if _rng.randf() >= difficulty.champion_chance():
+		return null
+	var controller := enemy as EnemyController
+	return Champion.promote(controller, Champion.roll(controller, difficulty.champion_affix_count(), _rng))
 
 
 func _on_enemy_died(enemy: Node3D) -> void:
