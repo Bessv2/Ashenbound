@@ -138,6 +138,11 @@ done
 running || fail "the game is not running after launch; see $OUT/logcat.txt"
 sleep 4  # Scene load.
 STARTED=$(date +%s)
+shot 01-title
+# The game opens on the title screen; "Enter the crypt" has focus.
+step "key ENTER (enter the crypt)"
+adb shell input keyevent KEYCODE_ENTER
+sleep 6  # The crypt loads.
 shot 01-start
 
 # --- Scripted session --------------------------------------------------------

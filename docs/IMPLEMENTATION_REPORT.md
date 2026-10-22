@@ -1265,3 +1265,40 @@ Commands run:
 Not tested:
 - On a phone; balance against the other classes in full runs.
 ```
+
+## 31. Visuals and a living UI (branch `feature/visual-ui`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: presentation (owner request 2026-10-22: "make the visuals 100x
+better and let's start to put some life into the UI")
+Status: Validated, verified in runtime (desktop software Vulkan, web smoke test); not verified on device
+
+Changes:
+- World: FlameFx fires on torches, braziers and pillar embers; dust motes;
+  darker, warmer grade with stronger bloom; ScreenFx vignette, grain and
+  low-health pulse; hero outlines; hit squash; livelier damage numbers.
+- HUD: health trail and flash, smooth XP, room/boss/level banners, the
+  hero's class name, coloured ability buttons with press and ready motion,
+  sliding toasts, popping panels.
+- Title screen (the new start scene): class cards, tier, purse, Enter the
+  crypt; Leave the crypt in the pause menu. device-test.sh presses Enter
+  first.
+- docs/UI.md.
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 259 passed, 0 failed (4 new in test_living_ui.gd, 3 in
+  test_title_screen.gd; the XP bar test now waits for the fill)
+- Command: tools/export-web.sh; tools/web/smoke.js
+  Result: export check passed; web smoke test passed
+- Command: crypt, HUD and title rendered under Xvfb
+  Result: fires and embers, vignette, the Ossuary banner, the health trail
+  after a hit, coloured buttons; the title screen (a long class name was
+  clipped and fixed)
+
+Not tested:
+- On a phone: frame rate with the fires, dust and frame; readability.
+```

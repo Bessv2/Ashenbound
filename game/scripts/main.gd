@@ -11,6 +11,8 @@ const HERO_SCENES := {
 	"hexbinder": "res://scenes/player/hexbinder.tscn",
 }
 
+const TITLE_SCENE := "res://scenes/title.tscn"
+
 ## The level played, instanced as the child "Level" when the scene starts.
 @export var level_scene: PackedScene
 ## When false, no encounter starts by itself: a quiet level for practice and
@@ -43,6 +45,7 @@ func _ready() -> void:
 	_load_level()
 	_hud.pause_requested.connect(_pause_controller.set_paused.bind(true))
 	_pause_menu.resume_requested.connect(_pause_controller.set_paused.bind(false))
+	_pause_menu.leave_requested.connect(leave_to_title)
 	_pause_controller.paused_changed.connect(_on_paused_changed)
 	_pause_menu.set_open(_pause_controller.is_paused())
 	_hud.inventory_requested.connect(open_inventory)
@@ -162,6 +165,14 @@ func _on_paused_changed(paused: bool) -> void:
 		_skills.close()
 		# Unpaused without collecting: the time stays banked for later.
 		_offline.hide()
+
+
+## Goes back to the title screen. Rewards already paid are kept; the run's
+## own Ash and gold are only paid when it ends, so leaving forfeits them.
+func leave_to_title() -> void:
+	GameplayActions.release_all()
+	get_tree().paused = false
+	get_tree().change_scene_to_file(TITLE_SCENE)
 
 
 ## Starts the scene over from scratch.

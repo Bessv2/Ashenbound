@@ -3,12 +3,15 @@ extends CanvasLayer
 ## Overlay shown while the game is paused. Processes only while paused.
 
 signal resume_requested
+## Back to the title screen (the run is abandoned; what it earned is kept).
+signal leave_requested
 
 @onready var _resume_button: Button = %ResumeButton
 
 
 func _ready() -> void:
 	_resume_button.pressed.connect(resume_requested.emit)
+	(%LeaveButton as Button).pressed.connect(leave_requested.emit)
 	var shake := %ShakeButton as Button
 	shake.pressed.connect(_toggle_shake)
 	Settings.changed.connect(_show_shake.unbind(1))
