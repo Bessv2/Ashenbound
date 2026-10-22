@@ -33,6 +33,7 @@ var _cards: Dictionary = {}
 var _tier_label: Label
 var _summary: Label
 var _enter_button: Button
+var _dungeon_buttons: Dictionary = {}
 var _time: float = 0.0
 
 
@@ -61,6 +62,13 @@ func choose(class_id: String) -> bool:
 	profile.select_class(class_id)
 	_refresh()
 	return true
+
+
+## Chooses dungeon `id` when it is open. Returns whether it is now chosen.
+func choose_dungeon(id: String) -> bool:
+	var chosen: bool = profile.select_dungeon(id)
+	_refresh()
+	return chosen
 
 
 ## Moves the chosen crypt tier by `step` within the open tiers.
@@ -141,6 +149,20 @@ func _build() -> void:
 		var card := _card(tree)
 		_cards[tree.class_id] = card
 		row.add_child(card)
+
+	var dungeons := HBoxContainer.new()
+	dungeons.name = "Dungeons"
+	dungeons.alignment = BoxContainer.ALIGNMENT_CENTER
+	dungeons.add_theme_constant_override(&"separation", 12)
+	page.add_child(dungeons)
+	for id in Dungeons.ORDER:
+		var button := Button.new()
+		button.name = id
+		button.custom_minimum_size = Vector2(420, 64)
+		button.add_theme_font_size_override(&"font_size", 22)
+		button.pressed.connect(choose_dungeon.bind(id))
+		_dungeon_buttons[id] = button
+		dungeons.add_child(button)
 
 	var bottom := HBoxContainer.new()
 	bottom.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -237,6 +259,19 @@ func _refresh() -> void:
 			card.add_theme_stylebox_override(state, box)
 		if not chosen:
 			card.self_modulate = Color.WHITE
+	for id: String in _dungeon_buttons:
+		var button: Button = _dungeon_buttons[id]
+		var info: Dictionary = Dungeons.INFO[id]
+		var open := Dungeons.is_open(id, profile)
+		var here: bool = id == profile.dungeon
+		button.disabled = not open
+		button.text = info.title if open else "%s · clear the crypt" % info.title
+		button.tooltip_text = info.line
+		for state in [&"normal", &"hover", &"pressed", &"focus", &"disabled"]:
+			button.add_theme_stylebox_override(state, UiFx.box(Color(0.07, 0.05, 0.07, 0.92), 10,
+					info.color if here else Color(info.color, 0.3), 3 if here else 1))
+		button.add_theme_color_override(&"font_color", info.color.lightened(0.25) if here else Color(0.75, 0.7, 0.65))
+	_enter_button.text = Dungeons.INFO[profile.dungeon].enter
 	_tier_label.text = "Tier %d" % profile.tier
 	_summary.text = "Level %d    Ash %d    Gold %d" % [profile.level, profile.ash, profile.gold]
 

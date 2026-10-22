@@ -17,6 +17,7 @@ var failures: PackedStringArray = []
 func instantiate_main(with_enemies: bool = false, level: PackedScene = ArenaScene) -> Node3D:
 	var main: Node3D = MainScene.instantiate()
 	main.level_scene = level
+	main.use_chosen_dungeon = false
 	main.encounters_start_by_themselves = with_enemies
 	# Champions are random; a test that wants them turns them back on.
 	main.champions_appear = false

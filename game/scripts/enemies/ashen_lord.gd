@@ -1,7 +1,9 @@
 class_name AshenLord
 extends EnemyController
-## The first boss. An EnemyController with three phases on top
-## (docs/dungeons/ashen_crypt.md):
+## A boss: an EnemyController with three phases on top. The Ashen Lord
+## (docs/dungeons/ashen_crypt.md) and the Hollow King
+## (docs/dungeons/forgotten_catacombs.md) are both this script with their own
+## attacks, data and adds:
 ##
 ## 1. From full health: Cinder Cleave (`attack`), and Ash Slam
 ##    (`slam_attack`) when the player stands close.
@@ -18,6 +20,9 @@ extends EnemyController
 
 signal phase_changed(phase: int)
 signal summoned(adds: Array[Node3D])
+
+## Its name on the boss bar.
+@export var display_title: String = "THE ASHEN LORD"
 
 @export var slam_attack: MeleeAttack
 ## The player is close enough for the slam within this distance.

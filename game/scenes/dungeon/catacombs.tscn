@@ -1,0 +1,838 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/level.gd" id="1_level"]
+[ext_resource type="Environment" path="res://resources/environment/catacombs_environment.tres" id="2_env"]
+[ext_resource type="Environment" path="res://resources/environment/arena_environment_compatibility.tres" id="3_env_compat"]
+[ext_resource type="Script" path="res://scripts/world/renderer_lighting.gd" id="4_renderer_lighting"]
+[ext_resource type="Script" path="res://scripts/world/baked_navigation_region.gd" id="5_navigation"]
+[ext_resource type="NavigationMesh" path="res://resources/navigation/ground_navigation_mesh.tres" id="6_navmesh"]
+[ext_resource type="Script" path="res://scripts/dungeon/crypt_room.gd" id="7_room"]
+[ext_resource type="PackedScene" path="res://scenes/dungeon/crypt_gate.tscn" id="8_gate"]
+[ext_resource type="Script" path="res://scripts/dungeon/combat_room.gd" id="9_combat_room"]
+[ext_resource type="Script" path="res://scripts/encounters/encounter_controller.gd" id="10_encounter"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/dungeon/pillar_decorated.glb" id="15_pillar"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/dungeon/barrel_large.glb" id="16_barrel"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/dungeon/banner_red.glb" id="17_banner"]
+[ext_resource type="Material" path="res://resources/materials/soul_fire_ember.tres" id="18_ember"]
+[ext_resource type="Script" path="res://scripts/presentation/model_dressing.gd" id="19_dressing"]
+[ext_resource type="Material" path="res://resources/materials/dungeon_cutout.tres" id="20_cutout"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/dungeon/chair.glb" id="21_chair"]
+[ext_resource type="Script" path="res://scripts/presentation/flame_fx.gd" id="22_flame"]
+[ext_resource type="Resource" path="res://resources/encounters/catacombs_gallery.tres" id="30_enc"]
+[ext_resource type="Resource" path="res://resources/encounters/catacombs_vault.tres" id="31_enc"]
+[ext_resource type="Resource" path="res://resources/encounters/catacombs_pit.tres" id="32_enc"]
+[ext_resource type="Resource" path="res://resources/encounters/catacombs_throne.tres" id="33_enc"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_pillar"]
+height = 4.0
+radius = 0.7
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_barrel"]
+height = 2.0
+radius = 0.9
+
+[sub_resource type="SphereMesh" id="SphereMesh_ember"]
+material = ExtResource("18_ember")
+radius = 0.28
+height = 0.56
+radial_segments = 12
+rings = 6
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_Gallery"]
+size = Vector3(24, 3, 18)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_Vault"]
+size = Vector3(20, 3, 22)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_Pit"]
+size = Vector3(16, 3, 14)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_Throne"]
+size = Vector3(28, 3, 26)
+
+[node name="ForgottenCatacombs" type="Node3D" node_paths=PackedStringArray("player_start", "encounters")]
+script = ExtResource("1_level")
+player_start = NodePath("PlayerStart")
+encounters = [NodePath("Encounters/Gallery"), NodePath("Encounters/Vault"), NodePath("Encounters/Pit"), NodePath("Encounters/Throne")]
+victory_title = "The catacombs fall silent"
+item_level = 6
+
+[node name="PlayerStart" type="Marker3D" parent="."]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, 3)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("2_env")
+
+[node name="Moonlight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.7880108, 0.48514786, -0.37903908, 0, 0.6156615, 0.7880107, 0.6156615, -0.62096095, 0.4851479, 0, 12, 0)
+light_color = Color(0.45, 0.7, 0.95, 1)
+light_energy = 0.6
+shadow_enabled = true
+directional_shadow_mode = 0
+directional_shadow_max_distance = 60.0
+
+[node name="RendererLighting" type="Node" parent="." node_paths=PackedStringArray("world_environment", "moonlight")]
+script = ExtResource("4_renderer_lighting")
+world_environment = NodePath("../WorldEnvironment")
+moonlight = NodePath("../Moonlight")
+compatibility_environment = ExtResource("3_env_compat")
+compatibility_moonlight_energy = 0.4
+
+[node name="Navigation" type="NavigationRegion3D" parent="."]
+navigation_mesh = ExtResource("6_navmesh")
+script = ExtResource("5_navigation")
+
+[node name="Rooms" type="Node3D" parent="Navigation"]
+
+[node name="Stairwell" type="Node3D" parent="Navigation/Rooms"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, 0)
+script = ExtResource("7_room")
+size = Vector2i(12, 12)
+north = 1
+seed = 21
+torch_light_color = Color(0.4, 0.85, 1, 1)
+torch_core_color = Color(0.75, 1, 1, 1)
+torch_edge_color = Color(0.15, 0.6, 1, 1)
+
+[node name="Corridor1" type="Node3D" parent="Navigation/Rooms"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -10)
+script = ExtResource("7_room")
+size = Vector2i(4, 8)
+north = 2
+south = 2
+seed = 22
+torch_light_color = Color(0.4, 0.85, 1, 1)
+torch_core_color = Color(0.75, 1, 1, 1)
+torch_edge_color = Color(0.15, 0.6, 1, 1)
+
+[node name="Gallery" type="Node3D" parent="Navigation/Rooms"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -24)
+script = ExtResource("7_room")
+size = Vector2i(24, 20)
+north = 1
+south = 1
+seed = 23
+torch_light_color = Color(0.4, 0.85, 1, 1)
+torch_core_color = Color(0.75, 1, 1, 1)
+torch_edge_color = Color(0.15, 0.6, 1, 1)
+
+[node name="Corridor2" type="Node3D" parent="Navigation/Rooms"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -38)
+script = ExtResource("7_room")
+size = Vector2i(4, 8)
+north = 2
+south = 2
+seed = 24
+torch_light_color = Color(0.4, 0.85, 1, 1)
+torch_core_color = Color(0.75, 1, 1, 1)
+torch_edge_color = Color(0.15, 0.6, 1, 1)
+
+[node name="Vault" type="Node3D" parent="Navigation/Rooms"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -54)
+script = ExtResource("7_room")
+size = Vector2i(20, 24)
+north = 1
+south = 1
+seed = 25
+torch_light_color = Color(0.4, 0.85, 1, 1)
+torch_core_color = Color(0.75, 1, 1, 1)
+torch_edge_color = Color(0.15, 0.6, 1, 1)
+
+[node name="Corridor3" type="Node3D" parent="Navigation/Rooms"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -70)
+script = ExtResource("7_room")
+size = Vector2i(4, 8)
+north = 2
+south = 2
+seed = 26
+torch_light_color = Color(0.4, 0.85, 1, 1)
+torch_core_color = Color(0.75, 1, 1, 1)
+torch_edge_color = Color(0.15, 0.6, 1, 1)
+
+[node name="Pit" type="Node3D" parent="Navigation/Rooms"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -82)
+script = ExtResource("7_room")
+size = Vector2i(16, 16)
+north = 1
+south = 1
+seed = 27
+torch_light_color = Color(0.4, 0.85, 1, 1)
+torch_core_color = Color(0.75, 1, 1, 1)
+torch_edge_color = Color(0.15, 0.6, 1, 1)
+
+[node name="Corridor4" type="Node3D" parent="Navigation/Rooms"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -94)
+script = ExtResource("7_room")
+size = Vector2i(4, 8)
+north = 2
+south = 2
+seed = 28
+torch_light_color = Color(0.4, 0.85, 1, 1)
+torch_core_color = Color(0.75, 1, 1, 1)
+torch_edge_color = Color(0.15, 0.6, 1, 1)
+
+[node name="Throne" type="Node3D" parent="Navigation/Rooms"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -112)
+script = ExtResource("7_room")
+size = Vector2i(28, 28)
+south = 1
+seed = 29
+torch_light_color = Color(0.4, 0.85, 1, 1)
+torch_core_color = Color(0.75, 1, 1, 1)
+torch_edge_color = Color(0.15, 0.6, 1, 1)
+
+[node name="Gates" type="Node3D" parent="Navigation"]
+
+[node name="Stairwell" parent="Navigation/Gates" instance=ExtResource("8_gate")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -6.5)
+open = true
+
+[node name="Gallery" parent="Navigation/Gates" instance=ExtResource("8_gate")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -34.5)
+
+[node name="Vault" parent="Navigation/Gates" instance=ExtResource("8_gate")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -66.5)
+
+[node name="Pit" parent="Navigation/Gates" instance=ExtResource("8_gate")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -90.5)
+
+[node name="Props" type="Node3D" parent="Navigation"]
+
+[node name="GalleryPillarW1" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -6, 2, -20)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/GalleryPillarW1"]
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="Model" parent="Navigation/Props/GalleryPillarW1" instance=ExtResource("15_pillar")]
+transform = Transform3D(0.7, 0, 0, 0, 0.75, 0, 0, 0, 0.7, 0, -2, 0)
+
+[node name="Dressing" type="Node" parent="Navigation/Props/GalleryPillarW1" node_paths=PackedStringArray("model")]
+script = ExtResource("19_dressing")
+model = NodePath("../Model")
+material = ExtResource("20_cutout")
+
+[node name="Ember" type="MeshInstance3D" parent="Navigation/Props/GalleryPillarW1"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.25, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_ember")
+
+[node name="Fire" type="Node3D" parent="Navigation/Props/GalleryPillarW1"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.3, 0)
+script = ExtResource("22_flame")
+size = 0.75
+core_color = Color(0.75, 1, 1, 1)
+edge_color = Color(0.15, 0.6, 1, 1)
+ember_count = 12
+
+[node name="GalleryPillarW2" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -6, 2, -28)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/GalleryPillarW2"]
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="Model" parent="Navigation/Props/GalleryPillarW2" instance=ExtResource("15_pillar")]
+transform = Transform3D(0.7, 0, 0, 0, 0.75, 0, 0, 0, 0.7, 0, -2, 0)
+
+[node name="Dressing" type="Node" parent="Navigation/Props/GalleryPillarW2" node_paths=PackedStringArray("model")]
+script = ExtResource("19_dressing")
+model = NodePath("../Model")
+material = ExtResource("20_cutout")
+
+[node name="Ember" type="MeshInstance3D" parent="Navigation/Props/GalleryPillarW2"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.25, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_ember")
+
+[node name="Light" type="OmniLight3D" parent="Navigation/Props/GalleryPillarW2"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.7, 0)
+light_color = Color(0.4, 0.85, 1, 1)
+light_energy = 2.2
+omni_range = 10.0
+
+[node name="Fire" type="Node3D" parent="Navigation/Props/GalleryPillarW2" node_paths=PackedStringArray("light")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.3, 0)
+script = ExtResource("22_flame")
+light = NodePath("../Light")
+size = 0.75
+core_color = Color(0.75, 1, 1, 1)
+edge_color = Color(0.15, 0.6, 1, 1)
+ember_count = 12
+
+[node name="GalleryPillarE1" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 6, 2, -20)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/GalleryPillarE1"]
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="Model" parent="Navigation/Props/GalleryPillarE1" instance=ExtResource("15_pillar")]
+transform = Transform3D(0.7, 0, 0, 0, 0.75, 0, 0, 0, 0.7, 0, -2, 0)
+
+[node name="Dressing" type="Node" parent="Navigation/Props/GalleryPillarE1" node_paths=PackedStringArray("model")]
+script = ExtResource("19_dressing")
+model = NodePath("../Model")
+material = ExtResource("20_cutout")
+
+[node name="Ember" type="MeshInstance3D" parent="Navigation/Props/GalleryPillarE1"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.25, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_ember")
+
+[node name="Light" type="OmniLight3D" parent="Navigation/Props/GalleryPillarE1"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.7, 0)
+light_color = Color(0.4, 0.85, 1, 1)
+light_energy = 2.2
+omni_range = 10.0
+
+[node name="Fire" type="Node3D" parent="Navigation/Props/GalleryPillarE1" node_paths=PackedStringArray("light")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.3, 0)
+script = ExtResource("22_flame")
+light = NodePath("../Light")
+size = 0.75
+core_color = Color(0.75, 1, 1, 1)
+edge_color = Color(0.15, 0.6, 1, 1)
+ember_count = 12
+
+[node name="GalleryPillarE2" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 6, 2, -28)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/GalleryPillarE2"]
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="Model" parent="Navigation/Props/GalleryPillarE2" instance=ExtResource("15_pillar")]
+transform = Transform3D(0.7, 0, 0, 0, 0.75, 0, 0, 0, 0.7, 0, -2, 0)
+
+[node name="Dressing" type="Node" parent="Navigation/Props/GalleryPillarE2" node_paths=PackedStringArray("model")]
+script = ExtResource("19_dressing")
+model = NodePath("../Model")
+material = ExtResource("20_cutout")
+
+[node name="Ember" type="MeshInstance3D" parent="Navigation/Props/GalleryPillarE2"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.25, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_ember")
+
+[node name="Fire" type="Node3D" parent="Navigation/Props/GalleryPillarE2"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.3, 0)
+script = ExtResource("22_flame")
+size = 0.75
+core_color = Color(0.75, 1, 1, 1)
+edge_color = Color(0.15, 0.6, 1, 1)
+ember_count = 12
+
+[node name="VaultPillarW" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -5, 2, -50)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/VaultPillarW"]
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="Model" parent="Navigation/Props/VaultPillarW" instance=ExtResource("15_pillar")]
+transform = Transform3D(0.7, 0, 0, 0, 0.75, 0, 0, 0, 0.7, 0, -2, 0)
+
+[node name="Dressing" type="Node" parent="Navigation/Props/VaultPillarW" node_paths=PackedStringArray("model")]
+script = ExtResource("19_dressing")
+model = NodePath("../Model")
+material = ExtResource("20_cutout")
+
+[node name="Ember" type="MeshInstance3D" parent="Navigation/Props/VaultPillarW"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.25, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_ember")
+
+[node name="Light" type="OmniLight3D" parent="Navigation/Props/VaultPillarW"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.7, 0)
+light_color = Color(0.4, 0.85, 1, 1)
+light_energy = 2.2
+omni_range = 10.0
+
+[node name="Fire" type="Node3D" parent="Navigation/Props/VaultPillarW" node_paths=PackedStringArray("light")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.3, 0)
+script = ExtResource("22_flame")
+light = NodePath("../Light")
+size = 0.75
+core_color = Color(0.75, 1, 1, 1)
+edge_color = Color(0.15, 0.6, 1, 1)
+ember_count = 12
+
+[node name="VaultPillarE" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 5, 2, -50)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/VaultPillarE"]
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="Model" parent="Navigation/Props/VaultPillarE" instance=ExtResource("15_pillar")]
+transform = Transform3D(0.7, 0, 0, 0, 0.75, 0, 0, 0, 0.7, 0, -2, 0)
+
+[node name="Dressing" type="Node" parent="Navigation/Props/VaultPillarE" node_paths=PackedStringArray("model")]
+script = ExtResource("19_dressing")
+model = NodePath("../Model")
+material = ExtResource("20_cutout")
+
+[node name="Ember" type="MeshInstance3D" parent="Navigation/Props/VaultPillarE"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.25, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_ember")
+
+[node name="Light" type="OmniLight3D" parent="Navigation/Props/VaultPillarE"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.7, 0)
+light_color = Color(0.4, 0.85, 1, 1)
+light_energy = 2.2
+omni_range = 10.0
+
+[node name="Fire" type="Node3D" parent="Navigation/Props/VaultPillarE" node_paths=PackedStringArray("light")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.3, 0)
+script = ExtResource("22_flame")
+light = NodePath("../Light")
+size = 0.75
+core_color = Color(0.75, 1, 1, 1)
+edge_color = Color(0.15, 0.6, 1, 1)
+ember_count = 12
+
+[node name="VaultPillarSW" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -5, 2, -59)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/VaultPillarSW"]
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="Model" parent="Navigation/Props/VaultPillarSW" instance=ExtResource("15_pillar")]
+transform = Transform3D(0.7, 0, 0, 0, 0.75, 0, 0, 0, 0.7, 0, -2, 0)
+
+[node name="Dressing" type="Node" parent="Navigation/Props/VaultPillarSW" node_paths=PackedStringArray("model")]
+script = ExtResource("19_dressing")
+model = NodePath("../Model")
+material = ExtResource("20_cutout")
+
+[node name="Ember" type="MeshInstance3D" parent="Navigation/Props/VaultPillarSW"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.25, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_ember")
+
+[node name="Fire" type="Node3D" parent="Navigation/Props/VaultPillarSW"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.3, 0)
+script = ExtResource("22_flame")
+size = 0.75
+core_color = Color(0.75, 1, 1, 1)
+edge_color = Color(0.15, 0.6, 1, 1)
+ember_count = 12
+
+[node name="VaultPillarSE" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 5, 2, -59)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/VaultPillarSE"]
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="Model" parent="Navigation/Props/VaultPillarSE" instance=ExtResource("15_pillar")]
+transform = Transform3D(0.7, 0, 0, 0, 0.75, 0, 0, 0, 0.7, 0, -2, 0)
+
+[node name="Dressing" type="Node" parent="Navigation/Props/VaultPillarSE" node_paths=PackedStringArray("model")]
+script = ExtResource("19_dressing")
+model = NodePath("../Model")
+material = ExtResource("20_cutout")
+
+[node name="Ember" type="MeshInstance3D" parent="Navigation/Props/VaultPillarSE"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.25, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_ember")
+
+[node name="Fire" type="Node3D" parent="Navigation/Props/VaultPillarSE"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.3, 0)
+script = ExtResource("22_flame")
+size = 0.75
+core_color = Color(0.75, 1, 1, 1)
+edge_color = Color(0.15, 0.6, 1, 1)
+ember_count = 12
+
+[node name="PitPillarW" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -4, 2, -84)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/PitPillarW"]
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="Model" parent="Navigation/Props/PitPillarW" instance=ExtResource("15_pillar")]
+transform = Transform3D(0.7, 0, 0, 0, 0.75, 0, 0, 0, 0.7, 0, -2, 0)
+
+[node name="Dressing" type="Node" parent="Navigation/Props/PitPillarW" node_paths=PackedStringArray("model")]
+script = ExtResource("19_dressing")
+model = NodePath("../Model")
+material = ExtResource("20_cutout")
+
+[node name="Ember" type="MeshInstance3D" parent="Navigation/Props/PitPillarW"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.25, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_ember")
+
+[node name="Light" type="OmniLight3D" parent="Navigation/Props/PitPillarW"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.7, 0)
+light_color = Color(0.4, 0.85, 1, 1)
+light_energy = 2.2
+omni_range = 10.0
+
+[node name="Fire" type="Node3D" parent="Navigation/Props/PitPillarW" node_paths=PackedStringArray("light")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.3, 0)
+script = ExtResource("22_flame")
+light = NodePath("../Light")
+size = 0.75
+core_color = Color(0.75, 1, 1, 1)
+edge_color = Color(0.15, 0.6, 1, 1)
+ember_count = 12
+
+[node name="PitPillarE" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 4, 2, -84)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/PitPillarE"]
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="Model" parent="Navigation/Props/PitPillarE" instance=ExtResource("15_pillar")]
+transform = Transform3D(0.7, 0, 0, 0, 0.75, 0, 0, 0, 0.7, 0, -2, 0)
+
+[node name="Dressing" type="Node" parent="Navigation/Props/PitPillarE" node_paths=PackedStringArray("model")]
+script = ExtResource("19_dressing")
+model = NodePath("../Model")
+material = ExtResource("20_cutout")
+
+[node name="Ember" type="MeshInstance3D" parent="Navigation/Props/PitPillarE"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.25, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_ember")
+
+[node name="Light" type="OmniLight3D" parent="Navigation/Props/PitPillarE"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.7, 0)
+light_color = Color(0.4, 0.85, 1, 1)
+light_energy = 2.2
+omni_range = 10.0
+
+[node name="Fire" type="Node3D" parent="Navigation/Props/PitPillarE" node_paths=PackedStringArray("light")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.3, 0)
+script = ExtResource("22_flame")
+light = NodePath("../Light")
+size = 0.75
+core_color = Color(0.75, 1, 1, 1)
+edge_color = Color(0.15, 0.6, 1, 1)
+ember_count = 12
+
+[node name="BrazierNW" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -9, 2, -121)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/BrazierNW"]
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="Model" parent="Navigation/Props/BrazierNW" instance=ExtResource("15_pillar")]
+transform = Transform3D(0.7, 0, 0, 0, 0.75, 0, 0, 0, 0.7, 0, -2, 0)
+
+[node name="Dressing" type="Node" parent="Navigation/Props/BrazierNW" node_paths=PackedStringArray("model")]
+script = ExtResource("19_dressing")
+model = NodePath("../Model")
+material = ExtResource("20_cutout")
+
+[node name="Ember" type="MeshInstance3D" parent="Navigation/Props/BrazierNW"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.25, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_ember")
+
+[node name="Light" type="OmniLight3D" parent="Navigation/Props/BrazierNW"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.7, 0)
+light_color = Color(0.4, 0.85, 1, 1)
+light_energy = 2.2
+omni_range = 10.0
+
+[node name="Fire" type="Node3D" parent="Navigation/Props/BrazierNW" node_paths=PackedStringArray("light")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.3, 0)
+script = ExtResource("22_flame")
+light = NodePath("../Light")
+size = 0.75
+core_color = Color(0.75, 1, 1, 1)
+edge_color = Color(0.15, 0.6, 1, 1)
+ember_count = 12
+
+[node name="BrazierNE" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 9, 2, -121)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/BrazierNE"]
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="Model" parent="Navigation/Props/BrazierNE" instance=ExtResource("15_pillar")]
+transform = Transform3D(0.7, 0, 0, 0, 0.75, 0, 0, 0, 0.7, 0, -2, 0)
+
+[node name="Dressing" type="Node" parent="Navigation/Props/BrazierNE" node_paths=PackedStringArray("model")]
+script = ExtResource("19_dressing")
+model = NodePath("../Model")
+material = ExtResource("20_cutout")
+
+[node name="Ember" type="MeshInstance3D" parent="Navigation/Props/BrazierNE"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.25, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_ember")
+
+[node name="Light" type="OmniLight3D" parent="Navigation/Props/BrazierNE"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.7, 0)
+light_color = Color(0.4, 0.85, 1, 1)
+light_energy = 2.2
+omni_range = 10.0
+
+[node name="Fire" type="Node3D" parent="Navigation/Props/BrazierNE" node_paths=PackedStringArray("light")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.3, 0)
+script = ExtResource("22_flame")
+light = NodePath("../Light")
+size = 0.75
+core_color = Color(0.75, 1, 1, 1)
+edge_color = Color(0.15, 0.6, 1, 1)
+ember_count = 12
+
+[node name="BrazierSW" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -9, 2, -103)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/BrazierSW"]
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="Model" parent="Navigation/Props/BrazierSW" instance=ExtResource("15_pillar")]
+transform = Transform3D(0.7, 0, 0, 0, 0.75, 0, 0, 0, 0.7, 0, -2, 0)
+
+[node name="Dressing" type="Node" parent="Navigation/Props/BrazierSW" node_paths=PackedStringArray("model")]
+script = ExtResource("19_dressing")
+model = NodePath("../Model")
+material = ExtResource("20_cutout")
+
+[node name="Ember" type="MeshInstance3D" parent="Navigation/Props/BrazierSW"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.25, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_ember")
+
+[node name="Light" type="OmniLight3D" parent="Navigation/Props/BrazierSW"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.7, 0)
+light_color = Color(0.4, 0.85, 1, 1)
+light_energy = 2.2
+omni_range = 10.0
+
+[node name="Fire" type="Node3D" parent="Navigation/Props/BrazierSW" node_paths=PackedStringArray("light")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.3, 0)
+script = ExtResource("22_flame")
+light = NodePath("../Light")
+size = 0.75
+core_color = Color(0.75, 1, 1, 1)
+edge_color = Color(0.15, 0.6, 1, 1)
+ember_count = 12
+
+[node name="BrazierSE" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 9, 2, -103)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/BrazierSE"]
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="Model" parent="Navigation/Props/BrazierSE" instance=ExtResource("15_pillar")]
+transform = Transform3D(0.7, 0, 0, 0, 0.75, 0, 0, 0, 0.7, 0, -2, 0)
+
+[node name="Dressing" type="Node" parent="Navigation/Props/BrazierSE" node_paths=PackedStringArray("model")]
+script = ExtResource("19_dressing")
+model = NodePath("../Model")
+material = ExtResource("20_cutout")
+
+[node name="Ember" type="MeshInstance3D" parent="Navigation/Props/BrazierSE"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.25, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_ember")
+
+[node name="Light" type="OmniLight3D" parent="Navigation/Props/BrazierSE"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.7, 0)
+light_color = Color(0.4, 0.85, 1, 1)
+light_energy = 2.2
+omni_range = 10.0
+
+[node name="Fire" type="Node3D" parent="Navigation/Props/BrazierSE" node_paths=PackedStringArray("light")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.3, 0)
+script = ExtResource("22_flame")
+light = NodePath("../Light")
+size = 0.75
+core_color = Color(0.75, 1, 1, 1)
+edge_color = Color(0.15, 0.6, 1, 1)
+ember_count = 12
+
+[node name="VaultBarrelW" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -8.6, 0, -64.6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/VaultBarrelW"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1, 0)
+shape = SubResource("CylinderShape3D_barrel")
+
+[node name="Model" parent="Navigation/Props/VaultBarrelW" instance=ExtResource("16_barrel")]
+
+[node name="VaultBarrelE" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 8.6, 0, -64.6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/VaultBarrelE"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1, 0)
+shape = SubResource("CylinderShape3D_barrel")
+
+[node name="Model" parent="Navigation/Props/VaultBarrelE" instance=ExtResource("16_barrel")]
+
+[node name="GalleryBarrel" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 10.2, 0, -16.2)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/GalleryBarrel"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1, 0)
+shape = SubResource("CylinderShape3D_barrel")
+
+[node name="Model" parent="Navigation/Props/GalleryBarrel" instance=ExtResource("16_barrel")]
+
+[node name="Banners" type="Node3D" parent="."]
+
+[node name="ThroneWest" parent="Banners" instance=ExtResource("17_banner")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -4, 0, -126.5)
+
+[node name="ThroneCenter" parent="Banners" instance=ExtResource("17_banner")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -126.5)
+
+[node name="ThroneEast" parent="Banners" instance=ExtResource("17_banner")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 4, 0, -126.5)
+
+[node name="ThroneSeat" parent="." instance=ExtResource("21_chair")]
+transform = Transform3D(2.2, 0, 0, 0, 2.2, 0, 0, 0, 2.2, 0, 0, -124.2)
+
+[node name="Encounters" type="Node3D" parent="."]
+
+[node name="Gallery" type="Node3D" parent="Encounters"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -24)
+script = ExtResource("10_encounter")
+data = ExtResource("30_enc")
+title = "The Gallery of Bones"
+subtitle = "Something stirs in the niches"
+
+[node name="North" type="Marker3D" parent="Encounters/Gallery"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -7.0)
+
+[node name="NorthEast" type="Marker3D" parent="Encounters/Gallery"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 9.0, 0, -6.0)
+
+[node name="NorthWest" type="Marker3D" parent="Encounters/Gallery"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -9.0, 0, -6.0)
+
+[node name="East" type="Marker3D" parent="Encounters/Gallery"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 9.0, 0, 0)
+
+[node name="West" type="Marker3D" parent="Encounters/Gallery"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -9.0, 0, 0)
+
+[node name="SouthEast" type="Marker3D" parent="Encounters/Gallery"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 8.0, 0, 6.0)
+
+[node name="SouthWest" type="Marker3D" parent="Encounters/Gallery"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -8.0, 0, 6.0)
+
+[node name="Vault" type="Node3D" parent="Encounters"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -54)
+script = ExtResource("10_encounter")
+data = ExtResource("31_enc")
+title = "The Drowned Vault"
+subtitle = "The water remembers"
+
+[node name="North" type="Marker3D" parent="Encounters/Vault"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -9.0)
+
+[node name="NorthEast" type="Marker3D" parent="Encounters/Vault"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 7.0, 0, -8.0)
+
+[node name="NorthWest" type="Marker3D" parent="Encounters/Vault"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -7.0, 0, -8.0)
+
+[node name="East" type="Marker3D" parent="Encounters/Vault"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 7.0, 0, 0)
+
+[node name="West" type="Marker3D" parent="Encounters/Vault"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -7.0, 0, 0)
+
+[node name="SouthEast" type="Marker3D" parent="Encounters/Vault"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 6.0, 0, 8.0)
+
+[node name="SouthWest" type="Marker3D" parent="Encounters/Vault"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -6.0, 0, 8.0)
+
+[node name="Pit" type="Node3D" parent="Encounters"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -82)
+script = ExtResource("10_encounter")
+data = ExtResource("32_enc")
+title = "The Bone Pit"
+subtitle = "No one climbs out"
+
+[node name="North" type="Marker3D" parent="Encounters/Pit"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -5.0)
+
+[node name="NorthEast" type="Marker3D" parent="Encounters/Pit"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 5.0, 0, -4.0)
+
+[node name="NorthWest" type="Marker3D" parent="Encounters/Pit"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -5.0, 0, -4.0)
+
+[node name="East" type="Marker3D" parent="Encounters/Pit"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 5.0, 0, 0)
+
+[node name="West" type="Marker3D" parent="Encounters/Pit"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -5.0, 0, 0)
+
+[node name="SouthEast" type="Marker3D" parent="Encounters/Pit"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 4.0, 0, 4.0)
+
+[node name="SouthWest" type="Marker3D" parent="Encounters/Pit"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -4.0, 0, 4.0)
+
+[node name="Throne" type="Node3D" parent="Encounters"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -112)
+script = ExtResource("10_encounter")
+data = ExtResource("33_enc")
+title = "The Hollow Throne"
+subtitle = "The Hollow King remembers his crown"
+title_color = Color(0.45, 0.9, 1, 1)
+
+[node name="North" type="Marker3D" parent="Encounters/Throne"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -10)
+
+[node name="SummonNW" type="Marker3D" parent="Encounters/Throne"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -7.5, 0, -7.5)
+
+[node name="SummonNE" type="Marker3D" parent="Encounters/Throne"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 7.5, 0, -7.5)
+
+[node name="SummonSW" type="Marker3D" parent="Encounters/Throne"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -7.5, 0, 7.5)
+
+[node name="SummonSE" type="Marker3D" parent="Encounters/Throne"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 7.5, 0, 7.5)
+
+[node name="CombatRooms" type="Node3D" parent="."]
+
+[node name="Gallery" type="Area3D" parent="CombatRooms" node_paths=PackedStringArray("encounter", "seal_gates", "exit_gates")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, -25)
+script = ExtResource("9_combat_room")
+encounter = NodePath("../../Encounters/Gallery")
+seal_gates = [NodePath("../../Navigation/Gates/Stairwell")]
+exit_gates = [NodePath("../../Navigation/Gates/Gallery")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CombatRooms/Gallery"]
+shape = SubResource("BoxShape3D_Gallery")
+
+[node name="Vault" type="Area3D" parent="CombatRooms" node_paths=PackedStringArray("encounter", "seal_gates", "exit_gates")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, -55)
+script = ExtResource("9_combat_room")
+encounter = NodePath("../../Encounters/Vault")
+seal_gates = [NodePath("../../Navigation/Gates/Gallery")]
+exit_gates = [NodePath("../../Navigation/Gates/Vault")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CombatRooms/Vault"]
+shape = SubResource("BoxShape3D_Vault")
+
+[node name="Pit" type="Area3D" parent="CombatRooms" node_paths=PackedStringArray("encounter", "seal_gates", "exit_gates")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, -83)
+script = ExtResource("9_combat_room")
+encounter = NodePath("../../Encounters/Pit")
+seal_gates = [NodePath("../../Navigation/Gates/Vault")]
+exit_gates = [NodePath("../../Navigation/Gates/Pit")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CombatRooms/Pit"]
+shape = SubResource("BoxShape3D_Pit")
+
+[node name="Throne" type="Area3D" parent="CombatRooms" node_paths=PackedStringArray("encounter", "seal_gates")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, -113)
+script = ExtResource("9_combat_room")
+encounter = NodePath("../../Encounters/Throne")
+seal_gates = [NodePath("../../Navigation/Gates/Pit")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CombatRooms/Throne"]
+shape = SubResource("BoxShape3D_Throne")

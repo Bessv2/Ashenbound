@@ -255,6 +255,12 @@ checklist below is the full manual pass.
       everything in it, then erupts for 24. **SHOT** draws for half a second,
       then an amber streak hits every enemy in a line (not through walls).
       **RAVEN** sends a violet raven that circles and dives for 6.
+- [ ] After clearing the crypt once, the title screen's **The Forgotten
+      Catacombs** button can be chosen and the way in reads **Enter the
+      catacombs**. Inside: cyan fires, a teal fog. Small green **Ghouls**
+      rush in packs. The last room's boss bar reads **THE HOLLOW KING**:
+      his three-bolt volley is telegraphed by a red fan; he raises four Ghouls
+      at 60% health.
 - [ ] After clearing the crypt once, send the app to the background (or
       close it) for more than 5 minutes: coming back shows **While you were
       away** with XP, gold and Ash; **Collect** adds them once. (Changing the
