@@ -211,6 +211,12 @@ checklist below is the full manual pass.
       by the braziers and a ring of fire starts to expand from him (step out
       past 10 m or dodge through it). Under 30 % he is faster. Killing him
       kills the skeletons and wins the run.
+- [ ] Items drop as coloured beams with names; walking over one picks it up
+      with a message. **BAG** opens the inventory and pauses: tapping a bag
+      item shows its stats and green/red differences; **Equip** swaps it in
+      and the health bar follows a health item.
+- [ ] Closing the app and starting it again keeps the Ash, the bag and the
+      equipment.
 - [ ] Walking behind a tall wall (in each corridor) the Warden stays visible
       through a small see-through patch in the wall.
 - [ ] The Chapel and the Throne seal and open the same way. Killing the Lord

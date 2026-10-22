@@ -4,6 +4,7 @@ extends CanvasLayer
 ## debug readout. Emits requests; it does not change game state itself.
 
 signal pause_requested
+signal inventory_requested
 
 @onready var _root: Control = $Root
 @onready var _pause_button: Button = %PauseButton
@@ -29,6 +30,7 @@ func _ready() -> void:
 	_toasts.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	_root.add_child(_toasts)
 	_pause_button.pressed.connect(pause_requested.emit)
+	(%BagButton as Button).pressed.connect(inventory_requested.emit)
 	_debug_label.visible = OS.is_debug_build()
 	# Not DisplayServer.is_touchscreen_available(): mouse-to-touch emulation
 	# (used to test the joystick on desktop) makes that true everywhere.

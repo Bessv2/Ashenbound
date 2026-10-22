@@ -41,7 +41,7 @@ Status labels follow the charter:
 | 1: Movement and camera | Verified in runtime | **Device gate blocked:** there is no Android device, and no `/dev/kvm` for an emulator. The manual checklist is in [BUILD_ANDROID.md](BUILD_ANDROID.md#manual-device-checklist). |
 | 2: Combat foundation | In progress | See below. |
 | 3: First dungeon | Validated, verified in runtime | Spec: [dungeons/ashen_crypt.md](dungeons/ashen_crypt.md). All six steps done; the gate (three runs in a row, clean, paid once each) passes in automated tests. **Device check open.** PRs #15 to #20, stacked. |
-| 4: First loot loop | In progress | Design: [LOOT.md](LOOT.md). Steps 1 to 3 of 5 (item model, stats in combat, drops) validated. Parked PR #6 is reference only. |
+| 4: First loot loop | Validated, verified in runtime | Design: [LOOT.md](LOOT.md). All five steps done; the gate (restart restores bag, gear and Ash; stats verified in combat) passes in automated tests. **Device check open.** |
 | 5 to 7 | Not started | |
 
 ### Milestone 2 progress

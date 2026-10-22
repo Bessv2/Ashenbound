@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://scripts/dungeon/run_controller.gd" id="13_run"]
 [ext_resource type="Script" path="res://scripts/core/perf_log.gd" id="12_perf"]
 [ext_resource type="Script" path="res://scripts/items/loot_dropper.gd" id="14_loot"]
+[ext_resource type="Script" path="res://ui/inventory/inventory_panel.gd" id="15_inventory"]
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
@@ -42,3 +43,6 @@ player_health = NodePath("../Player/Health")
 
 [node name="Loot" type="Node" parent="."]
 script = ExtResource("14_loot")
+
+[node name="Inventory" type="CanvasLayer" parent="."]
+script = ExtResource("15_inventory")

@@ -934,3 +934,43 @@ Not tested:
 Recommended next task:
 - Steps 4 and 5: inventory screen, save and load.
 ```
+
+## 21. Milestone 4, steps 4 and 5: inventory screen and saving (branch `feature/m4-inventory`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: 4 (first loot loop), complete
+Status: Validated, verified in runtime (desktop software Vulkan); not verified on device
+
+Changes:
+- InventoryPanel: nine slots, bag grid, item card with per-stat comparison,
+  Equip / Unequip, rarity frames; opened by the HUD's BAG button, pauses the
+  game.
+- Profile saving: versioned JSON, written atomically with a backup, loaded
+  with fallback; broken files kept aside; unreadable items skipped.
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 209 passed, 0 failed (6 new in test_save_and_inventory.gd). Two
+  expected warnings come from the corrupt-save tests.
+- Command: rendered inventory screen under Xvfb
+  Exit code: 0
+  Result: slots, bag and card fit 1280×720; buttons always visible
+
+Acceptance (docs/LOOT.md):
+- [x] 1. Affixes in range, count by rarity
+- [x] 2. Items survive save and load unchanged
+- [x] 3. Every stat changes combat; removing the item restores it
+- [x] 4. Equip and unequip never lose or duplicate an item
+- [x] 5. A drop is picked up once; a full bag leaves it
+- [x] 6. A restart restores bag, equipment and Ash (simulated in tests)
+- [x] 7. A corrupt save does not crash and does not delete data
+
+Not tested:
+- On a phone; saving in the browser preview (user:// is browser storage there).
+
+Recommended next task:
+- XP, levels and the skill trees.
+```

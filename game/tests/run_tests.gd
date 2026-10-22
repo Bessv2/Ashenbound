@@ -19,6 +19,10 @@ var _warning_count := 0
 
 func _initialize() -> void:
 	OS.add_logger(_error_counter)
+	# Tests never touch the real save; save tests pick their own file.
+	var profile := root.get_node_or_null(^"Profile")
+	if profile:
+		profile.save_path = ""
 	# A --script run starts with a tiny (64×64) headless window, which the
 	# project's stretch mode would scale up to the base resolution. Disable the
 	# scaling so pushed screen-space input maps 1:1 onto the UI under test.
@@ -81,6 +85,7 @@ func _reset_global_state() -> void:
 	GameplayActions.release_all()
 	var profile := root.get_node_or_null(^"Profile")
 	if profile:
+		profile.save_path = ""
 		profile.reset()
 
 
