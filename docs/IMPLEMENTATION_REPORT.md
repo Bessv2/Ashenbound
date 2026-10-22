@@ -1197,3 +1197,44 @@ Not tested:
 - On a phone: dash feel, the mark's readability.
 - Balance against the Warden in full runs.
 ```
+
+## 29. Fix: exported builds lost text lists (owner playtest, 2026-10-22)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: bug fix (owner's web playtest: "I can't open doors, enemies aren't
+moving, XP is not coming up when I kill one of the test dummies")
+Status: Validated, verified in runtime (web build in headless Chromium)
+
+Cause:
+- Godot 4.7.2's export-time conversion of text resources to binary wrote every
+  PackedStringArray empty. Wave spawn markers were lost, so the Ossuary's
+  enemies never spawned ("no spawn marker named ''"), the room could never be
+  cleared and its exit stayed shut. Skill branch names and the Warden's
+  hidden model parts were lost too. Desktop and the tests read the text files
+  directly, so they never saw it. A plain binary save/load keeps the arrays;
+  only the export converter drops them.
+- XP from the training targets: by design they give none (they respawn
+  forever); XP comes from the crypt's enemies.
+
+Changes:
+- project.godot: editor/export/convert_text_resources_to_binary=false (also
+  fixes the Android export, which uses the same converter).
+- tools/check_export.gd, run by tools/export-web.sh: fails the export when the
+  markers, branch names or hidden parts come out empty.
+
+Commands run:
+- Command: godot --main-pack build/web/index.pck --script (probe)
+  Result: before: markers=[], branches=[], hidden=[]; after: all present
+- Command: tools/export-web.sh with the old setting, then the new one
+  Exit code: 1 ("export check FAILED: …"), then 0
+- Command: the web build in headless Chromium, walking north with the keyboard
+  Result: before: three "no spawn marker" errors, an empty Ossuary; after:
+  skeletons rise, chase and attack; no errors
+- Command: tools/test.sh
+  Exit code: 0; 245 passed
+
+Not tested:
+- The Android APK on a phone (same setting; no device).
+```

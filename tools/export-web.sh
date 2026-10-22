@@ -18,6 +18,8 @@ mkdir -p "$OUT"
 for file in index.html index.js index.pck index.wasm; do
 	[[ -s "$OUT/$file" ]] || { echo "Export failed: $OUT/$file is missing or empty." >&2; exit 1; }
 done
+# The exported data must still hold what the game needs (see the script).
+"$GODOT" --headless --main-pack "$OUT/index.pck" --script "$ROOT_DIR/tools/check_export.gd"
 
 python3 - "$OUT/index.html" "$ROOT_DIR/tools/web/preview_overlay.html" <<'PY'
 import sys

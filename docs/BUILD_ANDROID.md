@@ -265,6 +265,13 @@ checklist below is the full manual pass.
   and falls back to OpenGL ES 3 when Vulkan is unavailable
   (`rendering/rendering_device/fallback_to_opengl3`, which is on by default).
   Check `adb logcat -s godot` for the driver that was chosen.
+- **Exported game has empty lists (rooms without enemies, doors that never
+  open):** Godot 4.7.2's export-time conversion of text resources to binary
+  drops every `PackedStringArray` (wave spawn markers, skill branch names,
+  hidden model parts). The project turns that conversion off
+  (`editor/export/convert_text_resources_to_binary=false` in
+  `project.godot`); leave it off. `tools/export-web.sh` checks the exported
+  package with `tools/check_export.gd` and fails if it happens again.
 - **`INSTALL_FAILED_UPDATE_INCOMPATIBLE`**: an APK with the same package name
   but a different signing key is installed. Uninstall it first with
   `adb uninstall com.ashenbound.game`.
