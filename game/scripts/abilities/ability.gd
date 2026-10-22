@@ -15,6 +15,8 @@ signal activated
 ## The InputMap action that starts it.
 @export var action: StringName
 @export_range(0.0, 120.0, 0.05, "suffix:s") var cooldown: float = 1.0
+## The colour of its HUD button's ring and flash.
+@export var hud_color: Color = Color(0.95, 0.45, 0.2)
 
 ## Scales the cooldown spent from now on (cooldown reduction on gear).
 var cooldown_scale: float = 1.0

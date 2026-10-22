@@ -14,6 +14,7 @@
 [ext_resource type="Script" path="res://ui/inventory/inventory_panel.gd" id="15_inventory"]
 [ext_resource type="Script" path="res://ui/skills/skill_tree_panel.gd" id="16_skills"]
 [ext_resource type="Script" path="res://ui/offline/offline_panel.gd" id="17_offline"]
+[ext_resource type="Script" path="res://ui/effects/screen_fx.gd" id="18_screen_fx"]
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
@@ -54,3 +55,6 @@ script = ExtResource("16_skills")
 
 [node name="Offline" type="CanvasLayer" parent="."]
 script = ExtResource("17_offline")
+
+[node name="ScreenFx" type="CanvasLayer" parent="."]
+script = ExtResource("18_screen_fx")

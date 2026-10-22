@@ -223,6 +223,12 @@ enemies and the dodge came after it, and are described below.
   sparks on every hit and an ash-and-ember burst on death; `AttackSwoosh` on
   the Warden draws an arc along each melee hit's reach and arc (gold on a
   critical hit). Effects are visual only and never touch `Health`.
+- **Presentation** ([UI.md](UI.md)): `FlameFx` (torches, braziers),
+  `ScreenFx` (vignette, low-health pulse, a CanvasLayer under the HUD),
+  `Banner` (room, boss and level titles in the HUD), `UiFx` (pop-in and
+  flash helpers), outlines through `ModelDressing.outline_width`. The game
+  starts on `scenes/title.tscn` (`TitleScreen`), which writes the chosen
+  class and tier to `Profile` and changes to `scenes/main.tscn`.
 - **Camera shake**: `IsometricCameraRig.add_trauma()`; the shake grows with
   trauma squared, decays in about half a second, moves the camera only in its
   own plane and pauses with the game. `Main` adds trauma when the hero is

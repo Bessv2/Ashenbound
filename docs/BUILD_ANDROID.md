@@ -221,6 +221,14 @@ checklist below is the full manual pass.
       **SKILLS** opens the trees: learning Stalwart raises max health at once;
       **Reset** gives the points back. The Reaver and Hexbinder tabs are
       previews.
+- [ ] The game opens on the title screen: ASHENBOUND over drifting embers,
+      six class cards (Warden, Reaver, Hexbinder can be chosen), the tier, and
+      **Enter the crypt**. **II** → **Leave the crypt** comes back to it.
+- [ ] Torches and braziers burn with moving flames and embers; dust hangs in
+      the rooms; the screen edges are dark, and pulse red under 40% health.
+      Entering a room shows its name across the screen. A hit drops the
+      health bar at once and a pale trail follows; ability buttons flash when
+      ready.
 - [ ] **SKILLS** → Reaver tab → **Play Reaver** starts a new run as the
       Reaver (hooded, two knives, 85 health). **VEIL** dashes through a group,
       numbers pop on each one passed and a crimson ring marks them; hits on a

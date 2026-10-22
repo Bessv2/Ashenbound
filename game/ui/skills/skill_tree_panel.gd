@@ -62,6 +62,7 @@ func open() -> void:
 	_selected = ""
 	_refresh()
 	show()
+	UiFx.pop_layer(self)
 
 
 func close() -> void:

@@ -11,6 +11,8 @@ const HERO_SCENES := {
 	"hexbinder": "res://scenes/player/hexbinder.tscn",
 }
 
+const TITLE_SCENE := "res://scenes/title.tscn"
+
 ## The level played, instanced as the child "Level" when the scene starts.
 @export var level_scene: PackedScene
 ## When false, no encounter starts by itself: a quiet level for practice and
@@ -32,6 +34,7 @@ var difficulty: Difficulty
 @onready var _inventory: InventoryPanel = $Inventory
 @onready var _skills: SkillTreePanel = $Skills
 @onready var _offline: OfflinePanel = $Offline
+@onready var _screen_fx: ScreenFx = $ScreenFx
 
 ## Items picked up this run.
 var _loot_found: int = 0
@@ -42,6 +45,7 @@ func _ready() -> void:
 	_load_level()
 	_hud.pause_requested.connect(_pause_controller.set_paused.bind(true))
 	_pause_menu.resume_requested.connect(_pause_controller.set_paused.bind(false))
+	_pause_menu.leave_requested.connect(leave_to_title)
 	_pause_controller.paused_changed.connect(_on_paused_changed)
 	_pause_menu.set_open(_pause_controller.is_paused())
 	_hud.inventory_requested.connect(open_inventory)
@@ -53,6 +57,8 @@ func _ready() -> void:
 	# A method, not a lambda: the connection to the autoload goes when Main goes.
 	Profile.offline_ready.connect(open_offline_rewards)
 	_hud.track_health(_player.health)
+	_show_hero_name()
+	_screen_fx.track(_player.health)
 	_hud.track_dodge(_player.dodge)
 	_hud.track_abilities(_player.abilities)
 	_run.ended.connect(_on_run_ended)
@@ -161,6 +167,14 @@ func _on_paused_changed(paused: bool) -> void:
 		_offline.hide()
 
 
+## Goes back to the title screen. Rewards already paid are kept; the run's
+## own Ash and gold are only paid when it ends, so leaving forfeits them.
+func leave_to_title() -> void:
+	GameplayActions.release_all()
+	get_tree().paused = false
+	get_tree().change_scene_to_file(TITLE_SCENE)
+
+
 ## Starts the scene over from scratch.
 func restart() -> void:
 	get_tree().paused = false
@@ -186,6 +200,9 @@ func _load_level() -> void:
 		_player.reset_physics_interpolation()
 		_camera_rig.snap_to_target()
 	_run.watch(level.encounters)
+	for node in level.find_children("*", "Node3D", true, false):
+		if node is EncounterController and (node as EncounterController).title != "":
+			(node as EncounterController).started.connect(_on_encounter_started.bind(node))
 	_loot.item_level = difficulty.item_level(level.item_level)
 	_loot.chance_scale = difficulty.drop_chance_scale()
 	_loot.rarity_scale = difficulty.rarity_scale()
@@ -207,7 +224,20 @@ func _on_kill_counted(enemy: Node3D) -> void:
 
 
 func _on_leveled_up(new_level: int) -> void:
-	_hud.show_toast("Level %d: a skill point to spend" % new_level, Color("#D9A44C"))
+	_hud.show_banner("Level %d" % new_level, "A skill point to spend", Color("#D9A44C"))
+
+
+func _on_encounter_started(encounter: EncounterController) -> void:
+	_hud.show_banner(encounter.title, encounter.subtitle, encounter.title_color)
+
+
+## The hero's class name, in the colour of its first ability, at the top left.
+func _show_hero_name() -> void:
+	var stats := _player.get_node_or_null(^"Stats") as CharacterStats
+	if stats == null or stats.skill_tree == null:
+		return
+	var color := _player.abilities[0].hud_color if not _player.abilities.is_empty() else Color.WHITE
+	_hud.set_hero(stats.skill_tree.class_title, color.lerp(Color.WHITE, 0.25))
 
 
 ## Seconds between the killing blow that wins the run and the summary.

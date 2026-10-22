@@ -81,6 +81,7 @@ script = ExtResource("14_veil")
 display_name = "VEIL"
 action = &"ability_1"
 cooldown = 6.0
+hud_color = Color(0.95, 0.15, 0.25, 1)
 
 [node name="FanAttack" type="Node" parent="."]
 script = ExtResource("5_attack")
@@ -91,6 +92,7 @@ script = ExtResource("15_strike")
 display_name = "FAN"
 action = &"ability_2"
 cooldown = 4.0
+hud_color = Color(1, 0.55, 0.55, 1)
 attack = NodePath("../FanAttack")
 
 [node name="Hemorrhage" type="Node" parent="."]
@@ -98,6 +100,7 @@ script = ExtResource("17_bleed")
 display_name = "BLEED"
 action = &"ability_3"
 cooldown = 6.0
+hud_color = Color(0.8, 0.05, 0.12, 1)
 reach = 2.8
 damage_per_tick = 5
 tick_count = 6
@@ -109,6 +112,7 @@ script = ExtResource("22_dressing")
 model = NodePath("../Visual/Model")
 material = ExtResource("23_model_material")
 hidden_parts = PackedStringArray("1H_Crossbow", "2H_Crossbow", "Throwable")
+outline_width = 0.018
 
 [node name="Animator" type="Node" parent="." node_paths=PackedStringArray("body", "animation_player", "health", "dodge", "attacks", "abilities")]
 script = ExtResource("24_animator")

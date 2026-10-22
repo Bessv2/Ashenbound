@@ -51,6 +51,7 @@ func open() -> void:
 	_selected_slot = -1
 	_refresh()
 	show()
+	UiFx.pop_layer(self)
 
 
 func close() -> void:
