@@ -142,7 +142,8 @@ In order, each with its own small design note:
 
 1. **XP and levels**: built, see [SKILL_TREES.md](SKILL_TREES.md).
 2. **Gold, salvage and upgrades**: built, above.
-3. **Offline rewards** (Milestone 6): XP, gold and materials for the time
+3. **Offline rewards**: built (provisional), see
+   [OFFLINE_REWARDS.md](OFFLINE_REWARDS.md). Originally planned as: (Milestone 6): XP, gold and materials for the time
    away, for content already cleared, capped (charter default 8 hours). They
    use the local clock until the server exists, and are marked as provisional
    until Milestone 5 validates them with trusted time.

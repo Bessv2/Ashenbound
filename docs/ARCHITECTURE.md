@@ -394,6 +394,12 @@ Milestone 3, step 1 ([dungeons/ashen_crypt.md](dungeons/ashen_crypt.md)).
   counts as gone when its Health dies (the corpse may linger). When a wave is
   dead the next one starts after the delay; after the last, `cleared` fires
   once. It also emits `wave_started(index)` and `enemy_killed(enemy)`.
+- **Offline rewards** ([OFFLINE_REWARDS.md](OFFLINE_REWARDS.md)):
+  `OfflineRewards` holds the rules; `Profile` banks time away
+  (`bank_time_away()`, at launch and on Android resume, through a
+  replaceable `clock`), saves the bank and pays it once
+  (`claim_offline()`); `OfflinePanel` ("Offline" in Main) shows it and
+  pauses the game until collected.
 - **`Forge`** (`scripts/items/forge.gd`): salvage values, upgrade prices and
   the +10% per rank rule ([LOOT.md](LOOT.md#gold-salvage-and-upgrades)).
   `Profile.salvage()` and `Profile.upgrade_item()` apply them; an item's

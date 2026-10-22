@@ -46,7 +46,8 @@ Status labels follow the charter:
 | Visual pass | Validated, verified in runtime | Hit sparks, slash arcs, death bursts, camera shake with an off switch. PR stacked on #24. |
 | Crypt tiers | Validated, verified in runtime | [dungeons/tiers.md](dungeons/tiers.md): ten tiers, unlocked by clears, scaling enemies and rewards. PR stacked on the visual pass. |
 | Gold, salvage and upgrades | Validated, verified in runtime | [LOOT.md](LOOT.md#gold-salvage-and-upgrades). PR stacked on the crypt tiers. |
-| 5 to 7 | Not started | |
+| Offline rewards | Validated, verified in runtime; **provisional** (device clock) | [OFFLINE_REWARDS.md](OFFLINE_REWARDS.md): highest tier cleared, half a run per hour, 8-hour cap. Milestone 6 groundwork, ahead of Milestone 5. |
+| 5 to 7 | Not started | Offline rewards above are early Milestone 6 work. |
 
 ### Milestone 2 progress
 
@@ -76,6 +77,11 @@ owner's request, so the web preview could be published from `main`.
 
 ## Deviations from the charter
 
+- **Offline rewards before the backend:** the charter puts them in Milestone
+  6, with trusted server time. The owner asked for them early; they use the
+  device clock and are marked provisional until Milestone 5
+  ([OFFLINE_REWARDS.md](OFFLINE_REWARDS.md)).
+
 - **Names:** the hero is the Warden. The main scene's slot for it is still
   called `Player`, because that slot will hold any class. The arena is not yet
   framed as the Fallen Marches.
@@ -89,14 +95,11 @@ owner's request, so the web preview could be published from `main`.
 
 ## Next task
 
-**Offline rewards** (Milestone 6 groundwork, owner's vision: "being offline
-still earns you XP and other things like gold and loot resources"): time
-away earns XP, gold and Ash for the highest crypt tier cleared, capped at 8
-hours, claimed once on return. The local clock is used until the Milestone 5
-server exists, and the rewards are marked provisional; a clock set backwards
-earns nothing.
-
-Then a second playable class (Reaver), per charter 13.9.
+**A second playable class: the Reaver** (charter 13.9 step 3: a class with a
+different range and mobility profile, to prove the combat framework is
+shared). First a combat abstraction review of the Warden's code, then the
+Reaver's kit (basic attack chain, Veil Rend, two more abilities), its tree
+made playable, and class selection.
 
 Device checks for Milestones 1 to 4 are still open: they need the Android app
 on a phone ([DEVICE_TESTING.md](DEVICE_TESTING.md)). The owner's playtests so
