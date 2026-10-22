@@ -974,3 +974,36 @@ Not tested:
 Recommended next task:
 - XP, levels and the skill trees.
 ```
+
+## 22. XP, levels and skill trees (branch `feature/skill-trees`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: progression (owner request 2026-10-22; leads into Milestone 6)
+Status: Validated, verified in runtime (desktop software Vulkan); not verified on device
+
+Changes:
+- docs/SKILL_TREES.md: XP curve, points, tree rules, three trees.
+- SkillNode, SkillTree, SkillStats; trees for the Warden (playable),
+  Reaver and Hexbinder (previews), 15 nodes in 3 branches each.
+- Profile: level, XP, learned ranks, learn/reset, save version 2 with
+  version 1 migration.
+- CharacterStats takes the tree as a bonus; skill-only stats change Cleave,
+  Guard, its counter and Brand.
+- XP per kill; HUD level, points and XP bar; level-up message.
+- SkillTreePanel (SKILLS button).
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 216 passed, 0 failed (7 new in test_skill_trees.gd)
+- Command: rendered HUD and skill screens under Xvfb
+  Exit code: 0
+  Result: level and XP bar; tree with learned, open and locked nodes; preview tab
+
+Acceptance (docs/SKILL_TREES.md): checks 1 to 4 pass in automated tests.
+
+Not tested:
+- On a phone.
+```

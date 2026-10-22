@@ -55,6 +55,8 @@ const REPATH_DISTANCE := 0.5
 @export var hunting: bool = false
 ## Ash the run earns when this enemy is killed.
 @export_range(0, 1000, 1) var ash_value: int = 1
+## XP the hero gains for the kill.
+@export_range(0, 100000, 1) var xp_value: int = 10
 ## What it may drop when killed; none when null.
 @export var drop_table: DropTable
 

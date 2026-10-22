@@ -1,0 +1,177 @@
+[gd_resource type="Resource" script_class="SkillTree" format=3]
+
+[ext_resource type="Script" path="res://scripts/progression/skill_tree.gd" id="1_tree"]
+[ext_resource type="Script" path="res://scripts/progression/skill_node.gd" id="2_node"]
+
+[sub_resource type="Resource" id="Node_bloodied_edge"]
+script = ExtResource("2_node")
+id = "bloodied_edge"
+display_name = "Bloodied Edge"
+description = "+3% damage per rank."
+branch = 0
+tier = 0
+max_rank = 5
+per_rank = Dictionary[String, int]({"damage_pct": 3})
+requires = ""
+
+[sub_resource type="Resource" id="Node_heavy_swings"]
+script = ExtResource("2_node")
+id = "heavy_swings"
+display_name = "Heavy Swings"
+description = "Cleave deals +15% damage per rank."
+branch = 0
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"cleave_damage_pct": 15})
+requires = "bloodied_edge"
+
+[sub_resource type="Resource" id="Node_butchers_eye"]
+script = ExtResource("2_node")
+id = "butchers_eye"
+display_name = "Butcher's Eye"
+description = "+4% critical chance per rank."
+branch = 0
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"crit_chance": 4})
+requires = "bloodied_edge"
+
+[sub_resource type="Resource" id="Node_rending_blows"]
+script = ExtResource("2_node")
+id = "rending_blows"
+display_name = "Rending Blows"
+description = "+15% critical damage per rank."
+branch = 0
+tier = 2
+max_rank = 3
+per_rank = Dictionary[String, int]({"crit_damage": 15})
+requires = "butchers_eye"
+
+[sub_resource type="Resource" id="Node_executioner"]
+script = ExtResource("2_node")
+id = "executioner"
+display_name = "Executioner"
+description = "Each kill heals 3 per rank."
+branch = 0
+tier = 2
+max_rank = 2
+per_rank = Dictionary[String, int]({"health_on_kill": 3})
+requires = "heavy_swings"
+
+[sub_resource type="Resource" id="Node_iron_skin"]
+script = ExtResource("2_node")
+id = "iron_skin"
+display_name = "Iron Skin"
+description = "+6 armour per rank."
+branch = 1
+tier = 0
+max_rank = 5
+per_rank = Dictionary[String, int]({"armor": 6})
+requires = ""
+
+[sub_resource type="Resource" id="Node_stalwart"]
+script = ExtResource("2_node")
+id = "stalwart"
+display_name = "Stalwart"
+description = "+10 max health per rank."
+branch = 1
+tier = 0
+max_rank = 5
+per_rank = Dictionary[String, int]({"max_health": 10})
+requires = ""
+
+[sub_resource type="Resource" id="Node_shield_wall"]
+script = ExtResource("2_node")
+id = "shield_wall"
+display_name = "Shield Wall"
+description = "Bulwark Guard lasts 0.3 s longer per rank."
+branch = 1
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"guard_duration_ms": 300})
+requires = "iron_skin"
+
+[sub_resource type="Resource" id="Node_retribution"]
+script = ExtResource("2_node")
+id = "retribution"
+display_name = "Retribution"
+description = "Guard's counter deals +30% damage per rank."
+branch = 1
+tier = 2
+max_rank = 3
+per_rank = Dictionary[String, int]({"counter_damage_pct": 30})
+requires = "shield_wall"
+
+[sub_resource type="Resource" id="Node_unbroken"]
+script = ExtResource("2_node")
+id = "unbroken"
+display_name = "Unbroken"
+description = "+25 max health and +10 armour."
+branch = 1
+tier = 2
+max_rank = 1
+per_rank = Dictionary[String, int]({"max_health": 25, "armor": 10})
+requires = "stalwart"
+
+[sub_resource type="Resource" id="Node_kindling"]
+script = ExtResource("2_node")
+id = "kindling"
+display_name = "Kindling"
+description = "+2% damage per rank."
+branch = 2
+tier = 0
+max_rank = 5
+per_rank = Dictionary[String, int]({"damage_pct": 2})
+requires = ""
+
+[sub_resource type="Resource" id="Node_searing_brand"]
+script = ExtResource("2_node")
+id = "searing_brand"
+display_name = "Searing Brand"
+description = "Ember Brand burns for 1 more per tick, per rank."
+branch = 2
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"brand_tick_damage": 1})
+requires = "kindling"
+
+[sub_resource type="Resource" id="Node_wildfire"]
+script = ExtResource("2_node")
+id = "wildfire"
+display_name = "Wildfire"
+description = "Ember Brand burns 2 more ticks per rank."
+branch = 2
+tier = 2
+max_rank = 2
+per_rank = Dictionary[String, int]({"brand_ticks": 2})
+requires = "searing_brand"
+
+[sub_resource type="Resource" id="Node_ember_haste"]
+script = ExtResource("2_node")
+id = "ember_haste"
+display_name = "Ember Haste"
+description = "+4% cooldown reduction per rank."
+branch = 2
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"cooldown_reduction": 4})
+requires = "kindling"
+
+[sub_resource type="Resource" id="Node_ashen_stride"]
+script = ExtResource("2_node")
+id = "ashen_stride"
+display_name = "Ashen Stride"
+description = "+3% move speed per rank."
+branch = 2
+tier = 2
+max_rank = 3
+per_rank = Dictionary[String, int]({"move_speed_pct": 3})
+requires = "ember_haste"
+
+[resource]
+script = ExtResource("1_tree")
+class_id = "warden"
+class_title = "Warden"
+playable = true
+branches = PackedStringArray("Carnage", "Bulwark", "Doomfire")
+nodes = Array[ExtResource("2_node")]([SubResource("Node_bloodied_edge"), SubResource("Node_heavy_swings"), SubResource("Node_butchers_eye"), SubResource("Node_rending_blows"), SubResource("Node_executioner"), SubResource("Node_iron_skin"), SubResource("Node_stalwart"), SubResource("Node_shield_wall"), SubResource("Node_retribution"), SubResource("Node_unbroken"), SubResource("Node_kindling"), SubResource("Node_searing_brand"), SubResource("Node_wildfire"), SubResource("Node_ember_haste"), SubResource("Node_ashen_stride")])
