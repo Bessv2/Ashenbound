@@ -236,6 +236,24 @@ script = ExtResource("3_action_button")
 action = &"ability_3"
 label = "BRAND"
 
+[node name="PotionButton" type="Control" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -566.0
+offset_top = -150.0
+offset_right = -466.0
+offset_bottom = -50.0
+grow_horizontal = 0
+grow_vertical = 0
+script = ExtResource("3_action_button")
+action = &"potion"
+label = "POTION"
+
 [node name="ControlsHint" type="Label" parent="Root"]
 unique_name_in_owner = true
 layout_mode = 1
@@ -251,5 +269,5 @@ offset_bottom = -24.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_type_variation = &"DimLabel"
-text = "WASD / Arrows: move    J / Space: attack    Shift / K: dodge    Q E R / 1 2 3: abilities    Esc / P: pause"
+text = "WASD / Arrows: move    J / Space: attack    Shift / K: dodge    Q E R / 1 2 3: abilities    F / 4: potion    Esc / P: pause"
 horizontal_alignment = 1

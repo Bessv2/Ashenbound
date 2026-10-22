@@ -38,6 +38,7 @@ health = NodePath("Health")
 visual = NodePath("Visual")
 navigation = NodePath("NavigationAgent")
 ash_value = 10
+champion_eligible = false
 drop_table = ExtResource("24_drops")
 xp_value = 100
 gold_value = 25

@@ -27,11 +27,17 @@ func _ready() -> void:
 		inventory = profile.inventory if profile else Inventory.new()
 
 
+## Rolls the enemy's drop table, and a Champion's bonus drop too.
 func on_enemy_killed(enemy: Node3D) -> void:
-	if not enemy is EnemyController or (enemy as EnemyController).drop_table == null:
+	if not enemy is EnemyController:
 		return
+	var items: Array[ItemInstance] = []
 	var table: DropTable = (enemy as EnemyController).drop_table
-	var items := table.roll(catalog, item_level, _rng, chance_scale, rarity_scale)
+	if table:
+		items.append_array(table.roll(catalog, item_level, _rng, chance_scale, rarity_scale))
+	var champion := Champion.of(enemy)
+	if champion and champion.bonus_drops:
+		items.append_array(champion.bonus_drops.roll(catalog, item_level, _rng, 1.0, rarity_scale))
 	for i in items.size():
 		var angle := TAU * i / maxf(items.size(), 1.0)
 		drop(items[i], enemy.global_position + Vector3(cos(angle), 0.0, sin(angle)) * (0.0 if items.size() == 1 else 1.0))

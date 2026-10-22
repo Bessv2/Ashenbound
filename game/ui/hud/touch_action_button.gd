@@ -27,6 +27,11 @@ const NO_TOUCH := -1
 ## clockwise from the top. The button still presses during a cooldown: what
 ## the action does then is up to the game.
 var cooldown: Callable
+## Optional: a short text in a disc at the top right (a potion count).
+var badge: String = "":
+	set(value):
+		badge = value
+		queue_redraw()
 
 var _touch_index: int = NO_TOUCH
 var _shown_cooldown: float = 0.0
@@ -131,6 +136,13 @@ func _draw() -> void:
 	var text_size := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)
 	draw_string(font, center + Vector2(-text_size.x * 0.5, font.get_ascent(font_size) * 0.35),
 			label, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, text_color)
+	if badge != "":
+		var spot := center + Vector2(radius * 0.72, -radius * 0.72)
+		draw_circle(spot, 17.0, Color(0.06, 0.04, 0.05, 0.95), true, -1.0, true)
+		draw_arc(spot, 16.0, 0.0, TAU, 32, ring_color, 2.0, true)
+		var badge_size := font.get_string_size(badge, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)
+		draw_string(font, spot + Vector2(-badge_size.x * 0.5, font.get_ascent(font_size) * 0.35),
+				badge, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, text_color)
 
 
 ## Fills `fraction` of the circle, clockwise from the top.

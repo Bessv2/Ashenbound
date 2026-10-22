@@ -176,6 +176,16 @@ func track_dodge(dodge: Dodge) -> void:
 	_dodge_button.cooldown = dodge.cooldown_fraction
 
 
+## Shows the potions left on the potion button, and their cooldown.
+func track_potions(belt: PotionBelt) -> void:
+	var button := %PotionButton as TouchActionButton
+	button.cooldown = belt.cooldown_fraction
+	button.set_accent(PotionBelt.COLOR)
+	var show_count := func() -> void: button.badge = str(belt.charges)
+	belt.changed.connect(show_count)
+	show_count.call()
+
+
 ## Labels each ability button after the ability on its action and shows that
 ## ability's cooldown. Buttons whose action has no ability are hidden.
 func track_abilities(abilities: Array[Ability]) -> void:

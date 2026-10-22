@@ -18,6 +18,9 @@ const TITLE_SCENE := "res://scenes/title.tscn"
 ## When false, no encounter starts by itself: a quiet level for practice and
 ## for tests. Encounters started by room triggers still start.
 @export var encounters_start_by_themselves: bool = true
+## When false, no enemy rises as a Champion: runs whose rewards must be exact
+## (tests).
+@export var champions_appear: bool = true
 
 var level: Level
 ## The crypt tier of this run, from Profile.tier when the scene starts.
@@ -35,6 +38,7 @@ var difficulty: Difficulty
 @onready var _skills: SkillTreePanel = $Skills
 @onready var _offline: OfflinePanel = $Offline
 @onready var _screen_fx: ScreenFx = $ScreenFx
+@onready var _potions: PotionBelt = $Potions
 
 ## Items picked up this run.
 var _loot_found: int = 0
@@ -61,6 +65,9 @@ func _ready() -> void:
 	_screen_fx.track(_player.health)
 	_hud.track_dodge(_player.dodge)
 	_hud.track_abilities(_player.abilities)
+	_potions.health = _player.health
+	_hud.track_potions(_potions)
+	_run.kill_counted.connect(_potions.on_kill)
 	_run.ended.connect(_on_run_ended)
 	_connect_shake()
 	_run.kill_counted.connect(_on_kill_counted)
@@ -115,7 +122,7 @@ func _connect_shake() -> void:
 				if not targets.is_empty() and (child as MeleeAttack).last_hit_critical:
 					_camera_rig.add_trauma(0.25))
 	_run.kill_counted.connect(func(enemy: Node3D) -> void:
-		if enemy is EnemyController and (enemy as EnemyController).ash_value >= 10:
+		if enemy is EnemyController and (Champion.of(enemy) or not (enemy as EnemyController).champion_eligible):
 			_camera_rig.add_trauma(0.6))
 
 
@@ -188,6 +195,8 @@ func _load_level() -> void:
 	level = level_scene.instantiate() as Level
 	level.name = "Level"
 	difficulty = Difficulty.new(Profile.tier)
+	if not champions_appear:
+		difficulty.champion_chance_override = 0.0
 	for node in level.find_children("*", "Node3D", true, false):
 		if node is EncounterController:
 			node.difficulty = difficulty
@@ -201,8 +210,11 @@ func _load_level() -> void:
 		_camera_rig.snap_to_target()
 	_run.watch(level.encounters)
 	for node in level.find_children("*", "Node3D", true, false):
-		if node is EncounterController and (node as EncounterController).title != "":
-			(node as EncounterController).started.connect(_on_encounter_started.bind(node))
+		if node is EncounterController:
+			var encounter := node as EncounterController
+			if encounter.title != "":
+				encounter.started.connect(_on_encounter_started.bind(encounter))
+			encounter.champion_spawned.connect(_on_champion_spawned)
 	_loot.item_level = difficulty.item_level(level.item_level)
 	_loot.chance_scale = difficulty.drop_chance_scale()
 	_loot.rarity_scale = difficulty.rarity_scale()
@@ -227,6 +239,12 @@ func _on_leveled_up(new_level: int) -> void:
 	_hud.show_banner("Level %d" % new_level, "A skill point to spend", Color("#D9A44C"))
 
 
+func _on_champion_spawned(enemy: EnemyController) -> void:
+	var champion := Champion.of(enemy)
+	_hud.show_toast("A champion rises: %s" % champion.title,
+			Champion.AFFIX_COLORS[champion.affixes[0]].lerp(Color.WHITE, 0.3))
+
+
 func _on_encounter_started(encounter: EncounterController) -> void:
 	_hud.show_banner(encounter.title, encounter.subtitle, encounter.title_color)
 
@@ -246,6 +264,7 @@ const VICTORY_SUMMARY_DELAY := 2.0
 
 func _on_run_ended(victory: bool) -> void:
 	GameplayActions.release_all()
+	_potions.input_enabled = false
 	# The reward is paid once, at the end of the run; claim_reward() refuses
 	# any second attempt for the same run.
 	_run.claim_reward()

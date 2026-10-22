@@ -40,6 +40,7 @@ slam_attack = NodePath("AshSlam")
 add_scene = ExtResource("24_add")
 animator = NodePath("Animator")
 ash_value = 50
+champion_eligible = false
 drop_table = ExtResource("25_drops")
 xp_value = 500
 gold_value = 100

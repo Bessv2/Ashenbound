@@ -240,6 +240,15 @@ checklist below is the full manual pass.
       drops a violet ring on a group (6 each, then small ticks); **UNMAKE**
       bursts every cursed enemy for big numbers; **GRASP** hits and slows
       everything close.
+- [ ] **POTION** (left of DODGE) shows 3. Hurt, a tap heals about a third
+      (the badge drops to 2); at full health it does nothing. Six kills, or
+      killing the Fallen Knight, bring a charge back.
+- [ ] Champions: at tier 4 and up, some skeletons and cultists rise bigger,
+      with a coloured ring and a name over their bar ("Hasted Stoneskin
+      Skeleton Warrior"), and a toast announces them. An **Ember-wreathed**
+      one has an orange ring that hurts once a second; a **Vengeful** one
+      leaves a violet ring where it dies, which erupts a moment later
+      (step out). Each drops at least a Rare (blue or better) item.
 - [ ] After clearing the crypt once, send the app to the background (or
       close it) for more than 5 minutes: coming back shows **While you were
       away** with XP, gold and Ash; **Collect** adds them once. (Changing the

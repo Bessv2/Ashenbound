@@ -78,6 +78,10 @@ ability_3={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"device":-1,"physical_keycode":82,"unicode":114), Object(InputEventKey,"device":-1,"physical_keycode":51,"unicode":51)]
 }
+potion={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"device":-1,"physical_keycode":70,"unicode":102), Object(InputEventKey,"device":-1,"physical_keycode":52,"unicode":52)]
+}
 toggle_pause={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"device":-1,"physical_keycode":4194305), Object(InputEventKey,"device":-1,"physical_keycode":80,"unicode":112)]

@@ -31,6 +31,8 @@ Status labels follow the charter:
 | 2026-10-21 | Owner playtest of the art pass in the web preview on their phone: "The play tests were great!" Continue with the milestones. |
 | 2026-10-21 | **Long-term vision:** "a Diablo 4 style game with Torchlight levels of classes and a full loot system", where being offline still earns XP, gold and loot resources. Work through the milestones in order to a working gameplay loop first, then add skills, attacks and systems. Offline XP extends the charter's offline rewards (Milestone 6). |
 | 2026-10-22 | "Keep going, and dev as many milestones as you can. Up the gameplay loop, better visuals and start a skill tree for the first 3 classes or all 6 classes." |
+| 2026-10-22 | "Merge them all, keep going with the Hexbinder … make the visuals 100x better and let's start to put some life into the UI." Done in PRs #32 and #33, merged. |
+| 2026-10-22 | "Go ahead and keep building more of the gameplay." Next: champions and potions, then the Dreadhunter. |
 | 2026-10-21 | **A browser build is a playtest preview** ([WEB_PREVIEW.md](WEB_PREVIEW.md)), not a platform change: Android stays the target. |
 
 ## Milestones
@@ -50,6 +52,7 @@ Status labels follow the charter:
 | Second class: Reaver | Validated, verified in runtime | [characters/reaver.md](characters/reaver.md): Twin Slash, Veil Rend, Fan of Blades, Hemorrhage; playable tree; class switch. |
 | Third class: Hexbinder | Validated, verified in runtime | [characters/hexbinder.md](characters/hexbinder.md): Hex Bolt, Black Testament, Grasp of the Grave, Unmake; playable tree. |
 | Visuals and living UI | Validated, verified in runtime | [UI.md](UI.md): fire, dust, grade, vignette, outlines, hit punch; health trail, banners, coloured buttons; title screen with class select. |
+| Champions and health potions | Validated, verified in runtime | [CHAMPIONS.md](CHAMPIONS.md): ordinary enemies may rise as champions with affixes (Hasted, Stoneskin, Vampiric, Ember-wreathed, Vengeful) and a guaranteed Rare drop; three potions per run, refilled by kills. |
 | 5 to 7 | Not started | Offline rewards above are early Milestone 6 work. |
 
 ### Milestone 2 progress
@@ -70,13 +73,13 @@ until a phone is available.
 
 ## Pull requests
 
-PRs #1 to #5 and #7 to #12 were merged into `main` on 2026-10-21, at the
-owner's request, so the web preview could be published from `main`.
+Everything up to #33 (the Hexbinder, then visuals and the living UI) is
+merged into `main`, apart from #6.
 
 | PR | Branch | State |
 |---|---|---|
-| #15 to #24 | `feature/m3-…`, `feature/m4-…`, `feature/skill-trees` | Open drafts, **stacked**: each is based on the one before, so they merge in order starting with #15. |
-| #6 | `feature/loot` | Open draft, **parked** until Milestone 4. It is based on `feature/dodge-skills` and predates the charter's six rarities and nine slots. |
+| (new) | `feature/champions` | Champions and health potions. |
+| #6 | `feature/loot` | Open draft, **obsolete**: the early loot work, superseded by Milestone 4's loot. Kept for reference; it can be closed. |
 
 ## Deviations from the charter
 
@@ -98,11 +101,15 @@ owner's request, so the web preview could be published from `main`.
 
 ## Next task
 
-The owner's playtest of the stack in the [web preview](WEB_PREVIEW.md), and
-merging PRs #15 onward in order. Then, by the charter's order (13.9): the
-**Hexbinder** (status effects, durations, area spells), or a second dungeon
-in the Fallen Marches, whichever the owner prefers; and Milestone 5 (the
-backend) to make progression durable and the offline rewards trusted.
+The **Dreadhunter**, the fourth class (charter 13.4): ranged physical
+damage, traps and marks. After it, the options are:
+
+- a second dungeon in the Fallen Marches;
+- the Reliquary and the Gravecaller;
+- Milestone 5 (the backend), to make progression durable and the offline
+  rewards trusted.
+
+The owner's playtests in the [web preview](WEB_PREVIEW.md) steer the order.
 
 Device checks for Milestones 1 to 4 are still open: they need the Android app
 on a phone ([DEVICE_TESTING.md](DEVICE_TESTING.md)). The owner's playtests so

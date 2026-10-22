@@ -15,6 +15,7 @@
 [ext_resource type="Script" path="res://ui/skills/skill_tree_panel.gd" id="16_skills"]
 [ext_resource type="Script" path="res://ui/offline/offline_panel.gd" id="17_offline"]
 [ext_resource type="Script" path="res://ui/effects/screen_fx.gd" id="18_screen_fx"]
+[ext_resource type="Script" path="res://scripts/player/potion_belt.gd" id="19_potions"]
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
@@ -43,6 +44,9 @@ visible = false
 [node name="Run" type="Node" parent="." node_paths=PackedStringArray("player_health")]
 script = ExtResource("13_run")
 player_health = NodePath("../Player/Health")
+
+[node name="Potions" type="Node" parent="."]
+script = ExtResource("19_potions")
 
 [node name="Loot" type="Node" parent="."]
 script = ExtResource("14_loot")

@@ -60,6 +60,7 @@ Main (Node3D)                         scenes/main.tscn, scripts/main.gd
 │       ├── AttackButton              ui/hud/touch_action_button.gd, lower-right, holds `attack`
 │       ├── DodgeButton               ui/hud/touch_action_button.gd, beside ATTACK, `dodge` + cooldown sweep
 │       ├── Cleave/Guard/BrandButton  same script, in an arc around ATTACK, `ability_1` to `ability_3`
+│       ├── PotionButton              same script, left of DODGE, `potion`, with a charge badge
 │       └── ControlsHint              keyboard hint, hidden on mobile
 ├── DeathScreen (CanvasLayer)         ui/death_screen/death_screen.tscn, "Rise again"
 └── PauseMenu (CanvasLayer)           ui/pause_menu/pause_menu.tscn  [process: when paused]
@@ -105,10 +106,11 @@ Gameplay goes through these InputMap actions, defined in `project.godot`:
 | `ability_1` | Q, 1 | **CLEAVE** button (tap) |
 | `ability_2` | E, 2 | **GUARD** button (tap) |
 | `ability_3` | R, 3 | **BRAND** button (tap) |
+| `potion` | F, 4 | **POTION** button (tap) |
 | `toggle_pause` | Escape, P | — (HUD **II** button; Android Back) |
 
-`GameplayActions.ALL` lists the gameplay actions (movement, attack, dodge and
-the three abilities).
+`GameplayActions.ALL` lists the gameplay actions (movement, attack, dodge,
+the three abilities and the potion).
 They are the ones released when the game pauses.
 
 Keys are bound by **physical** position, so WASD stays in the same place on
@@ -386,6 +388,26 @@ clearly on a phone: a long, visible windup that the player can step out of.
 - Balance: three player hits kill a Skeleton Warrior. One standing next to
   the player deals 12 about every 1.2 s.
 
+## Champions and potions
+
+Design and numbers: [CHAMPIONS.md](CHAMPIONS.md).
+
+- **`Champion`** (Node, the enemy's child "Champion"): `promote(enemy,
+  affixes)` scales the enemy and adds its presentation (an `EliteBar`
+  named after its affixes, a ring and a light). It also runs the affixes:
+  - the Ember-wreathed aura ticks in its own `_physics_process`;
+  - Vampiric heals on its attacks' `struck`;
+  - Vengeful starts a **`VengefulBlast`** in the level when it dies.
+
+  `Champion.of(enemy)` tells whether an enemy is one. `LootDropper` rolls a
+  champion's `bonus_drops` on top of its table.
+- `EncounterController._maybe_promote()` raises spawned enemies at
+  `Difficulty.champion_chance()`, after the tier is applied, and emits
+  `champion_spawned`. Main shows a toast for it.
+- **`PotionBelt`** (`Main/Potions`): charges, the potion action, refills from
+  `RunController.kill_counted`. The HUD shows it through
+  `Hud.track_potions()`.
+
 ## Encounters and the run
 
 Milestone 3, step 1 ([dungeons/ashen_crypt.md](dungeons/ashen_crypt.md)).
@@ -627,6 +649,8 @@ named `test_*.gd`. Each test method runs on a fresh suite instance in the scene
 tree. Integration tests instantiate the real `main.tscn` through
 `instantiate_main()`, which stops encounters from starting unless asked
 (`instantiate_main(true)`), so movement and UI tests run in a quiet arena.
+`instantiate_main()` also turns champions off (`champions_appear`), because
+they are random and would change a run's rewards.
 `wait_until(condition, max_frames)` waits for a state without hard-coding
 frame counts. `add_level(size, obstacles)` builds a floor with box obstacles
 under a navigation region baked like the arena's, and `wait_for_navigation()`
@@ -634,6 +658,8 @@ waits until the map can plan paths over it. A test fails on a
 failed `check` or on any engine or script error logged during it, captured with
 a custom `Logger`. Warnings are printed under the test that logged them, and
 counted in the summary, but do not fail it. Run them with `tools/test.sh`.
+To run only some suites, name them in `TEST_SUITES`, comma-separated
+(`TEST_SUITES=test_champions,test_potions`).
 
 ## Conventions
 

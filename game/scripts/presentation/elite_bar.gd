@@ -10,6 +10,7 @@ const HEIGHT := 0.14
 
 @export var health: Health
 @export var title: String = ""
+@export var title_color: Color = Color(0.95, 0.85, 0.7)
 
 var _fill: Sprite3D
 var _back: Sprite3D
@@ -29,7 +30,7 @@ func _ready() -> void:
 	_label.pixel_size = 0.006
 	_label.font_size = 48
 	_label.outline_size = 10
-	_label.modulate = Color(0.95, 0.85, 0.7)
+	_label.modulate = title_color
 	_label.position = Vector3(0, 0.34, 0)
 	add_child(_label)
 	if health:

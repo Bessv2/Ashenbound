@@ -33,6 +33,12 @@ here is visual only: no effect deals damage or changes a number.
 - **Ability buttons** take their ability's colour, sink under a finger, and
   flash a ring when the ability is ready again.
 - Messages slide in; the bag, skills, pause and away screens pop in.
+- The **POTION** button, left of DODGE, shows the potions left in a badge, is
+  dimmed while the belt is empty and flashes when a charge comes back
+  ([CHAMPIONS.md](CHAMPIONS.md#health-potions)).
+- A **champion** has its name (its affixes, then what it is) and a bar over
+  its head and a ring at its feet, in its first affix's colour. A toast
+  announces it when it rises.
 
 ## The title screen
 
