@@ -114,14 +114,34 @@ data) stay the base values, and equipping never changes them.
 - Offline-first: this is the local save. Milestone 5 adds the server copy and
   validated claims; `Profile` stays the one place rewards and items enter.
 
+## Gold, salvage and upgrades
+
+**Status:** built (owner's vision: "gold and loot resources"). Numbers are
+first-pass tuning, in `game/scripts/items/forge.gd`.
+
+- **Gold** comes from kills: Skeleton Warrior 3, Dark Cultist 5, Fallen
+  Knight 25, Ashen Lord 100 (about 170 for a full tier 1 run), more at higher
+  crypt tiers. Like Ash, it is counted during the run and paid once at its
+  end, kept on a fall.
+- **Salvage** (bag items only; take a worn item off first) turns an item
+  into gold: `(4 + 2 × item level) × rarity value × (1 + 0.5 × upgrade)`,
+  rarity value 1, 2, 4, 8, 16, 32 from Common to Mythic. It asks for a
+  second tap (**Confirm**), so a stray tap never destroys an item.
+- **Upgrade** raises an item one rank, up to **+5**, for
+  `(10 + 3 × item level) × rarity value × next rank` gold and
+  `2 × next rank` Ash. Each rank adds 10% to every stat on the item, at least
+  1. The rolled numbers are kept as rolled; the rank is applied when stats
+  are read, so the bonus can be retuned later. Worn items can be upgraded and
+  the hero's numbers follow at once.
+- The item card shows the upgrade price and the salvage value; the bag shows
+  Ash and gold. Items saved before upgrades load at +0.
+
 ## After the loot loop
 
 In order, each with its own small design note:
 
-1. **XP and levels** for the hero (kills and run completion), with level-ups
-   raising base stats. Item level follows the hero's level.
-2. **Gold** from drops and from salvaging items, and **upgrade** (spend gold
-   and materials to raise an item's level).
+1. **XP and levels**: built, see [SKILL_TREES.md](SKILL_TREES.md).
+2. **Gold, salvage and upgrades**: built, above.
 3. **Offline rewards** (Milestone 6): XP, gold and materials for the time
    away, for content already cleared, capped (charter default 8 hours). They
    use the local clock until the server exists, and are marked as provisional

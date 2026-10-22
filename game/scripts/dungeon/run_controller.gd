@@ -23,8 +23,9 @@ var result: Result = Result.RUNNING
 var elapsed: float = 0.0
 var kills: int = 0
 var damage_taken: int = 0
-## Ash earned so far; a defeat keeps what was earned.
+## Ash and gold earned so far; a defeat keeps what was earned.
 var ash: int = 0
+var gold: int = 0
 ## Unique per run, so a reward can be claimed only once.
 var run_id: String = ""
 
@@ -58,14 +59,14 @@ func is_over() -> bool:
 	return result != Result.RUNNING
 
 
-## Pays this run's Ash into `profile` (the Profile autoload by default). Only
+## Pays this run's Ash and gold into `profile` (the Profile autoload by default). Only
 ## after the run is over, and only once: returns false otherwise.
 func claim_reward(profile: Node = null) -> bool:
 	if result == Result.RUNNING:
 		return false
 	if profile == null:
 		profile = get_node_or_null(^"/root/Profile")
-	return profile != null and profile.grant_run_reward(run_id, ash)
+	return profile != null and profile.grant_run_reward(run_id, ash, gold)
 
 
 func _on_enemy_killed(enemy: Node3D) -> void:
@@ -74,6 +75,7 @@ func _on_enemy_killed(enemy: Node3D) -> void:
 	kills += 1
 	if enemy is EnemyController:
 		ash += (enemy as EnemyController).ash_value
+		gold += (enemy as EnemyController).gold_value
 	kill_counted.emit(enemy)
 
 

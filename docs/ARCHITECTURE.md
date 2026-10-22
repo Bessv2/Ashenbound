@@ -394,6 +394,12 @@ Milestone 3, step 1 ([dungeons/ashen_crypt.md](dungeons/ashen_crypt.md)).
   counts as gone when its Health dies (the corpse may linger). When a wave is
   dead the next one starts after the delay; after the last, `cleared` fires
   once. It also emits `wave_started(index)` and `enemy_killed(enemy)`.
+- **`Forge`** (`scripts/items/forge.gd`): salvage values, upgrade prices and
+  the +10% per rank rule ([LOOT.md](LOOT.md#gold-salvage-and-upgrades)).
+  `Profile.salvage()` and `Profile.upgrade_item()` apply them; an item's
+  `upgrade` rank is applied in `ItemInstance.total_stats()`, so
+  `CharacterStats` needs nothing new. Kills add `EnemyController.gold_value`
+  to the run, paid with the Ash.
 - **`Difficulty`** (`scripts/dungeon/difficulty.gd`): the crypt tier of a
   run ([dungeons/tiers.md](dungeons/tiers.md)). `Main` makes one from
   `Profile.tier`, gives it to every `EncounterController` (which scales each

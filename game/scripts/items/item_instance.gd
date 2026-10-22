@@ -15,13 +15,23 @@ var item_level: int = 1
 var base_stats: Dictionary[String, int] = {}
 ## [{"stat": key, "value": int}, ...]
 var affixes: Array[Dictionary] = []
+## Upgrade rank, 0 to Forge.MAX_UPGRADE. The rolled numbers above stay as
+## rolled; the rank is applied when stats are read (Forge.upgraded).
+var upgrade: int = 0
 
 
-## Base stats and affixes added up: stat key → value.
+## One rolled value as it counts at this item's upgrade rank.
+func stat_value(rolled: int) -> int:
+	return Forge.upgraded(rolled, upgrade)
+
+
+## Base stats and affixes added up, upgrades included: stat key → value.
 func total_stats() -> Dictionary[String, int]:
-	var total: Dictionary[String, int] = base_stats.duplicate()
+	var total: Dictionary[String, int] = {}
+	for stat in base_stats:
+		total[stat] = stat_value(base_stats[stat])
 	for affix in affixes:
-		total[affix.stat] = total.get(affix.stat, 0) + int(affix.value)
+		total[affix.stat] = total.get(affix.stat, 0) + stat_value(int(affix.value))
 	return total
 
 
@@ -32,6 +42,7 @@ func to_dict() -> Dictionary:
 		"base": base_id,
 		"rarity": rarity,
 		"ilvl": item_level,
+		"up": upgrade,
 		"stats": base_stats.duplicate(),
 		"affixes": affixes.map(func(a: Dictionary) -> Dictionary: return {"stat": a.stat, "value": int(a.value)}),
 	}
@@ -52,6 +63,7 @@ static func from_dict(data: Variant) -> ItemInstance:
 	item.base_id = str(dict.base)
 	item.rarity = clampi(int(dict.rarity), Rarity.Tier.COMMON, Rarity.Tier.MYTHIC)
 	item.item_level = maxi(int(dict.ilvl), 1)
+	item.upgrade = clampi(int(dict.get("up", 0)), 0, Forge.MAX_UPGRADE)
 	if not dict.stats is Dictionary or not dict.affixes is Array:
 		return null
 	for stat in dict.stats:

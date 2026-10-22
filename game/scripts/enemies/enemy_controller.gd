@@ -57,6 +57,8 @@ const REPATH_DISTANCE := 0.5
 @export_range(0, 1000, 1) var ash_value: int = 1
 ## XP the hero gains for the kill.
 @export_range(0, 100000, 1) var xp_value: int = 10
+## Gold the run earns for this kill (paid with the Ash at the run's end).
+@export_range(0, 100000, 1) var gold_value: int = 3
 ## What it may drop when killed; none when null.
 @export var drop_table: DropTable
 

@@ -40,6 +40,7 @@ navigation = NodePath("NavigationAgent")
 ash_value = 10
 drop_table = ExtResource("24_drops")
 xp_value = 100
+gold_value = 25
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.125, 0)

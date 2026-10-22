@@ -30,7 +30,7 @@ func damage_scale() -> float:
 	return 1.0 + DAMAGE_PER_TIER * (tier - 1)
 
 
-## Applies to Ash and XP from kills.
+## Applies to Ash, XP and gold from kills.
 func reward_scale() -> float:
 	return 1.0 + REWARD_PER_TIER * (tier - 1)
 
@@ -47,8 +47,8 @@ func rarity_scale() -> float:
 	return 1.0 + RARITY_PER_TIER * (tier - 1)
 
 
-## Makes `enemy` match this tier: more health (at full), harder hits, more Ash
-## and XP. Call once per enemy, before it enters the tree or right after.
+## Makes `enemy` match this tier: more health (at full), harder hits, more Ash,
+## XP and gold. Call once per enemy, before it enters the tree or right after.
 func apply(enemy: Node3D) -> void:
 	if tier == 1:
 		return
@@ -63,3 +63,4 @@ func apply(enemy: Node3D) -> void:
 		var controller := enemy as EnemyController
 		controller.ash_value = roundi(controller.ash_value * reward_scale())
 		controller.xp_value = roundi(controller.xp_value * reward_scale())
+		controller.gold_value = roundi(controller.gold_value * reward_scale())

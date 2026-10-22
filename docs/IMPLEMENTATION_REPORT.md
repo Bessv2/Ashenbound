@@ -1074,3 +1074,34 @@ Commands run:
 Not tested:
 - On a phone; balance of the higher tiers in real play.
 ```
+
+## 25. Gold, salvage and upgrades (branch `feature/gold-upgrades`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: Milestone 4 follow-up (charter: "Add upgrade/salvage after basic persistence works")
+Status: Validated, verified in runtime (desktop software Vulkan); not verified on device
+
+Changes:
+- Forge: salvage values, upgrade prices (gold and Ash), +10% per rank, +5 max.
+- ItemInstance.upgrade, applied in total_stats(); saved as "up" (old items +0).
+- Profile.gold, salvage(), upgrade_item(); worn upgrades refresh the hero.
+- EnemyController.gold_value (3/5/25/100), scaled by tier; paid with the run.
+- Bag card: Upgrade and Salvage (second tap confirms), prices on the card,
+  gold next to Ash. Summary shows the gold earned.
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 230 passed, 0 failed (5 new in test_gold_and_upgrades.gd); probes
+  that skip the salvage confirmation, the hero refresh or the run's gold fail
+  the matching tests
+- Command: bag screen rendered under Xvfb
+  Exit code: 0
+  Result: first layout overflowed the screen with the long button texts;
+  fixed (short labels, prices on the card) and re-captured
+
+Not tested:
+- On a phone; the gold economy in real play.
+```

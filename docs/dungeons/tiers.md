@@ -27,7 +27,7 @@ of Milestone 6.
 |---|---|---|---|
 | Enemy health | +40% | ×1.8 | ×4.6 |
 | Enemy damage (melee, bolts, the Lord's ring) | +15% | ×1.3 | ×2.35 |
-| Ash and XP per kill | +50% | ×2 | ×5.5 |
+| Ash, XP and gold per kill | +50% | ×2 | ×5.5 |
 | Item level of drops | +4 | +8 | +36 |
 | Drop chance | +10% | ×1.2 | ×1.9 (capped at a certain drop) |
 | Rarity boost (tiers above Uncommon) | +25% | ×1.5 | ×3.25 |
