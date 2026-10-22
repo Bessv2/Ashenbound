@@ -5,7 +5,9 @@ extends CharacterBody3D
 ## States, matching the charter's enemy states:
 ## - IDLE: waits until a living player comes within aggro range.
 ## - APPROACH: walks to the player along a navigation path; gives up beyond
-##   the leash range.
+##   the leash range. A ranged enemy (EnemyBehavior.retreat_distance) backs
+##   away instead when the player is too close, and one that needs a line of
+##   sight keeps walking until no wall is in the way.
 ## - TELEGRAPH: the attack's windup. The enemy stands still, facing the
 ##   target, while its AttackTelegraph shows where the hit will land.
 ## - ATTACK: the physics tick on which the hit resolves.
@@ -74,7 +76,10 @@ func _physics_process(delta: float) -> void:
 	_update_state(target, delta)
 
 	var desired := Vector3.ZERO
-	if state == State.APPROACH and target:
+	if state == State.APPROACH and target and _is_too_close(target):
+		desired = -_direction_to(target) * movement.move_speed
+		_path_target = Vector3.INF
+	elif state == State.APPROACH and target:
 		desired = _chase_direction(target) * movement.move_speed * attack.movement_multiplier()
 	else:
 		# The next chase plans a fresh path.
@@ -126,7 +131,10 @@ func _update_state(target: Node3D, delta: float) -> void:
 		State.APPROACH:
 			if target == null or (not hunting and _distance_to(target) > behavior.leash_radius):
 				_set_state(State.IDLE)
-			elif _distance_to(target) <= behavior.attack_range and attack.try_start(_direction_to(target)):
+			elif _is_too_close(target):
+				pass  # Backing away; see _physics_process.
+			elif _distance_to(target) <= behavior.attack_range and _has_line_to(target) \
+					and attack.try_start(_direction_to(target)):
 				_set_state(State.TELEGRAPH)
 		State.ATTACK:
 			# The hit resolved on the previous tick.
@@ -162,6 +170,23 @@ func _living_target() -> Node3D:
 	if target_health and target_health.is_dead():
 		return null
 	return player
+
+
+## Whether a ranged enemy should back away from `target` rather than attack.
+## Not when it is already against a wall: cornered, it fights.
+func _is_too_close(target: Node3D) -> bool:
+	return behavior.retreat_distance > 0.0 and _distance_to(target) < behavior.retreat_distance \
+			and not is_on_wall()
+
+
+## Whether nothing on the world layer stands between this enemy and `target`,
+## at chest height. Always true for enemies that do not need a line of sight.
+func _has_line_to(target: Node3D) -> bool:
+	if not behavior.needs_line_of_sight:
+		return true
+	var chest := Vector3.UP * 1.0
+	var query := PhysicsRayQueryParameters3D.create(global_position + chest, target.global_position + chest, 1)
+	return get_world_3d().direct_space_state.intersect_ray(query).is_empty()
 
 
 func _distance_to(target: Node3D) -> float:

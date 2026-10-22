@@ -196,6 +196,10 @@ checklist below is the full manual pass.
 - [ ] Three hits kill a Skeleton Warrior; it sinks into the floor. When all
       three are dead, three more rise; when those are dead, both doors open
       and the health bar rises by 30.
+- [ ] In the Ossuary's second wave a robed Dark Cultist keeps its distance.
+      Before each bolt a red line on the ground shows its path; stepping off
+      the line or dodging through the bolt avoids the 10 damage. Bolts stop at
+      walls and pillars. Walking up to a Cultist makes it back away.
 - [ ] Walking behind a tall wall (in each corridor) the Warden stays visible
       through a small see-through patch in the wall.
 - [ ] The Chapel and the Throne seal and open the same way. Clearing the

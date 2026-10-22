@@ -672,3 +672,52 @@ Acceptance criteria (spec, so far):
 - [x] 8. Victory and defeat are mutually exclusive
 - [ ] The rest: later steps
 ```
+
+## 15. Milestone 3, step 3: the Dark Cultist (branch `feature/m3-cultist`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: 3 (first dungeon), step 3 of 6: the Dark Cultist
+Status: Validated, verified in runtime (desktop software Vulkan); not verified on device
+
+Changes:
+- RangedAttack (extends MeleeAttack) fires a Projectile at the end of its
+  windup; ProjectileAttackData holds speed, range, width and height.
+- Projectile: a ray-swept shot that damages the first target it touches,
+  stops at walls and at its range, and is spent on an invulnerable target.
+- AttackTelegraph draws a strip along the bolt's path for projectile attacks.
+- EnemyBehavior.retreat_distance (back away from a close player unless
+  cornered) and needs_line_of_sight (no casting through walls).
+- The Dark Cultist: KayKit Skeleton Mage with a skull staff, robe recoloured
+  black-violet (tools/art/make_cultist_texture.py), violet eyes, 24 HP, a 0.7 s
+  shadow bolt for 10 damage at 10 m/s over 12 m.
+- Encounters: one Cultist in the Ossuary's second wave, two in the Chapel's
+  first.
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 168 passed, 0 failed (5 new in test_dark_cultist.gd)
+- Command: probes: no line-of-sight check; no retreat; never cornered; bolts
+  ignoring walls
+  Exit code: 1
+  Result: the matching tests failed; files restored and compared byte for byte
+- Command: rendered fight in the Chapel under Xvfb (software Vulkan)
+  Exit code: 0
+  Result: two Cultists show their line telegraphs, then violet bolts fly
+
+Not tested:
+- On a phone.
+
+Recommended next task:
+- Step 4: the Fallen Knight.
+
+Acceptance criteria (spec, so far):
+- [x] 1. Waves advance in order
+- [x] 2. Gates close on entry and open on clear
+- [x] 3. Rising enemies cannot deal or take damage
+- [x] 4. The Cultist's bolt is telegraphed, travels, can be dodged, and walls stop it
+- [x] 8. Victory and defeat are mutually exclusive
+- [ ] The rest: later steps
+```

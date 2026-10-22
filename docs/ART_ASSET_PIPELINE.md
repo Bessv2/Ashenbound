@@ -30,7 +30,7 @@ appreciated but not required. The licence texts are in
 | Pack | Source | Commit | Files used | Used for |
 |---|---|---|---|---|
 | KayKit Character Pack: Adventurers 1.0 | github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0 | `672074b` | `Characters/gltf/Knight.glb`, `knight_texture.png` (as the recolour source) | The Warden |
-| KayKit Character Pack: Skeletons 1.0 | github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0 | `15b62b9` | `Characters/gltf/Skeleton_Warrior.glb`, `Assets/gltf/Skeleton_Blade.gltf` + `.bin` + `skeleton_texture.png` | The Skeleton Warrior enemy, and the training targets (as stone statues) |
+| KayKit Character Pack: Skeletons 1.0 | github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0 | `15b62b9` | `Characters/gltf/Skeleton_Warrior.glb`, `Characters/gltf/Skeleton_Mage.glb`, `Assets/gltf/Skeleton_Blade.gltf` and `Skeleton_Staff.gltf` + `.bin` + `skeleton_texture.png` | The Skeleton Warrior enemy, the training targets (as stone statues), and the Dark Cultist (Skeleton Mage) |
 | KayKit Dungeon Remastered 1.0 | github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0 | `b0ca9bd` | 9 pieces in `game/assets/third_party/kaykit/dungeon/`: floor_tile_large, wall, wall_cracked, wall_doorway, column, pillar_decorated, torch_mounted, banner_red, barrel_large | The arena and the Ashen Crypt |
 
 The dungeon files were renamed from `<name>.gltf.glb` to `<name>.glb`.
@@ -47,6 +47,10 @@ The dungeon files were renamed from `<name>.gltf.glb` to `<name>.glb`.
   (`resources/shaders/occluder_cutout.gdshader`): the same KayKit texture and
   roughness, plus a dithered hole around the hero when the surface is between
   it and the camera.
+- **`cultist_texture.png`** is the skeleton palette texture with the Mage's
+  maroon robe and hat turned black-violet. Made by
+  `tools/art/make_cultist_texture.py skeleton_texture.png cultist_texture.png`
+  (needs Pillow).
 - **No mesh edits.** Hiding parts (the Knight carries every weapon and shield),
   swapping materials and holding a pose are done at runtime by `ModelDressing`
   (`game/scripts/presentation/model_dressing.gd`).
