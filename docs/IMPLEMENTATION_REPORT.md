@@ -1349,3 +1349,47 @@ Not tested:
   with the thumb.
 - Balance in full runs at higher tiers.
 ```
+
+## 33. The Dreadhunter, fourth playable class (branch `feature/dreadhunter`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: six-class roster (charter 13.4); owner request 2026-10-22: "keep
+building more of the gameplay"
+Status: Validated, verified in runtime (desktop software Vulkan); not verified on device
+
+Changes:
+- Dreadhunter hero (docs/characters/dreadhunter.md): the hooded Rogue with
+  its two-handed crossbow, tinted forest green; 90 health; a crossbow
+  basic attack (8 at 15 m).
+- Deadfall (Trapper): a rune-snare that holds enemies for 2 s, then erupts
+  for 6 × 4.
+- Charged Shot (Precision): a 0.5 s draw, then a piercing line for 24,
+  stopped by walls and cancelled by a dodge.
+- Carrion Raven (Beastcraft): a primitive raven that dives every 0.8 s for
+  6, for 8 s.
+- The Dreadhunter tree is playable; every node acts. Node texts were
+  adjusted to match.
+- The title screen and Main list the class. Tests that used the Dreadhunter
+  as the preview tree now use the Reliquary.
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 285 passed, 0 failed (11 new in test_dreadhunter.gd)
+- Probes: I removed the eruption's damage, made the shot stop after its
+  first target, and removed the raven's strike, one at a time. The matching
+  test failed each time, then passed once the code was restored.
+- Command: tools/export-web.sh; tools/web/smoke.js
+  Result: export check passed; web smoke test passed
+- Command: the crypt as the Dreadhunter, rendered under Xvfb
+  Result: the snare ring under a skeleton; the shot's tracer and a 24; the
+  raven circling the hero, made larger with a violet sheen after the first
+  render showed it too dark.
+
+Not tested:
+- On a phone: thumb reach for SNARE, SHOT and RAVEN; the raven's
+  readability.
+- Balance against the other classes in full runs.
+```

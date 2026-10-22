@@ -249,6 +249,12 @@ checklist below is the full manual pass.
       one has an orange ring that hurts once a second; a **Vengeful** one
       leaves a violet ring where it dies, which erupts a moment later
       (step out). Each drops at least a Rare (blue or better) item.
+- [ ] On the title screen, the **Dreadhunter** card can be chosen: a green-
+      hooded hunter with a crossbow, 90 health. **ATTACK** fires amber
+      bolts. **SNARE** drops an amber ring under the nearest enemy that holds
+      everything in it, then erupts for 24. **SHOT** draws for half a second,
+      then an amber streak hits every enemy in a line (not through walls).
+      **RAVEN** sends a violet raven that circles and dives for 6.
 - [ ] After clearing the crypt once, send the app to the background (or
       close it) for more than 5 minutes: coming back shows **While you were
       away** with XP, gold and Ash; **Collect** adds them once. (Changing the

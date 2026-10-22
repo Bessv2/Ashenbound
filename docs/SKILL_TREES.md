@@ -71,14 +71,14 @@ Withering Word, Spreading Blight, Hex Mastery, Frailty, Black Testament
 Mastery; Soul Leech, Dark Pact, Hungering Souls, Spirit Ward, Reaper's Tithe;
 Gathering Storm, Volatile Hex, Doom Chain, Ruin, Cataclysm Mastery.
 
-### Dreadhunter (preview)
+### Dreadhunter (playable)
 
-Branches from charter 13.4: **Precision** (charged shots, weak points),
-**Trapper** (snares, Deadfall), **Beastcraft** (a companion, if scope and
-performance permit). Nodes: Steady Aim, Drawn Shaft, Weak Point, Piercing
-Volley, Deadeye; Snare Craft, Fleet Hunter, Bramble Spikes, Deadfall Mastery,
-Killing Ground; Hunter's Bond, Thick Hide, Pack Instinct, Wild Heart, Savage
-Bite.
+Branches from charter 13.4: **Precision** (Charged Shot, weak points),
+**Trapper** (Deadfall), **Beastcraft** (the Carrion Raven). Nodes: Steady Aim,
+Drawn Shaft, Weak Point, Piercing Volley, Deadeye; Snare Craft, Fleet Hunter,
+Bramble Spikes, Deadfall Mastery, Killing Ground; Hunter's Bond, Thick Hide,
+Pack Instinct, Wild Heart, Savage Bite. Every node acts: see
+[characters/dreadhunter.md](characters/dreadhunter.md#skill-tree-playable).
 
 ### Reliquary (preview)
 

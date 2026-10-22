@@ -30,9 +30,9 @@ func test_all_six_trees_are_complete() -> void:
 		check(tree.branches.size() == 3 and tree.nodes.size() == 15, "%s has 3 branches of 5" % tree.class_id)
 		for branch in 3:
 			check(tree.nodes.filter(func(n: SkillNode) -> bool: return n.branch == branch).size() == 5, "%s branch %d" % [tree.class_id, branch])
-	for path in SkillTreePanel.TREE_PATHS.slice(0, 3):
+	for path in SkillTreePanel.TREE_PATHS.slice(0, 4):
 		check((load(path) as SkillTree).playable, "%s is playable" % path.get_file())
-	for path in SkillTreePanel.TREE_PATHS.slice(3):
+	for path in SkillTreePanel.TREE_PATHS.slice(4):
 		check(not (load(path) as SkillTree).playable, "%s is a preview" % path.get_file())
 
 
@@ -55,7 +55,7 @@ func test_learning_needs_a_point_the_requirement_and_room() -> void:
 	check(Profile.learn(WARDEN_TREE, "iron_skin") == "Fully learned.", "five ranks at most")
 	check(Profile.learn(WARDEN_TREE, "shield_wall") == "", "now Shield Wall")
 	check(Profile.points_available("warden") == 2, "6 of 8 points spent")
-	check(Profile.learn(load(SkillTreePanel.TREE_PATHS[3]), "steady_aim").contains("not playable"), "the Dreadhunter tree is read-only")
+	check(Profile.learn(load(SkillTreePanel.TREE_PATHS[4]), "penitence").contains("not playable"), "the Reliquary tree is read-only")
 
 
 func test_learned_ranks_change_combat_and_reset_restores_them() -> void:
@@ -129,8 +129,8 @@ func test_the_skill_screen_learns_and_pauses() -> void:
 	check(int(Profile.ranks("warden").get("stalwart", 0)) == 1, "Stalwart rank 1")
 	var hero: PlayerController = main.get_node("Player")
 	check(hero.health.max_health == 110, "the hero follows: %d" % hero.health.max_health)
-	panel.show_tree(3)
-	panel.select("steady_aim")
+	panel.show_tree(4)
+	panel.select("penitence")
 	check(panel.learn_selected() != "", "a preview tree cannot be learned")
 	panel.close_requested.emit()
 	check(not panel.visible and not get_tree().paused, "closing resumes")
