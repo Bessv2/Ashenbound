@@ -55,6 +55,9 @@ const REPATH_DISTANCE := 0.5
 @export var hunting: bool = false
 
 var state: State = State.IDLE
+## Scales movement speed (a boss's last phase moves faster). The movement
+## resource is shared, so it is never changed.
+var speed_multiplier: float = 1.0
 ## The attack playing out, or the last one.
 var current_attack: MeleeAttack
 ## Attacks started so far.
@@ -87,10 +90,10 @@ func _physics_process(delta: float) -> void:
 
 	var desired := Vector3.ZERO
 	if state == State.APPROACH and target and _is_too_close(target):
-		desired = -_direction_to(target) * movement.move_speed
+		desired = -_direction_to(target) * movement.move_speed * speed_multiplier
 		_path_target = Vector3.INF
 	elif state == State.APPROACH and target:
-		desired = _chase_direction(target) * movement.move_speed * current_attack.movement_multiplier()
+		desired = _chase_direction(target) * movement.move_speed * speed_multiplier * current_attack.movement_multiplier()
 	else:
 		# The next chase plans a fresh path.
 		_path_target = Vector3.INF
@@ -143,11 +146,13 @@ func _update_state(target: Node3D, delta: float) -> void:
 				_set_state(State.IDLE)
 			elif _is_too_close(target):
 				pass  # Backing away; see _physics_process.
-			elif _distance_to(target) <= behavior.attack_range and _has_line_to(target) \
-					and _next_attack().try_start(_direction_to(target)):
-				current_attack = _next_attack()
-				attacks_started += 1
-				_set_state(State.TELEGRAPH)
+			elif _distance_to(target) <= behavior.attack_range and _has_line_to(target):
+				# Chosen once: subclasses may remember their choice.
+				var next := _next_attack()
+				if next.try_start(_direction_to(target)):
+					current_attack = next
+					attacks_started += 1
+					_set_state(State.TELEGRAPH)
 		State.ATTACK:
 			# The hit resolved on the previous tick.
 			_set_state(State.RECOVERY if current_attack.is_busy() else _after_attack(target))
@@ -157,6 +162,7 @@ func _update_state(target: Node3D, delta: float) -> void:
 
 
 ## The attack to use next: the special one every `special_every`-th time.
+## Called once per attack that is about to start.
 func _next_attack() -> MeleeAttack:
 	var every := behavior.special_every
 	if special_attack and every > 0 and (attacks_started + 1) % every == 0:

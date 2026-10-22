@@ -6,7 +6,7 @@ reset and replay. The content was decided by the owner on 2026-10-21: Skeleton
 Warriors and Dark Cultists in the waves, a Fallen Knight elite, and the Ashen
 Lord as the boss.
 
-**Status:** specification, being built. Steps 1 to 4 of the build order are
+**Status:** specification, being built. Steps 1 to 5 of the build order are
 done; the rest is not implemented yet. Numbers are first-pass tuning to be adjusted in playtests.
 
 **Gate (charter):** multiple consecutive runs complete correctly with no stale
@@ -163,13 +163,14 @@ Each step is its own branch and PR, tested, and published to the web preview.
    encounters and waves; rising spawns; the encounter in the current arena
    replaces the endless spawner; a placeholder victory screen and replay.
 2. **The crypt:** the four rooms, corridors, gates and room triggers. *Done.*
-   Until step 5 lands, the Throne holds two waves of Skeleton Warriors (four,
-   then six) in place of the Ashen Lord.
+
 3. **Dark Cultist:** ranged attack, projectile, keep-away movement. *Done.*
    One joins the Ossuary's second wave and two the Chapel's first.
 4. **Fallen Knight:** heavy attacks, shield bash, frontal guard, elite bar.
    *Done.* It leads the Chapel's second wave with two Skeleton Warriors.
 5. **Ashen Lord:** the boss, three phases, summons, Ember Ring, boss bar.
+   *Done.* He rises from his throne (1.5 s); Cinder Cleave 2H slice, Ash Slam
+   2H chop (alternating once you stand within 3 m), Ember Ring from phase 2.
 6. **Run summary and Ash:** result screen, stats, reward granted once,
    multi-run tests; Milestone 3 gate.
 

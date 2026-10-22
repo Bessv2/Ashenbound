@@ -766,3 +766,55 @@ Acceptance criteria (spec, so far):
       front and only while it is not attacking
 - [ ] The rest: later steps
 ```
+
+## 17. Milestone 3, step 5: the Ashen Lord (branch `feature/m3-ashen-lord`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: 3 (first dungeon), step 5 of 6: the boss
+Status: Validated, verified in runtime (desktop software Vulkan); not verified on device
+
+Changes:
+- AshenLord (extends EnemyController): 600 HP, three phases at 60 % and 30 %,
+  each entered once and in order (one roar each, inert and invulnerable).
+  Cinder Cleave (30, 1.0 s, 160°), Ash Slam (35, 1.2 s, 4 m circle) when the
+  player is within 3 m, Ember Ring (20, expands to 10 m over 2 s) every third
+  attack in phase 2 and every other in phase 3. Phase 2 summons three
+  Skeleton Warriors at the braziers; phase 3 winds up 25 % faster and moves
+  30 % faster. The KayKit Knight at 1.7×, ash-dark with ember emission; rises
+  from a throne.
+- EncounterController.adopt(): summoned adds count toward the encounter; they
+  die with the Lord.
+- RingAttack and EmberRing; MeleeAttack.windup_scale; EnemyController
+  speed_multiplier.
+- Fixed: EnemyController asked for the next attack twice per attack, so a
+  subclass that remembers its choice recorded a different attack from the
+  one that started. It now chooses once.
+- BossBar at the top of the HUD.
+- The Throne encounter is the Lord alone (rise 1.5 s).
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 180 passed, 0 failed (6 new in test_ashen_lord.gd)
+- Command: probes: no queued phase after a roar; adds not adopted; ring
+  hitting every tick
+  Exit code: 1
+  Result: the matching tests failed; files restored and compared byte for byte
+- Command: rendered boss fight under Xvfb (software Vulkan)
+  Exit code: 0
+  Result: rise, slam circle, three adds in phase 2, the expanding ring, boss bar
+
+Not tested:
+- On a phone; boss balance in real play.
+
+Recommended next task:
+- Step 6: run summary and Ash, multi-run tests (Milestone 3 gate).
+
+Acceptance criteria (spec, so far):
+- [x] 1, 2, 3, 4, 5, 8
+- [x] 6. The Ashen Lord enters each phase exactly once, in order
+- [x] 7. Phase 2 summons exactly three adds, once; they die with the Lord
+- [ ] 9, 10, 11: step 6
+```

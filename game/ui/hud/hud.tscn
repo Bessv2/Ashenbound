@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://ui/hud/hud.gd" id="1_hud"]
 [ext_resource type="Script" path="res://ui/hud/touch_joystick.gd" id="2_joystick"]
 [ext_resource type="Script" path="res://ui/hud/touch_action_button.gd" id="3_action_button"]
+[ext_resource type="Script" path="res://ui/hud/boss_bar.gd" id="90_boss_bar"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -74,6 +75,32 @@ layout_mode = 2
 size_flags_vertical = 0
 focus_mode = 0
 text = "II"
+
+[node name="BossBar" type="VBoxContainer" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -210.0
+offset_top = 28.0
+offset_right = 210.0
+offset_bottom = 84.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+script = ExtResource("90_boss_bar")
+
+[node name="Name" type="Label" parent="Root/BossBar"]
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+horizontal_alignment = 1
+
+[node name="Bar" type="ProgressBar" parent="Root/BossBar"]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+mouse_filter = 2
+show_percentage = false
 
 [node name="TouchJoystick" type="Control" parent="Root"]
 unique_name_in_owner = true

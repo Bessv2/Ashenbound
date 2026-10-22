@@ -20,6 +20,7 @@
 [ext_resource type="Material" path="res://resources/materials/ember.tres" id="18_ember"]
 [ext_resource type="Script" path="res://scripts/presentation/model_dressing.gd" id="19_dressing"]
 [ext_resource type="Material" path="res://resources/materials/dungeon_cutout.tres" id="20_cutout"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/dungeon/chair.glb" id="21_chair"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_pillar"]
 height = 4.0
@@ -401,6 +402,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -102.5)
 [node name="ThroneEast" parent="Banners" instance=ExtResource("17_banner")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -102.5)
 
+[node name="ThroneSeat" parent="." instance=ExtResource("21_chair")]
+transform = Transform3D(2.2, 0, 0, 0, 2.2, 0, 0, 0, 2.2, 0, 0, -100.2)
+
 [node name="Dummies" type="Node3D" parent="."]
 
 [node name="TrainingDummyWest" parent="Dummies" instance=ExtResource("14_dummy")]
@@ -485,6 +489,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 8)
 
 [node name="SouthWest" type="Marker3D" parent="Encounters/Throne"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 8)
+
+[node name="SummonNW" type="Marker3D" parent="Encounters/Throne"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 0, -7.5)
+
+[node name="SummonNE" type="Marker3D" parent="Encounters/Throne"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, -7.5)
+
+[node name="SummonSW" type="Marker3D" parent="Encounters/Throne"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 0, 7.5)
 
 [node name="CombatRooms" type="Node3D" parent="."]
 

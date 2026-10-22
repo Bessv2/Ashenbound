@@ -68,6 +68,18 @@ func _begin_wave(index: int) -> void:
 	wave_started.emit(index)
 
 
+## Makes `enemy` (already in the tree, e.g. summoned by a boss) part of the
+## current wave: the wave and the encounter are not over until it dies too.
+func adopt(enemy: Node3D) -> void:
+	if phase != Phase.ACTIVE or _living.has(enemy):
+		return
+	var health := Health.of(enemy)
+	if health == null or health.is_dead():
+		return
+	health.died.connect(_on_enemy_died.bind(enemy), CONNECT_ONE_SHOT)
+	_living.append(enemy)
+
+
 func _spawn(scene: PackedScene, marker_name: String) -> void:
 	var marker := get_node_or_null(marker_name) as Marker3D
 	if marker == null:
