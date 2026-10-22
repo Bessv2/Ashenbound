@@ -17,7 +17,8 @@ signal changed
 signal leveled_up(level: int)
 
 ## 2 added level, XP and skills; version 1 saves load with level 1.
-const SAVE_VERSION := 2
+## 3 added crypt tiers; older saves load with tier 1 open.
+const SAVE_VERSION := 3
 const MAX_LEVEL := 30
 ## The class the player plays (only the Warden so far).
 const HERO_CLASS := "warden"
@@ -37,6 +38,10 @@ var level: int = 1
 var xp: int = 0
 ## Class id → {node id → rank}.
 var skill_ranks: Dictionary[String, Dictionary] = {}
+## The highest crypt tier the player may enter (clearing a tier opens the next).
+var tier_unlocked: int = 1
+## The tier the next run is played at.
+var tier: int = 1
 
 ## Runs already paid, by run id, oldest first.
 var _claimed: Dictionary[String, int] = {}
@@ -69,6 +74,8 @@ func to_dict() -> Dictionary:
 		"level": level,
 		"xp": xp,
 		"skills": skill_ranks.duplicate(true),
+		"tier_unlocked": tier_unlocked,
+		"tier": tier,
 	}
 
 
@@ -137,6 +144,8 @@ func _apply(data: Dictionary) -> bool:
 			_claimed[str(run_id)] = 0
 	level = clampi(int(data.get("level", 1)), 1, MAX_LEVEL)
 	xp = maxi(int(data.get("xp", 0)), 0)
+	tier_unlocked = clampi(int(data.get("tier_unlocked", 1)), 1, Difficulty.MAX_TIER)
+	tier = clampi(int(data.get("tier", 1)), 1, tier_unlocked)
 	skill_ranks.clear()
 	if data.get("skills") is Dictionary:
 		for class_id: Variant in data.skills:
@@ -156,6 +165,8 @@ func _apply_empty() -> void:
 	level = 1
 	xp = 0
 	skill_ranks.clear()
+	tier_unlocked = 1
+	tier = 1
 	ash = 0
 	_claimed.clear()
 	inventory.load_list([])
@@ -176,6 +187,26 @@ func grant_run_reward(run_id: String, amount: int) -> bool:
 
 func has_claimed(run_id: String) -> bool:
 	return _claimed.has(run_id)
+
+
+## Records a clear of crypt tier `cleared`: the next tier opens. Clearing a
+## tier again changes nothing. Returns true when a new tier opened.
+func complete_tier(cleared: int) -> bool:
+	var opened := clampi(cleared + 1, 1, Difficulty.MAX_TIER)
+	if opened <= tier_unlocked:
+		return false
+	tier_unlocked = opened
+	changed.emit()
+	return true
+
+
+## Chooses the tier of the next run, within the open tiers. Returns the tier.
+func select_tier(wanted: int) -> int:
+	var chosen := clampi(wanted, 1, tier_unlocked)
+	if chosen != tier:
+		tier = chosen
+		changed.emit()
+	return tier
 
 
 ## XP needed to go from `from_level` to the next.
@@ -266,6 +297,8 @@ func reset() -> void:
 	level = 1
 	xp = 0
 	skill_ranks.clear()
+	tier_unlocked = 1
+	tier = 1
 	ash = 0
 	_claimed.clear()
 	inventory.load_list([])

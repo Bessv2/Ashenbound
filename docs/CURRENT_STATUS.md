@@ -44,6 +44,7 @@ Status labels follow the charter:
 | 4: First loot loop | Validated, verified in runtime | Design: [LOOT.md](LOOT.md). All five steps done; the gate (restart restores bag, gear and Ash; stats verified in combat) passes in automated tests. **Device check open.** |
 | Progression (XP, levels, skill trees) | Validated, verified in runtime | Design: [SKILL_TREES.md](SKILL_TREES.md). Warden tree playable; Reaver and Hexbinder trees as previews. PR #24. |
 | Visual pass | Validated, verified in runtime | Hit sparks, slash arcs, death bursts, camera shake with an off switch. PR stacked on #24. |
+| Crypt tiers | Validated, verified in runtime | [dungeons/tiers.md](dungeons/tiers.md): ten tiers, unlocked by clears, scaling enemies and rewards. PR stacked on the visual pass. |
 | 5 to 7 | Not started | |
 
 ### Milestone 2 progress
@@ -87,13 +88,13 @@ owner's request, so the web preview could be published from `main`.
 
 ## Next task
 
-**Crypt difficulty tiers** (the gameplay loop): after a clear, the crypt can
-be replayed at a higher tier with tougher enemies, a higher item level and
-better rewards, so runs keep paying off as the hero grows.
+**Gold, salvage and upgrades**: enemies and salvaged items give gold; gold
+and Ash raise an item's level. This gives every drop a use and the tiers
+something to spend on.
 
-After that: gold, salvage and upgrades; then offline rewards (Milestone 6,
-capped at 8 hours, on the local clock and marked provisional until the
-Milestone 5 server exists); then a second playable class (Reaver).
+Then offline rewards (Milestone 6, capped at 8 hours, on the local clock and
+marked provisional until the Milestone 5 server exists), farming the highest
+tier cleared; then a second playable class (Reaver).
 
 Device checks for Milestones 1 to 4 are still open: they need the Android app
 on a phone ([DEVICE_TESTING.md](DEVICE_TESTING.md)). The owner's playtests so

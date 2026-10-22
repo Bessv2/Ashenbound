@@ -22,6 +22,8 @@ enum Phase { WAITING, ACTIVE, CLEARED }
 @export_range(0.0, 30.0, 0.1, "suffix:s") var start_delay: float = 1.5
 
 var phase: Phase = Phase.WAITING
+## The crypt tier its enemies are scaled to (set by Main); null is tier 1.
+var difficulty: Difficulty
 ## The wave being fought (0-based), or -1 before the first.
 var wave: int = -1
 
@@ -76,6 +78,8 @@ func adopt(enemy: Node3D) -> void:
 	var health := Health.of(enemy)
 	if health == null or health.is_dead():
 		return
+	if difficulty:
+		difficulty.apply(enemy)
 	health.died.connect(_on_enemy_died.bind(enemy), CONNECT_ONE_SHOT)
 	_living.append(enemy)
 
@@ -90,6 +94,8 @@ func _spawn(scene: PackedScene, marker_name: String) -> void:
 	enemy.position = marker.position
 	if enemy is EnemyController:
 		(enemy as EnemyController).hunting = true
+	if difficulty:
+		difficulty.apply(enemy)
 	add_child(enemy)
 	if enemy is EnemyController:
 		(enemy as EnemyController).rise(data.rise_time)

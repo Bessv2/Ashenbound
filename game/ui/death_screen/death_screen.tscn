@@ -63,3 +63,10 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 88)
 layout_mode = 2
 text = "Rise again"
+
+[node name="AlternateButton" type="Button" parent="Root/Center/Panel/Items"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(300, 88)
+layout_mode = 2
+text = "Replay"
