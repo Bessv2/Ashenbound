@@ -28,6 +28,7 @@ Status labels follow the charter:
 | 2026-10-21 | **Milestone 3 content:** the first boss is **the Ashen Lord**, with distinct phases. **Skeleton Warriors** are the basic enemy and replace the placeholder Hollow; a **Dark Cultist** is the ranged second type; a **Fallen Knight** is the elite. |
 | 2026-10-21 | Test a demo build on an Android device before Milestone 3 work starts. The owner's phone is their daily driver, so cloud options were explored: the CI emulator proves the game starts without crashing but cannot draw it. |
 | 2026-10-21 | **Art pass now**, ahead of Milestone 3, with free CC0 assets (KayKit), keeping Godot. |
+| 2026-10-21 | Owner playtest of the art pass in the web preview on their phone: "The play tests were great!" Continue with the milestones. |
 | 2026-10-21 | **A browser build is a playtest preview** ([WEB_PREVIEW.md](WEB_PREVIEW.md)), not a platform change: Android stays the target. |
 
 ## Milestones
@@ -37,7 +38,7 @@ Status labels follow the charter:
 | 0: Repository and toolchain baseline | Verified in runtime | Imports cleanly, runs, tests pass, a debug APK exports and its signature verifies. |
 | 1: Movement and camera | Verified in runtime | **Device gate blocked:** there is no Android device, and no `/dev/kvm` for an emulator. The manual checklist is in [BUILD_ANDROID.md](BUILD_ANDROID.md#manual-device-checklist). |
 | 2: Combat foundation | In progress | See below. |
-| 3: First dungeon | Not started | |
+| 3: First dungeon | In progress | Spec: [dungeons/ashen_crypt.md](dungeons/ashen_crypt.md). Step 1 of 6 (encounters) validated. |
 | 4: First loot loop | Parked | PR #6 |
 | 5 to 7 | Not started | |
 
@@ -70,8 +71,7 @@ owner's request, so the web preview could be published from `main`.
 
 - **Names:** the hero is the Warden. The main scene's slot for it is still
   called `Player`, because that slot will hold any class. The arena is not yet
-  framed as the Fallen Marches. The enemy now looks like a Skeleton Warrior but
-  is still called the Hollow in code; the rename comes with Milestone 3.
+  framed as the Fallen Marches.
 - **Art ahead of schedule:** the owner asked for a first art pass before
   Milestone 3. It uses third-party CC0 models
   ([ART_ASSET_PIPELINE.md](ART_ASSET_PIPELINE.md)), not final art.
@@ -82,23 +82,12 @@ owner's request, so the web preview could be published from `main`.
 
 ## Next task
 
-Start Milestone 3, the first dungeon, with a specification before any code,
-as for the Warden. The spec covers:
+Milestone 3, step 2 of 6: **the crypt**. Four rooms (Gatehouse, Ossuary Hall,
+Cultist Chapel, Ashen Throne) joined by corridors, with gates that seal a room
+during its encounter. The spec and the build order are in
+[dungeons/ashen_crypt.md](dungeons/ashen_crypt.md).
 
-- the encounter controller and its waves;
-- one elite;
-- the first boss, with distinct phases;
-- victory and defeat;
-- a reward summary;
-- reset and replay.
-
-The content is decided (see Owner decisions): Skeleton Warriors and Dark
-Cultists in the waves, a Fallen Knight elite, and the Ashen Lord as the boss.
-
-Before that, the owner tests a demo build on an Android device. Its results
-close the device checks for Milestones 1 and 2. The [web preview](WEB_PREVIEW.md)
-can show the feel of the controls in a phone's browser, but it does not count
-as a device check: it uses a different renderer and a browser, not the app. The owner chose to run the
-test with Claude Code on their own computer and a USB-connected phone. The
-procedure is [DEVICE_TESTING.md](DEVICE_TESTING.md): `tools/device-test.sh`
-plus hand checks.
+Device checks for Milestones 1 and 2 are still open: they need the Android app
+on a phone ([DEVICE_TESTING.md](DEVICE_TESTING.md)). The owner's playtests so
+far were in the [web preview](WEB_PREVIEW.md), which does not count as a device
+check (another renderer, and a browser rather than the app).

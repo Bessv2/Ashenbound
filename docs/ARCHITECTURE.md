@@ -39,13 +39,13 @@ Main (Node3D)                         scenes/main.tscn, scripts/main.gd
 │   ├── ModelDressing (Node)          scripts/presentation/model_dressing.gd, Warden material, hides spare weapons
 │   └── Animator (Node)               scripts/presentation/character_animator.gd
 ├── Enemies (Node3D)
-│   ├── TrainingDummy{East,North,West} scenes/enemies/training_dummy.tscn, 5 m from the start
+│   ├── TrainingDummy{East,North,West} scenes/enemies/training_dummy.tscn, 5 m from the start (stone skeleton statues)
 │   │   ├── Health (Node)             scripts/combat/health.gd, 50 HP
 │   │   ├── HitFeedback, Visual, HealthLabel (Label3D)
 │   │   └── CollisionShape3D          layer 3 "enemy"
-│   └── HollowSpawner (Node3D)        scripts/enemies/enemy_spawner.gd, max 3 alive
-│       ├── Spawn{NorthWest,NorthEast,SouthWest,SouthEast} (Marker3D)
-│       └── Hollow (CharacterBody3D)  scenes/enemies/hollow.tscn, spawned at runtime
+│   └── Encounter (Node3D)            scripts/encounters/encounter_controller.gd + resources/encounters/ossuary_hall.tres
+│       ├── North, NorthEast, East, South, West, NorthWest (Marker3D) spawn points
+│       └── SkeletonWarrior (CharacterBody3D) scenes/enemies/skeleton_warrior.tscn, spawned per wave
 │           ├── Health (30 HP), HitFeedback, MeleeAttack (targets layer 2)
 │           ├── NavigationAgent (NavigationAgent3D) plans the chase
 │           ├── Visual/Model           KayKit Skeleton Warrior, blade on the right hand bone
@@ -335,7 +335,8 @@ suite checks that the number of attacks in 2 s is the same at 30, 60 and 120 Hz.
 
 ## Enemies
 
-The first enemy is the **Hollow**, a slow melee chaser. It is meant to read
+The first enemy is the **Skeleton Warrior** (called the Hollow before
+Milestone 3), a slow melee chaser. It is meant to read
 clearly on a phone: a long, visible windup that the player can step out of.
 
 - **`EnemyBehavior`** (Resource): aggro radius 9 m, leash radius 15 m, attack
@@ -352,23 +353,45 @@ clearly on a phone: a long, visible windup that the player can step out of.
   - **ATTACK:** the single physics tick on which the hit resolves: 12 damage,
     1.6 m reach, 100° arc.
   - **RECOVERY:** the attack's 0.7 s recovery, standing still. Then the
-    Hollow approaches again, or goes idle if the player is gone.
+    Skeleton Warrior approaches again, or goes idle if the player is gone.
   - These follow the charter's enemy states. Each change emits
     `state_changed(previous, current)`, which tests use to check the sequence
     and timing, and which animation can use later.
   - **DEAD:** cancels any pending hit, stops colliding, sinks into the floor
     and frees itself, emitting `despawned`.
+  - **RISING:** only after `rise(seconds)`: climbing out of the ground. No
+    movement or attacks and no damage taken (`Health.invulnerable`), then
+    IDLE. The animator plays `Spawn_Ground_Skeletons` sped up to fit.
+  - **`hunting`:** encounter enemies hunt the player from anywhere and never
+    give up at the leash range.
 - **`AttackTelegraph`** (MeshInstance3D under the enemy's visual): a red
   ground sector built from the attack's reach and arc. It shows only during the
   windup and grows more opaque as the hit approaches.
-- **`EnemySpawner`** (Node3D): keeps `max_alive` enemies alive, spawning at
-  its `Marker3D` children. It picks the free point (no living enemy within
-  1.5 m) farthest from the player, and replaces each enemy `respawn_delay`
-  (4 s) after its corpse is removed. Give it at least `max_alive` points:
-  enemies spawned on top of each other get pushed apart violently by the
-  physics engine, which is exactly the bug the regression test guards against.
-- Balance: three player hits kill a Hollow. A Hollow standing next to the
-  player deals 12 about every 1.2 s.
+- Balance: three player hits kill a Skeleton Warrior. One standing next to
+  the player deals 12 about every 1.2 s.
+
+## Encounters and the run
+
+Milestone 3, step 1 ([dungeons/ashen_crypt.md](dungeons/ashen_crypt.md)).
+
+- **`EncounterData`** / **`WaveData`** (Resources): an encounter is a list of
+  waves; a wave lists enemy scenes and, for each, the name of the spawn
+  marker it appears at. Also the pause between waves (1.5 s) and the rise
+  time (0.8 s).
+- **`EncounterController`** (Node3D): WAITING, ACTIVE, CLEARED. `start()` (or
+  `auto_start` after `start_delay`) spawns wave 0 at its `Marker3D` children.
+  Spawned enemies are its children, hunt the player and rise first. An enemy
+  counts as gone when its Health dies (the corpse may linger). When a wave is
+  dead the next one starts after the delay; after the last, `cleared` fires
+  once. It also emits `wave_started(index)` and `enemy_killed(enemy)`.
+- **`RunController`** (Node, `Run` in the main scene): the run is won when
+  every listed encounter is cleared and lost when the player dies. The first
+  result stands; anything after is ignored. Counts kills and play time
+  (paused time excluded). It lives in the scene, so a restart starts clean.
+- **Main** listens only to `Run.ended`. On defeat it opens the death screen;
+  on victory it locks the Warden's input, makes it invulnerable, and opens
+  the same screen titled "The hall is cleared" with **Play again**.
+- The endless `EnemySpawner` was removed with this step.
 
 ### Navigation
 
@@ -476,7 +499,7 @@ Known simplifications:
 `game/tests/` contains a small headless runner (`run_tests.gd`) and suites
 named `test_*.gd`. Each test method runs on a fresh suite instance in the scene
 tree. Integration tests instantiate the real `main.tscn` through
-`instantiate_main()`, which switches enemy spawners off unless asked
+`instantiate_main()`, which stops encounters from starting unless asked
 (`instantiate_main(true)`), so movement and UI tests run in a quiet arena.
 `wait_until(condition, max_frames)` waits for a state without hard-coding
 frame counts. `add_level(size, obstacles)` builds a floor with box obstacles

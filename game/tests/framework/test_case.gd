@@ -10,15 +10,15 @@ const GroundNavigationMesh := preload("res://resources/navigation/ground_navigat
 var failures: PackedStringArray = []
 
 
-## A fresh, not yet added main scene. Enemy spawners are switched off unless
-## `with_enemies` is true, so tests that are not about enemies run in a quiet
-## arena.
+## A fresh, not yet added main scene. Its encounters do not start by
+## themselves unless `with_enemies` is true, so tests that are not about
+## enemies run in a quiet arena.
 func instantiate_main(with_enemies: bool = false) -> Node3D:
 	var main: Node3D = MainScene.instantiate()
 	if not with_enemies:
 		for node in main.find_children("*", "Node3D", true, false):
-			if node is EnemySpawner:
-				node.enabled = false
+			if node is EncounterController:
+				node.auto_start = false
 	return main
 
 

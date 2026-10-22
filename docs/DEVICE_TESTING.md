@@ -155,7 +155,7 @@ to play for about 5 minutes and answer these:
    Does a second finger elsewhere leave it undisturbed?
 3. Can you hold the stick and ATTACK at the same time? (A script cannot test
    two fingers.)
-4. Can you read the Hollows, their red warnings, the damage numbers and the
+4. Can you read the Skeleton Warriors, their red warnings, the damage numbers and the
    HUD at arm's length?
 5. Does anything feel late or sluggish: attacks, dodges, abilities?
 
@@ -189,7 +189,7 @@ the numbers as a lower bound.
 - **`worst_ms`:** the slowest single frame in the interval. Values regularly
   above 33 ms are visible stutters.
 - **`draw_calls`:** draw calls in the last frame. A software-rendered desktop
-  run shows about 106 for the arena with Hollows. Much higher on the phone
+  run shows about 106 for the arena with Skeleton Warriors. Much higher on the phone
   would point at rendering cost.
 - **`static_mb`:** static memory. If it keeps rising across intervals during
   the soak, that suggests a leak worth investigating.

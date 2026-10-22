@@ -51,6 +51,7 @@ transform = Transform3D(-0.8, 0, 0, 0, 0.8, 0, 0, 0, -0.8, 0, 0.15, 0)
 [node name="ModelDressing" type="Node" parent="." node_paths=PackedStringArray("model")]
 script = ExtResource("8_dressing")
 model = NodePath("../Visual/Model")
+material = ExtResource("5_stone")
 hidden_parts = PackedStringArray("Skeleton_Warrior_Helmet")
 pose_animation = &"Skeleton_Inactive_Standing_Pose"
 

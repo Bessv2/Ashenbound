@@ -13,6 +13,8 @@ extends CharacterBody3D
 ##   again or goes idle.
 ## - DEAD: cancels any pending hit, stops colliding, sinks into the floor and
 ##   frees itself.
+## - RISING: only after rise(); climbing out of the ground. It does nothing and
+##   cannot be damaged, then goes IDLE.
 ##
 ## Every change emits `state_changed`, for tests now and animation later.
 ##
@@ -27,7 +29,7 @@ extends CharacterBody3D
 signal despawned
 signal state_changed(previous: State, current: State)
 
-enum State { IDLE, APPROACH, TELEGRAPH, ATTACK, RECOVERY, DEAD }
+enum State { IDLE, APPROACH, TELEGRAPH, ATTACK, RECOVERY, DEAD, RISING }
 
 ## How far the player may move from the end of the current path before a new
 ## path is planned. Planning every physics frame would work too, but wastes
@@ -43,11 +45,15 @@ const REPATH_DISTANCE := 0.5
 ## Plans the chase around obstacles. Without one the enemy steers straight at
 ## its target.
 @export var navigation: NavigationAgent3D
+## Hunts the player anywhere in the level and never gives up, instead of
+## waiting for it within aggro range (encounter enemies).
+@export var hunting: bool = false
 
 var state: State = State.IDLE
 
 ## Where the current path leads; INF when no path has been requested.
 var _path_target: Vector3 = Vector3.INF
+var _rise_left: float = 0.0
 
 @onready var _collision: CollisionShape3D = $CollisionShape3D
 
@@ -65,7 +71,7 @@ func _physics_process(delta: float) -> void:
 	if state == State.DEAD:
 		return
 	var target := _living_target()
-	_update_state(target)
+	_update_state(target, delta)
 
 	var desired := Vector3.ZERO
 	if state == State.APPROACH and target:
@@ -92,13 +98,33 @@ func is_attacking() -> bool:
 	return state == State.TELEGRAPH or state == State.ATTACK or state == State.RECOVERY
 
 
-func _update_state(target: Node3D) -> void:
+## Climbs out of the ground for `seconds`: no movement, no attacks and no
+## damage taken, then IDLE.
+func rise(seconds: float) -> void:
+	if state == State.DEAD or seconds <= 0.0:
+		return
+	_rise_left = seconds
+	health.invulnerable = true
+	_set_state(State.RISING)
+
+
+## Seconds of rising left, or 0.
+func rise_time_left() -> float:
+	return _rise_left if state == State.RISING else 0.0
+
+
+func _update_state(target: Node3D, delta: float) -> void:
 	match state:
+		State.RISING:
+			_rise_left -= delta
+			if _rise_left <= 0.0:
+				health.invulnerable = false
+				_set_state(State.IDLE)
 		State.IDLE:
-			if target and _distance_to(target) <= behavior.aggro_radius:
+			if target and (hunting or _distance_to(target) <= behavior.aggro_radius):
 				_set_state(State.APPROACH)
 		State.APPROACH:
-			if target == null or _distance_to(target) > behavior.leash_radius:
+			if target == null or (not hunting and _distance_to(target) > behavior.leash_radius):
 				_set_state(State.IDLE)
 			elif _distance_to(target) <= behavior.attack_range and attack.try_start(_direction_to(target)):
 				_set_state(State.TELEGRAPH)

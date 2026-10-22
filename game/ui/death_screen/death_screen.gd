@@ -1,7 +1,8 @@
 class_name DeathScreen
 extends CanvasLayer
-## Shown when the player dies. Fades in after the fall animation and offers a
-## restart. Emits a request; Main performs the restart.
+## Shown when a run ends: when the player dies, and (with another title) on
+## victory. Fades in after a delay and offers a restart. Emits a request; Main
+## performs the restart.
 
 signal restart_requested
 
@@ -11,6 +12,8 @@ signal restart_requested
 
 @onready var _root: Control = $Root
 @onready var _restart_button: Button = %RestartButton
+@onready var _title: Label = $Root/Center/Panel/Items/Title
+@onready var _flavor: Label = $Root/Center/Panel/Items/Flavor
 
 
 func _ready() -> void:
@@ -18,7 +21,14 @@ func _ready() -> void:
 	_restart_button.pressed.connect(restart_requested.emit)
 
 
-func open() -> void:
+## Opens the screen. Empty texts keep the defaults (the death texts).
+func open(title: String = "", flavor: String = "", button: String = "") -> void:
+	if title != "":
+		_title.text = title
+	if flavor != "":
+		_flavor.text = flavor
+	if button != "":
+		_restart_button.text = button
 	show()
 	_root.modulate.a = 0.0
 	# Disabled until visible, so a stray tap during the fall cannot restart.

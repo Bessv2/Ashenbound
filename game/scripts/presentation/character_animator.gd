@@ -9,6 +9,8 @@ extends Node
 ## plus recovery, a dodge's duration), within `max_speed_scale`.
 
 @export var body: CharacterBody3D
+## For enemies: plays `rise_animation` while it rises out of the ground.
+@export var enemy: EnemyController
 @export var animation_player: AnimationPlayer
 @export var health: Health
 @export var dodge: Dodge
@@ -25,6 +27,7 @@ extends Node
 @export var hit_animation: StringName = &"Hit_A"
 @export var death_animation: StringName = &"Death_A"
 @export var dodge_animation: StringName = &"Dodge_Forward"
+@export var rise_animation: StringName = &"Spawn_Ground_Skeletons"
 ## Horizontal speed at which the run clip plays at normal speed.
 @export_range(0.5, 20.0, 0.1, "suffix:m/s") var run_reference_speed: float = 5.0
 ## Below this horizontal speed the character idles.
@@ -48,6 +51,8 @@ func _ready() -> void:
 		abilities[i].activated.connect(_play_action.bind(ability_animations[i], 0.0))
 	if dodge:
 		dodge.started.connect(_play_action.bind(dodge_animation, dodge.data.duration if dodge.data else 0.0).unbind(1))
+	if enemy:
+		enemy.state_changed.connect(_on_enemy_state_changed)
 	if health:
 		health.hit.connect(_on_hit.unbind(1))
 		health.died.connect(_on_died)
@@ -78,6 +83,14 @@ func _play_action(clip: StringName, fit_time: float) -> void:
 		speed = clampf(animation_player.get_animation(clip).length / fit_time, 1.0, max_speed_scale)
 	action = clip
 	animation_player.play(clip, blend_time, speed)
+
+
+func _on_enemy_state_changed(_previous: EnemyController.State, current: EnemyController.State) -> void:
+	if current == EnemyController.State.RISING:
+		_play_action(rise_animation, enemy.rise_time_left())
+	elif action == rise_animation:
+		# Risen: hand back to locomotion even if the clip has not finished.
+		action = &""
 
 
 func _on_hit() -> void:
