@@ -36,6 +36,12 @@ theme_type_variation = &"HeaderLabel"
 text = "Paused"
 horizontal_alignment = 1
 
+[node name="ShakeButton" type="Button" parent="Center/Panel/Items"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 88)
+layout_mode = 2
+text = "Screen shake: On"
+
 [node name="ResumeButton" type="Button" parent="Center/Panel/Items"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 88)

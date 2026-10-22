@@ -5,7 +5,7 @@ Update this file whenever a milestone's state, a decision or the next task
 changes. The full history of what was built, and how it was checked, is in
 [IMPLEMENTATION_REPORT.md](IMPLEMENTATION_REPORT.md).
 
-**Last updated:** 2026-10-21
+**Last updated:** 2026-10-22
 
 Status labels follow the charter:
 
@@ -42,6 +42,8 @@ Status labels follow the charter:
 | 2: Combat foundation | In progress | See below. |
 | 3: First dungeon | Validated, verified in runtime | Spec: [dungeons/ashen_crypt.md](dungeons/ashen_crypt.md). All six steps done; the gate (three runs in a row, clean, paid once each) passes in automated tests. **Device check open.** PRs #15 to #20, stacked. |
 | 4: First loot loop | Validated, verified in runtime | Design: [LOOT.md](LOOT.md). All five steps done; the gate (restart restores bag, gear and Ash; stats verified in combat) passes in automated tests. **Device check open.** |
+| Progression (XP, levels, skill trees) | Validated, verified in runtime | Design: [SKILL_TREES.md](SKILL_TREES.md). Warden tree playable; Reaver and Hexbinder trees as previews. PR #24. |
+| Visual pass | Validated, verified in runtime | Hit sparks, slash arcs, death bursts, camera shake with an off switch. PR stacked on #24. |
 | 5 to 7 | Not started | |
 
 ### Milestone 2 progress
@@ -67,6 +69,7 @@ owner's request, so the web preview could be published from `main`.
 
 | PR | Branch | State |
 |---|---|---|
+| #15 to #24 | `feature/m3-…`, `feature/m4-…`, `feature/skill-trees` | Open drafts, **stacked**: each is based on the one before, so they merge in order starting with #15. |
 | #6 | `feature/loot` | Open draft, **parked** until Milestone 4. It is based on `feature/dodge-skills` and predates the charter's six rarities and nine slots. |
 
 ## Deviations from the charter
@@ -84,17 +87,15 @@ owner's request, so the web preview could be published from `main`.
 
 ## Next task
 
-Milestone 3, step 6 of 6: **the run summary and Ash**: a result screen with
-time, kills, damage taken and the Ash earned, granted once per run; replay
-from the Gatehouse; tests that play several runs in a row (the Milestone 3
-gate). The spec and the
-build order are in [dungeons/ashen_crypt.md](dungeons/ashen_crypt.md).
+**Crypt difficulty tiers** (the gameplay loop): after a clear, the crypt can
+be replayed at a higher tier with tougher enemies, a higher item level and
+better rewards, so runs keep paying off as the hero grows.
 
-After Milestone 3: Milestone 4, the loot loop (items, rarities, affixes,
-equipment, drops, save/load), then character progression (XP and levels,
-gold) so offline rewards (Milestone 6) have something to grant.
+After that: gold, salvage and upgrades; then offline rewards (Milestone 6,
+capped at 8 hours, on the local clock and marked provisional until the
+Milestone 5 server exists); then a second playable class (Reaver).
 
-Device checks for Milestones 1 and 2 are still open: they need the Android app
+Device checks for Milestones 1 to 4 are still open: they need the Android app
 on a phone ([DEVICE_TESTING.md](DEVICE_TESTING.md)). The owner's playtests so
 far were in the [web preview](WEB_PREVIEW.md), which does not count as a device
 check (another renderer, and a browser rather than the app).

@@ -1007,3 +1007,36 @@ Acceptance (docs/SKILL_TREES.md): checks 1 to 4 pass in automated tests.
 Not tested:
 - On a phone.
 ```
+
+## 23. Visual pass (branch `feature/visual-pass`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: presentation (owner request 2026-10-22: "better visuals")
+Status: Validated, verified in runtime (desktop software Vulkan, web smoke test); not verified on device
+
+Changes:
+- Vfx: one-shot particle bursts and slash arcs, visual only, self-freeing,
+  CPU particles so the web (Compatibility) build matches.
+- HitFeedback: sparks on every hit; ash and ember burst when an enemy dies.
+- AttackSwoosh on the Warden: an ember arc along each melee hit (basic
+  attack, Cleave, Guard counter), gold on a critical hit.
+- Camera shake from trauma: hero hurt, critical hits, elite and boss kills.
+  A "Screen shake" toggle in the pause menu, saved with the settings.
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 219 passed, 0 failed (3 new in test_visual_effects.gd); probes that
+  disable the arc or ignore the setting fail the matching tests
+- Command: tools/export-web.sh, then tools/web/smoke.js
+  Exit code: 0, 0
+  Result: web smoke test passed
+- Command: rendered Cleave and a kill in the crypt under Xvfb
+  Exit code: 0
+  Result: the ember arc and the death burst are visible
+
+Not tested:
+- On a phone: effect cost on mobile GPUs, and whether the shake feels right.
+```

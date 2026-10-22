@@ -218,6 +218,16 @@ enemies and the dodge came after it, and are described below.
 - **`HitFeedback`** (Node): on damage, flashes every mesh under a visual root
   with an overlay material, and spawns a floating `DamageNumber` in a
   configurable color (ember for enemies, red for the player).
+- **Effects** (`Vfx`, `scripts/presentation/vfx.gd`): one-shot CPU particle
+  bursts and glowing slash arcs that free themselves. `HitFeedback` throws
+  sparks on every hit and an ash-and-ember burst on death; `AttackSwoosh` on
+  the Warden draws an arc along each melee hit's reach and arc (gold on a
+  critical hit). Effects are visual only and never touch `Health`.
+- **Camera shake**: `IsometricCameraRig.add_trauma()`; the shake grows with
+  trauma squared, decays in about half a second, moves the camera only in its
+  own plane and pauses with the game. `Main` adds trauma when the hero is
+  hurt, lands a critical hit or kills an elite or boss. The player can turn it
+  off in the pause menu (`GameSettings.screen_shake`, saved).
 - **Feedback** (`DamageNumber`, `HitFeedback`) uses tweens on
   the physics clock, so it pauses with the game and works with physics
   interpolation.

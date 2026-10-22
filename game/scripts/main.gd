@@ -40,11 +40,34 @@ func _ready() -> void:
 	_hud.track_dodge(_player.dodge)
 	_hud.track_abilities(_player.abilities)
 	_run.ended.connect(_on_run_ended)
+	_connect_shake()
 	_run.kill_counted.connect(_on_kill_counted)
 	Profile.leveled_up.connect(_on_leveled_up)
 	_run.kill_counted.connect(_loot.on_enemy_killed)
 	_loot.collected.connect(_on_loot_collected)
 	_death_screen.restart_requested.connect(restart)
+
+
+## Shakes the camera when the hero is hurt, lands a critical hit or kills an
+## elite or boss. Presentation only.
+func _connect_shake() -> void:
+	# A method, not a lambda: the connection to the autoload goes when Main goes.
+	Settings.changed.connect(_on_settings_changed)
+	_on_settings_changed(Settings.current)
+	_player.health.damaged.connect(func(amount: int, _left: int) -> void:
+		_camera_rig.add_trauma(0.3 + amount / 80.0))
+	for child in _player.get_children():
+		if child is MeleeAttack:
+			(child as MeleeAttack).struck.connect(func(targets: Array[Health]) -> void:
+				if not targets.is_empty() and (child as MeleeAttack).last_hit_critical:
+					_camera_rig.add_trauma(0.25))
+	_run.kill_counted.connect(func(enemy: Node3D) -> void:
+		if enemy is EnemyController and (enemy as EnemyController).ash_value >= 10:
+			_camera_rig.add_trauma(0.6))
+
+
+func _on_settings_changed(settings: GameSettings) -> void:
+	_camera_rig.shake_enabled = settings.screen_shake
 
 
 ## Opens the bag; the game waits while it is open.
