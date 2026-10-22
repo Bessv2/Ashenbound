@@ -23,20 +23,47 @@ const MOVE_SPEED_CAP := 30
 const COOLDOWN_REDUCTION_CAP := 40
 
 @export var player: PlayerController
-## Extra points added on top of the gear (the skill tree, later). Stat key →
-## value, in the same units as item stats.
+## The hero's class tree; its learned ranks (from Profile) add to the gear.
+@export var skill_tree: SkillTree
+## Extra points added on top of the gear (set from the skill tree). Stat key →
+## value, in the same units as item and skill stats.
 var bonus: Dictionary[String, int] = {}
 
 ## Final stats after the last recalculation: stat key → value.
 var final: Dictionary[String, int] = {}
 
 var _equipment: Equipment
+var _profile: Node
 var _base_max_health: int = 0
+## Ability values before skills: [Guard duration, Brand damage, Brand ticks].
+var _base_guard_duration: float = 0.0
+var _base_brand_damage: int = 0
+var _base_brand_ticks: int = 0
 
 
 func _ready() -> void:
 	_base_max_health = player.health.max_health
+	var guard := player.get_node_or_null(^"Guard") as GuardAbility
+	if guard:
+		_base_guard_duration = guard.duration
+	var brand := player.get_node_or_null(^"Brand") as BrandAbility
+	if brand:
+		_base_brand_damage = brand.damage_per_tick
+		_base_brand_ticks = brand.tick_count
+	_profile = get_node_or_null(^"/root/Profile")
+	if _profile and skill_tree:
+		_profile.changed.connect(_take_skills)
+		_take_skills()
 	track(_default_equipment())
+
+
+## Takes the learned ranks of `skill_tree` from Profile as the bonus.
+func _take_skills() -> void:
+	var learned: Dictionary[String, int] = skill_tree.bonus(_profile.ranks(skill_tree.class_id))
+	if learned == bonus:
+		return
+	bonus = learned
+	recalculate()
 
 
 ## Uses `equipment` (Profile's by default) and recalculates whenever it
@@ -55,7 +82,9 @@ func value(stat: String) -> int:
 
 
 func recalculate() -> void:
-	var total: Dictionary[String, int] = _equipment.totals() if _equipment else {}
+	var total: Dictionary[String, int] = {}
+	if _equipment:
+		total = _equipment.totals()
 	for stat in bonus:
 		total[stat] = total.get(stat, 0) + bonus[stat]
 	total[ItemStats.CRIT_CHANCE] = total.get(ItemStats.CRIT_CHANCE, 0) + BASE_CRIT_CHANCE
@@ -85,6 +114,7 @@ func _apply() -> void:
 		ability.cooldown_scale = 1.0 - value(ItemStats.COOLDOWN_REDUCTION) / 100.0
 		ability.power = 1.0 + value(ItemStats.DAMAGE_PCT) / 100.0
 	player.speed_multiplier = 1.0 + value(ItemStats.MOVE_SPEED_PCT) / 100.0
+	_apply_skills(damage_scale)
 	player.health.armor = value(ItemStats.ARMOR)
 	# Keep the same missing health when the maximum changes, never dying of it.
 	var health := player.health
@@ -92,6 +122,22 @@ func _apply() -> void:
 	health.max_health = _base_max_health + value(ItemStats.MAX_HEALTH)
 	if not health.is_dead():
 		health.current = clampi(health.max_health - missing, 1, health.max_health)
+
+
+## Skill-only stats: each changes one of the Warden's abilities.
+func _apply_skills(damage_scale: float) -> void:
+	var cleave := player.get_node_or_null(^"Cleave") as CleaveAbility
+	if cleave and cleave.attack:
+		cleave.attack.damage_scale = damage_scale * (1.0 + value(SkillStats.CLEAVE_DAMAGE_PCT) / 100.0)
+	var guard := player.get_node_or_null(^"Guard") as GuardAbility
+	if guard:
+		guard.duration = _base_guard_duration + value(SkillStats.GUARD_DURATION_MS) / 1000.0
+		if guard.counter:
+			guard.counter.damage_scale = damage_scale * (1.0 + value(SkillStats.COUNTER_DAMAGE_PCT) / 100.0)
+	var brand := player.get_node_or_null(^"Brand") as BrandAbility
+	if brand:
+		brand.damage_per_tick = _base_brand_damage + value(SkillStats.BRAND_TICK_DAMAGE)
+		brand.tick_count = _base_brand_ticks + value(SkillStats.BRAND_TICKS)
 
 
 ## Every MeleeAttack the hero owns (basic attack, Cleave, Guard's counter).

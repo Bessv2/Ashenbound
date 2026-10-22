@@ -217,6 +217,10 @@ checklist below is the full manual pass.
       and the health bar follows a health item.
 - [ ] Closing the app and starting it again keeps the Ash, the bag and the
       equipment.
+- [ ] Kills fill the XP bar under the health bar; a level-up shows a message.
+      **SKILLS** opens the trees: learning Stalwart raises max health at once;
+      **Reset** gives the points back. The Reaver and Hexbinder tabs are
+      previews.
 - [ ] Walking behind a tall wall (in each corridor) the Warden stays visible
       through a small see-through patch in the wall.
 - [ ] The Chapel and the Throne seal and open the same way. Killing the Lord

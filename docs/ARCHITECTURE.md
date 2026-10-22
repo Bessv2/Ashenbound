@@ -669,3 +669,23 @@ Design: [LOOT.md](LOOT.md). Code in `game/scripts/items/`.
   then the backup; if neither reads, the game starts fresh and the broken file
   is renamed `.broken-<time>`, never deleted. Items a save cannot read are left
   out with a warning. Tests turn saving off (`save_path = ""`).
+
+## Progression (XP, levels, skill trees)
+
+Design: [SKILL_TREES.md](SKILL_TREES.md). Code in `game/scripts/progression/`.
+
+- `Profile` holds the level, XP and learned ranks per class (saved, version 2;
+  version 1 saves load at level 1). `add_xp()` levels up along
+  `100 × level^1.5` and emits `leveled_up`; each level is one skill point.
+  Main grants each killed enemy's `xp_value` (10 / 20 / 100 / 500).
+- `SkillTree` (Resource, `resources/skills/<class>_tree.tres`): three branches
+  of `SkillNode`s; each node adds `per_rank` stats and may require another node
+  of its branch. `learn_problem()` says why a rank cannot be learned. Trees of
+  classes that are not playable yet (Reaver, Hexbinder) are read-only.
+- Ranks feed `CharacterStats.bonus` (the Warden's `skill_tree`), so a skill
+  works exactly like gear. `SkillStats` adds keys that change one ability:
+  Cleave damage, Guard duration, Guard's counter damage, Brand's damage and
+  ticks. Reset refunds every point.
+- `SkillTreePanel` ("Skills" in Main, the HUD's SKILLS button): class tabs,
+  branch columns, the node card with Learn; it pauses the game like the bag.
+  The HUD shows the level, points to spend and an XP bar.

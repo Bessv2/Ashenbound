@@ -5,6 +5,7 @@ extends CanvasLayer
 
 signal pause_requested
 signal inventory_requested
+signal skills_requested
 
 @onready var _root: Control = $Root
 @onready var _pause_button: Button = %PauseButton
@@ -31,6 +32,11 @@ func _ready() -> void:
 	_root.add_child(_toasts)
 	_pause_button.pressed.connect(pause_requested.emit)
 	(%BagButton as Button).pressed.connect(inventory_requested.emit)
+	(%SkillsButton as Button).pressed.connect(skills_requested.emit)
+	var profile := get_node_or_null(^"/root/Profile")
+	if profile:
+		profile.changed.connect(_update_level.bind(profile))
+		_update_level(profile)
 	_debug_label.visible = OS.is_debug_build()
 	# Not DisplayServer.is_touchscreen_available(): mouse-to-touch emulation
 	# (used to test the joystick on desktop) makes that true everywhere.
@@ -39,6 +45,14 @@ func _ready() -> void:
 	_apply_settings(Settings.current)
 	get_viewport().size_changed.connect(_fit_to_safe_area)
 	_fit_to_safe_area()
+
+
+func _update_level(profile: Node) -> void:
+	var bar := %XpBar as ProgressBar
+	bar.max_value = profile.xp_to_next(profile.level)
+	bar.value = profile.xp
+	var points: int = profile.points_available(profile.HERO_CLASS)
+	(%LevelText as Label).text = "Level %d" % profile.level + ("  ·  %d to spend" % points if points > 0 else "")
 
 
 ## Shows `text` for a moment above the controls (loot picked up). New

@@ -1,0 +1,177 @@
+[gd_resource type="Resource" script_class="SkillTree" format=3]
+
+[ext_resource type="Script" path="res://scripts/progression/skill_tree.gd" id="1_tree"]
+[ext_resource type="Script" path="res://scripts/progression/skill_node.gd" id="2_node"]
+
+[sub_resource type="Resource" id="Node_open_veins"]
+script = ExtResource("2_node")
+id = "open_veins"
+display_name = "Open Veins"
+description = "+3% damage per rank."
+branch = 0
+tier = 0
+max_rank = 5
+per_rank = Dictionary[String, int]({"damage_pct": 3})
+requires = ""
+
+[sub_resource type="Resource" id="Node_hemorrhage"]
+script = ExtResource("2_node")
+id = "hemorrhage"
+display_name = "Hemorrhage"
+description = "Bleeds deal +15% damage per rank."
+branch = 0
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"bleed_damage_pct": 15})
+requires = "open_veins"
+
+[sub_resource type="Resource" id="Node_crimson_thirst"]
+script = ExtResource("2_node")
+id = "crimson_thirst"
+display_name = "Crimson Thirst"
+description = "Each kill heals 2 per rank."
+branch = 0
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"health_on_kill": 2})
+requires = "open_veins"
+
+[sub_resource type="Resource" id="Node_deep_cuts"]
+script = ExtResource("2_node")
+id = "deep_cuts"
+display_name = "Deep Cuts"
+description = "Bleeds deal +20% damage per rank."
+branch = 0
+tier = 2
+max_rank = 3
+per_rank = Dictionary[String, int]({"bleed_damage_pct": 20})
+requires = "hemorrhage"
+
+[sub_resource type="Resource" id="Node_exsanguinate"]
+script = ExtResource("2_node")
+id = "exsanguinate"
+display_name = "Exsanguinate"
+description = "+15% critical damage per rank."
+branch = 0
+tier = 2
+max_rank = 2
+per_rank = Dictionary[String, int]({"crit_damage": 15})
+requires = "crimson_thirst"
+
+[sub_resource type="Resource" id="Node_light_feet"]
+script = ExtResource("2_node")
+id = "light_feet"
+display_name = "Light Feet"
+description = "+3% move speed per rank."
+branch = 1
+tier = 0
+max_rank = 5
+per_rank = Dictionary[String, int]({"move_speed_pct": 3})
+requires = ""
+
+[sub_resource type="Resource" id="Node_phantom_step"]
+script = ExtResource("2_node")
+id = "phantom_step"
+display_name = "Phantom Step"
+description = "Dashes recharge 8% faster per rank."
+branch = 1
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"dash_cooldown_pct": 8})
+requires = "light_feet"
+
+[sub_resource type="Resource" id="Node_flanker"]
+script = ExtResource("2_node")
+id = "flanker"
+display_name = "Flanker"
+description = "+5% attack speed per rank."
+branch = 1
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"attack_speed_pct": 5})
+requires = "light_feet"
+
+[sub_resource type="Resource" id="Node_smoke_veil"]
+script = ExtResource("2_node")
+id = "smoke_veil"
+display_name = "Smoke Veil"
+description = "+5 armour per rank."
+branch = 1
+tier = 2
+max_rank = 3
+per_rank = Dictionary[String, int]({"armor": 5})
+requires = "phantom_step"
+
+[sub_resource type="Resource" id="Node_veil_rend_mastery"]
+script = ExtResource("2_node")
+id = "veil_rend_mastery"
+display_name = "Veil Rend Mastery"
+description = "Veil Rend deals +20% damage per rank."
+branch = 1
+tier = 2
+max_rank = 3
+per_rank = Dictionary[String, int]({"veil_rend_damage_pct": 20})
+requires = "flanker"
+
+[sub_resource type="Resource" id="Node_mark_for_death"]
+script = ExtResource("2_node")
+id = "mark_for_death"
+display_name = "Mark for Death"
+description = "Marked targets take +5% damage per rank."
+branch = 2
+tier = 0
+max_rank = 5
+per_rank = Dictionary[String, int]({"mark_damage_pct": 5})
+requires = ""
+
+[sub_resource type="Resource" id="Node_coup_de_grace"]
+script = ExtResource("2_node")
+id = "coup_de_grace"
+display_name = "Coup de Grâce"
+description = "+15% critical damage per rank."
+branch = 2
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"crit_damage": 15})
+requires = "mark_for_death"
+
+[sub_resource type="Resource" id="Node_cold_focus"]
+script = ExtResource("2_node")
+id = "cold_focus"
+display_name = "Cold Focus"
+description = "+4% critical chance per rank."
+branch = 2
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"crit_chance": 4})
+requires = "mark_for_death"
+
+[sub_resource type="Resource" id="Node_relentless"]
+script = ExtResource("2_node")
+id = "relentless"
+display_name = "Relentless"
+description = "+4% cooldown reduction per rank."
+branch = 2
+tier = 2
+max_rank = 3
+per_rank = Dictionary[String, int]({"cooldown_reduction": 4})
+requires = "cold_focus"
+
+[sub_resource type="Resource" id="Node_final_verdict"]
+script = ExtResource("2_node")
+id = "final_verdict"
+display_name = "Final Verdict"
+description = "+5% damage per rank."
+branch = 2
+tier = 2
+max_rank = 2
+per_rank = Dictionary[String, int]({"damage_pct": 5})
+requires = "coup_de_grace"
+
+[resource]
+script = ExtResource("1_tree")
+class_id = "reaver"
+class_title = "Reaver"
+playable = false
+branches = PackedStringArray("Bloodletting", "Shadowstep", "Executioner")
+nodes = Array[ExtResource("2_node")]([SubResource("Node_open_veins"), SubResource("Node_hemorrhage"), SubResource("Node_crimson_thirst"), SubResource("Node_deep_cuts"), SubResource("Node_exsanguinate"), SubResource("Node_light_feet"), SubResource("Node_phantom_step"), SubResource("Node_flanker"), SubResource("Node_smoke_veil"), SubResource("Node_veil_rend_mastery"), SubResource("Node_mark_for_death"), SubResource("Node_coup_de_grace"), SubResource("Node_cold_focus"), SubResource("Node_relentless"), SubResource("Node_final_verdict")])

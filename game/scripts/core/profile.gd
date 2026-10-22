@@ -1,6 +1,7 @@
 extends Node
 ## The player's lasting progress across runs (autoload "Profile"): Ash, the
-## bag and the equipment, saved to `save_path`. Every reward goes through
+## bag, the equipment, the hero's level and XP and learned skills, saved to
+## `save_path`. Every reward goes through
 ## grant_run_reward(), which accepts each run once, so a replayed signal, a
 ## double tap or a retried request can never pay twice. That is the seam the
 ## backend (Milestone 5) hooks into.
@@ -13,8 +14,13 @@ extends Node
 ## deletes the player's data on its own.
 
 signal changed
+signal leveled_up(level: int)
 
-const SAVE_VERSION := 1
+## 2 added level, XP and skills; version 1 saves load with level 1.
+const SAVE_VERSION := 2
+const MAX_LEVEL := 30
+## The class the player plays (only the Warden so far).
+const HERO_CLASS := "warden"
 const DEFAULT_SAVE_PATH := "user://profile.json"
 ## Run ids remembered against double payment (the most recent ones).
 const CLAIMED_KEPT := 50
@@ -26,6 +32,11 @@ var ash: int = 0
 var inventory := Inventory.new()
 var equipment := Equipment.new()
 var catalog: ItemCatalog = ItemCatalog.load_default()
+var level: int = 1
+## XP gathered toward the next level.
+var xp: int = 0
+## Class id → {node id → rank}.
+var skill_ranks: Dictionary[String, Dictionary] = {}
 
 ## Runs already paid, by run id, oldest first.
 var _claimed: Dictionary[String, int] = {}
@@ -55,6 +66,9 @@ func to_dict() -> Dictionary:
 		"claimed": claimed.slice(maxi(claimed.size() - CLAIMED_KEPT, 0)),
 		"inventory": inventory.to_list(),
 		"equipment": equipment.to_dict(),
+		"level": level,
+		"xp": xp,
+		"skills": skill_ranks.duplicate(true),
 	}
 
 
@@ -121,6 +135,16 @@ func _apply(data: Dictionary) -> bool:
 	if data.get("claimed") is Array:
 		for run_id: Variant in data.claimed:
 			_claimed[str(run_id)] = 0
+	level = clampi(int(data.get("level", 1)), 1, MAX_LEVEL)
+	xp = maxi(int(data.get("xp", 0)), 0)
+	skill_ranks.clear()
+	if data.get("skills") is Dictionary:
+		for class_id: Variant in data.skills:
+			var learned := {}
+			if data.skills[class_id] is Dictionary:
+				for node_id: Variant in data.skills[class_id]:
+					learned[str(node_id)] = maxi(int(data.skills[class_id][node_id]), 0)
+			skill_ranks[str(class_id)] = learned
 	var skipped := inventory.load_list(data.inventory) + equipment.load_dict(data.equipment)
 	if skipped > 0:
 		push_warning("%d saved items could not be read and were left out." % skipped)
@@ -129,6 +153,9 @@ func _apply(data: Dictionary) -> bool:
 
 
 func _apply_empty() -> void:
+	level = 1
+	xp = 0
+	skill_ranks.clear()
 	ash = 0
 	_claimed.clear()
 	inventory.load_list([])
@@ -149,6 +176,63 @@ func grant_run_reward(run_id: String, amount: int) -> bool:
 
 func has_claimed(run_id: String) -> bool:
 	return _claimed.has(run_id)
+
+
+## XP needed to go from `from_level` to the next.
+static func xp_to_next(from_level: int) -> int:
+	return roundi(100.0 * pow(from_level, 1.5))
+
+
+## Adds XP, levelling up as many times as it covers. Returns levels gained.
+func add_xp(amount: int) -> int:
+	if amount <= 0 or level >= MAX_LEVEL:
+		return 0
+	xp += amount
+	var gained := 0
+	while level < MAX_LEVEL and xp >= xp_to_next(level):
+		xp -= xp_to_next(level)
+		level += 1
+		gained += 1
+		leveled_up.emit(level)
+	if level >= MAX_LEVEL:
+		xp = 0
+	changed.emit()
+	return gained
+
+
+func ranks(class_id: String) -> Dictionary:
+	return skill_ranks.get(class_id, {})
+
+
+func points_spent(class_id: String) -> int:
+	var spent := 0
+	for rank: int in ranks(class_id).values():
+		spent += rank
+	return spent
+
+
+## One point per level after the first, per class.
+func points_available(class_id: String) -> int:
+	return level - 1 - points_spent(class_id)
+
+
+## Spends a point on `node_id` of `tree`. Returns "" or why it could not.
+func learn(tree: SkillTree, node_id: String) -> String:
+	var held := ranks(tree.class_id)
+	var problem := tree.learn_problem(held, node_id, points_available(tree.class_id))
+	if problem != "":
+		return problem
+	held = held.duplicate()
+	held[node_id] = int(held.get(node_id, 0)) + 1
+	skill_ranks[tree.class_id] = held
+	changed.emit()
+	return ""
+
+
+## Refunds every point of `class_id`.
+func reset_skills(class_id: String) -> void:
+	skill_ranks.erase(class_id)
+	changed.emit()
 
 
 ## Moves the bag item `uid` onto the hero; whatever it replaces goes back in
@@ -179,6 +263,9 @@ func unequip_to_bag(slot: int) -> bool:
 
 ## Empties the profile (tests and a future "new game").
 func reset() -> void:
+	level = 1
+	xp = 0
+	skill_ranks.clear()
 	ash = 0
 	_claimed.clear()
 	inventory.load_list([])

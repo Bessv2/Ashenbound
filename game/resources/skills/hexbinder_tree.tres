@@ -1,0 +1,177 @@
+[gd_resource type="Resource" script_class="SkillTree" format=3]
+
+[ext_resource type="Script" path="res://scripts/progression/skill_tree.gd" id="1_tree"]
+[ext_resource type="Script" path="res://scripts/progression/skill_node.gd" id="2_node"]
+
+[sub_resource type="Resource" id="Node_withering_word"]
+script = ExtResource("2_node")
+id = "withering_word"
+display_name = "Withering Word"
+description = "Curses last 10% longer per rank."
+branch = 0
+tier = 0
+max_rank = 5
+per_rank = Dictionary[String, int]({"curse_duration_pct": 10})
+requires = ""
+
+[sub_resource type="Resource" id="Node_spreading_blight"]
+script = ExtResource("2_node")
+id = "spreading_blight"
+display_name = "Spreading Blight"
+description = "Curses deal +15% damage per rank."
+branch = 0
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"curse_damage_pct": 15})
+requires = "withering_word"
+
+[sub_resource type="Resource" id="Node_hex_mastery"]
+script = ExtResource("2_node")
+id = "hex_mastery"
+display_name = "Hex Mastery"
+description = "+3% damage per rank."
+branch = 0
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"damage_pct": 3})
+requires = "withering_word"
+
+[sub_resource type="Resource" id="Node_frailty"]
+script = ExtResource("2_node")
+id = "frailty"
+display_name = "Frailty"
+description = "Curses deal +20% damage per rank."
+branch = 0
+tier = 2
+max_rank = 3
+per_rank = Dictionary[String, int]({"curse_damage_pct": 20})
+requires = "spreading_blight"
+
+[sub_resource type="Resource" id="Node_black_testament_mastery"]
+script = ExtResource("2_node")
+id = "black_testament_mastery"
+display_name = "Black Testament Mastery"
+description = "Black Testament deals +20% damage per rank."
+branch = 0
+tier = 2
+max_rank = 3
+per_rank = Dictionary[String, int]({"black_testament_pct": 20})
+requires = "hex_mastery"
+
+[sub_resource type="Resource" id="Node_soul_leech"]
+script = ExtResource("2_node")
+id = "soul_leech"
+display_name = "Soul Leech"
+description = "Each kill heals 2 per rank."
+branch = 1
+tier = 0
+max_rank = 5
+per_rank = Dictionary[String, int]({"health_on_kill": 2})
+requires = ""
+
+[sub_resource type="Resource" id="Node_dark_pact"]
+script = ExtResource("2_node")
+id = "dark_pact"
+display_name = "Dark Pact"
+description = "+10 max health per rank."
+branch = 1
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"max_health": 10})
+requires = "soul_leech"
+
+[sub_resource type="Resource" id="Node_hungering_souls"]
+script = ExtResource("2_node")
+id = "hungering_souls"
+display_name = "Hungering Souls"
+description = "Soul Siphon restores 10% more per rank."
+branch = 1
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"soul_siphon_pct": 10})
+requires = "soul_leech"
+
+[sub_resource type="Resource" id="Node_spirit_ward"]
+script = ExtResource("2_node")
+id = "spirit_ward"
+display_name = "Spirit Ward"
+description = "+5 armour per rank."
+branch = 1
+tier = 2
+max_rank = 3
+per_rank = Dictionary[String, int]({"armor": 5})
+requires = "dark_pact"
+
+[sub_resource type="Resource" id="Node_reapers_tithe"]
+script = ExtResource("2_node")
+id = "reapers_tithe"
+display_name = "Reaper's Tithe"
+description = "Soul Siphon restores 15% more per rank."
+branch = 1
+tier = 2
+max_rank = 2
+per_rank = Dictionary[String, int]({"soul_siphon_pct": 15})
+requires = "hungering_souls"
+
+[sub_resource type="Resource" id="Node_gathering_storm"]
+script = ExtResource("2_node")
+id = "gathering_storm"
+display_name = "Gathering Storm"
+description = "+4% cooldown reduction per rank."
+branch = 2
+tier = 0
+max_rank = 5
+per_rank = Dictionary[String, int]({"cooldown_reduction": 4})
+requires = ""
+
+[sub_resource type="Resource" id="Node_volatile_hex"]
+script = ExtResource("2_node")
+id = "volatile_hex"
+display_name = "Volatile Hex"
+description = "Detonations deal +15% damage per rank."
+branch = 2
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"detonation_damage_pct": 15})
+requires = "gathering_storm"
+
+[sub_resource type="Resource" id="Node_doom_chain"]
+script = ExtResource("2_node")
+id = "doom_chain"
+display_name = "Doom Chain"
+description = "+4% critical chance per rank."
+branch = 2
+tier = 1
+max_rank = 3
+per_rank = Dictionary[String, int]({"crit_chance": 4})
+requires = "gathering_storm"
+
+[sub_resource type="Resource" id="Node_ruin"]
+script = ExtResource("2_node")
+id = "ruin"
+display_name = "Ruin"
+description = "+15% critical damage per rank."
+branch = 2
+tier = 2
+max_rank = 3
+per_rank = Dictionary[String, int]({"crit_damage": 15})
+requires = "doom_chain"
+
+[sub_resource type="Resource" id="Node_cataclysm_mastery"]
+script = ExtResource("2_node")
+id = "cataclysm_mastery"
+display_name = "Cataclysm Mastery"
+description = "Detonations deal +20% damage per rank."
+branch = 2
+tier = 2
+max_rank = 3
+per_rank = Dictionary[String, int]({"detonation_damage_pct": 20})
+requires = "volatile_hex"
+
+[resource]
+script = ExtResource("1_tree")
+class_id = "hexbinder"
+class_title = "Hexbinder"
+playable = false
+branches = PackedStringArray("Curses", "Soul Siphon", "Cataclysm")
+nodes = Array[ExtResource("2_node")]([SubResource("Node_withering_word"), SubResource("Node_spreading_blight"), SubResource("Node_hex_mastery"), SubResource("Node_frailty"), SubResource("Node_black_testament_mastery"), SubResource("Node_soul_leech"), SubResource("Node_dark_pact"), SubResource("Node_hungering_souls"), SubResource("Node_spirit_ward"), SubResource("Node_reapers_tithe"), SubResource("Node_gathering_storm"), SubResource("Node_volatile_hex"), SubResource("Node_doom_chain"), SubResource("Node_ruin"), SubResource("Node_cataclysm_mastery")])

@@ -24,6 +24,8 @@
 
 [ext_resource type="Script" path="res://scripts/player/character_stats.gd" id="26_stats"]
 
+[ext_resource type="Resource" path="res://resources/skills/warden_tree.tres" id="27_tree"]
+
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
 height = 1.8
@@ -143,3 +145,4 @@ script = ExtResource("25_occlusion")
 [node name="Stats" type="Node" parent="." node_paths=PackedStringArray("player")]
 script = ExtResource("26_stats")
 player = NodePath("..")
+skill_tree = ExtResource("27_tree")

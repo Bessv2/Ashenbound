@@ -20,6 +20,7 @@ var level: Level
 @onready var _run: RunController = $Run
 @onready var _loot: LootDropper = $Loot
 @onready var _inventory: InventoryPanel = $Inventory
+@onready var _skills: SkillTreePanel = $Skills
 
 ## Items picked up this run.
 var _loot_found: int = 0
@@ -33,11 +34,14 @@ func _ready() -> void:
 	_pause_menu.set_open(_pause_controller.is_paused())
 	_hud.inventory_requested.connect(open_inventory)
 	_inventory.close_requested.connect(_pause_controller.set_paused.bind(false))
+	_hud.skills_requested.connect(open_skills)
+	_skills.close_requested.connect(_pause_controller.set_paused.bind(false))
 	_hud.track_health(_player.health)
 	_hud.track_dodge(_player.dodge)
 	_hud.track_abilities(_player.abilities)
 	_run.ended.connect(_on_run_ended)
-	_run.kill_counted.connect(_on_kill_counted.unbind(1))
+	_run.kill_counted.connect(_on_kill_counted)
+	Profile.leveled_up.connect(_on_leveled_up)
 	_run.kill_counted.connect(_loot.on_enemy_killed)
 	_loot.collected.connect(_on_loot_collected)
 	_death_screen.restart_requested.connect(restart)
@@ -51,11 +55,21 @@ func open_inventory() -> void:
 	_pause_controller.set_paused(true)
 
 
+## Opens the skill trees; the game waits while they are open.
+func open_skills() -> void:
+	if _run.is_over():
+		return
+	_skills.open()
+	_pause_controller.set_paused(true)
+
+
 func _on_paused_changed(paused: bool) -> void:
-	# The bag pauses the game too; the pause menu only shows without it.
-	_pause_menu.set_open(paused and not _inventory.visible)
+	# The bag and the skills pause the game too; the pause menu only shows
+	# without them.
+	_pause_menu.set_open(paused and not _inventory.visible and not _skills.visible)
 	if not paused:
 		_inventory.close()
+		_skills.close()
 
 
 ## Starts the scene over from scratch.
@@ -91,10 +105,16 @@ func _on_loot_collected(item: ItemInstance) -> void:
 			Rarity.color_of(item.rarity))
 
 
-func _on_kill_counted() -> void:
+func _on_kill_counted(enemy: Node3D) -> void:
 	var stats := _player.get_node_or_null(^"Stats") as CharacterStats
 	if stats:
 		_player.health.heal(stats.value(ItemStats.HEALTH_ON_KILL))
+	if enemy is EnemyController:
+		Profile.add_xp((enemy as EnemyController).xp_value)
+
+
+func _on_leveled_up(new_level: int) -> void:
+	_hud.show_toast("Level %d: a skill point to spend" % new_level, Color("#D9A44C"))
 
 
 ## Seconds between the killing blow that wins the run and the summary.
