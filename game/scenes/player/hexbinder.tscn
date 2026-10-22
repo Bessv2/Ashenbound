@@ -81,18 +81,21 @@ script = ExtResource("14_testament")
 display_name = "CURSE"
 action = &"ability_1"
 cooldown = 5.0
+hud_color = Color(0.7, 0.35, 1, 1)
 
 [node name="Grasp" type="Node" parent="."]
 script = ExtResource("15_grasp")
 display_name = "GRASP"
 action = &"ability_2"
 cooldown = 8.0
+hud_color = Color(0.35, 0.95, 0.7, 1)
 
 [node name="Unmake" type="Node" parent="."]
 script = ExtResource("16_unmake")
 display_name = "UNMAKE"
 action = &"ability_3"
 cooldown = 6.0
+hud_color = Color(0.9, 0.5, 1, 1)
 
 [node name="ModelDressing" type="Node" parent="." node_paths=PackedStringArray("model")]
 script = ExtResource("22_dressing")

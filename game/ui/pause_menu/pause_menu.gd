@@ -27,7 +27,10 @@ func _show_shake() -> void:
 
 
 func set_open(open: bool) -> void:
+	var opening := open and not visible
 	visible = open
+	if opening:
+		UiFx.pop_layer(self)
 	if open:
 		# Lets keyboard and gamepad players resume with the accept key.
 		_resume_button.grab_focus()

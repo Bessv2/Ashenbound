@@ -19,6 +19,11 @@ enum Phase { WAITING, ACTIVE, CLEARED }
 ## Starts by itself `start_delay` seconds after entering the tree. When false,
 ## something else calls start() (a room trigger).
 @export var auto_start: bool = false
+## Shown as a banner when the encounter starts (empty: no banner).
+@export var title: String = ""
+@export var subtitle: String = ""
+## The banner's colour (a boss's is red).
+@export var title_color: Color = Color("#E8D9C0")
 @export_range(0.0, 30.0, 0.1, "suffix:s") var start_delay: float = 1.5
 
 var phase: Phase = Phase.WAITING

@@ -1,7 +1,12 @@
 class_name Hud
 extends CanvasLayer
-## In-game overlay: title, player health, pause button, touch controls and a
-## debug readout. Emits requests; it does not change game state itself.
+## In-game overlay: the hero's name, health and XP, the menu buttons, touch
+## controls, banners (rooms, bosses, level-ups), messages and a debug readout.
+## Emits requests; it does not change game state itself.
+##
+## The bars move rather than jump: health drops at once and a pale trail
+## follows it down a moment later, so a hit's size reads at a glance; XP
+## fills smoothly.
 
 signal pause_requested
 signal inventory_requested
@@ -16,8 +21,18 @@ signal skills_requested
 @onready var _health_text: Label = %HealthText
 @onready var _dodge_button: TouchActionButton = %DodgeButton
 
+const HEALTH_FILL := Color("#B3261E")
+const HEALTH_TRAIL := Color("#F2C9A0")
+const XP_FILL := Color("#D9A44C")
+
 var _health: Health
 var _toasts: VBoxContainer
+var _banner: Banner
+var _health_trail: ProgressBar
+var _health_tween: Tween
+var _trail_tween: Tween
+var _xp_tween: Tween
+var _shown_level: int = 0
 
 
 func _ready() -> void:
@@ -30,6 +45,10 @@ func _ready() -> void:
 	_toasts.offset_right = 300.0
 	_toasts.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	_root.add_child(_toasts)
+	_banner = Banner.new()
+	_banner.name = "Banner"
+	_root.add_child(_banner)
+	_style_bars()
 	_pause_button.pressed.connect(pause_requested.emit)
 	(%BagButton as Button).pressed.connect(inventory_requested.emit)
 	(%SkillsButton as Button).pressed.connect(skills_requested.emit)
@@ -47,10 +66,60 @@ func _ready() -> void:
 	_fit_to_safe_area()
 
 
+## Shows the hero's class name in its colour where the game's title was.
+func set_hero(title: String, color: Color) -> void:
+	var label := $Root/TopBar/Row/TitleBlock/Title as Label
+	label.text = title.to_upper()
+	label.modulate = color
+
+
+## Shows a big title (a room, a boss, a level gained) for a moment.
+func show_banner(title: String, subtitle: String = "", color: Color = Color("#E8D9C0")) -> void:
+	_banner.show_banner(title, subtitle, color)
+
+
+func banner() -> Banner:
+	return _banner
+
+
+func _style_bars() -> void:
+	var health := _health_bar
+	health.add_theme_stylebox_override(&"background", StyleBoxEmpty.new())
+	health.add_theme_stylebox_override(&"fill", UiFx.box(HEALTH_FILL, 3))
+	# The trail sits behind the bar: the bar's own background is empty, so
+	# the trail's background is the frame and its fill shows where health
+	# was a moment ago.
+	_health_trail = ProgressBar.new()
+	_health_trail.name = "Trail"
+	_health_trail.show_percentage = false
+	_health_trail.show_behind_parent = true
+	_health_trail.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_health_trail.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_health_trail.add_theme_stylebox_override(&"background", UiFx.box(Color(0.06, 0.03, 0.04, 0.85), 3, Color(0.45, 0.22, 0.12, 0.9), 1))
+	_health_trail.add_theme_stylebox_override(&"fill", UiFx.box(HEALTH_TRAIL, 3))
+	health.add_child(_health_trail)
+	var xp := %XpBar as ProgressBar
+	xp.add_theme_stylebox_override(&"background", UiFx.box(Color(0.06, 0.04, 0.03, 0.85), 2, Color(0.35, 0.25, 0.12, 0.8), 1))
+	xp.add_theme_stylebox_override(&"fill", UiFx.box(XP_FILL, 2))
+
+
+## Where the trail behind the health bar is (for tests).
+func health_trail_value() -> float:
+	return _health_trail.value
+
+
 func _update_level(profile: Node) -> void:
 	var bar := %XpBar as ProgressBar
+	var levelled: bool = _shown_level != 0 and profile.level > _shown_level
+	_shown_level = profile.level
 	bar.max_value = profile.xp_to_next(profile.level)
-	bar.value = profile.xp
+	if _xp_tween:
+		_xp_tween.kill()
+	if levelled or not is_node_ready():
+		bar.value = profile.xp
+	else:
+		_xp_tween = create_tween()
+		_xp_tween.tween_property(bar, "value", float(profile.xp), 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	var points: int = profile.points_available(profile.hero_class)
 	(%LevelText as Label).text = "Level %d" % profile.level + ("  ·  %d to spend" % points if points > 0 else "")
 
@@ -67,8 +136,14 @@ func show_toast(text: String, color: Color = Color.WHITE) -> void:
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_toasts.add_child(label)
+	# Slides in from the side and settles.
+	label.position.x = 60.0
+	label.modulate.a = 0.0
 	var tween := label.create_tween()
-	tween.tween_interval(2.0)
+	tween.set_parallel()
+	tween.tween_property(label, "modulate:a", color.a, 0.18)
+	tween.tween_property(label, "position:x", 0.0, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.chain().tween_interval(2.0)
 	tween.tween_property(label, "modulate:a", 0.0, 0.6)
 	tween.tween_callback(label.queue_free)
 
@@ -84,10 +159,16 @@ func toasts() -> Array[Label]:
 ## Shows `health` in the health bar and keeps it up to date.
 func track_health(health: Health) -> void:
 	_health = health
-	health.damaged.connect(_update_health.unbind(2))
+	health.damaged.connect(_on_health_damaged.unbind(2))
 	health.healed.connect(_update_health.unbind(2))
 	health.revived.connect(_update_health)
 	_update_health()
+	_health_trail.value = health.current
+
+
+func _on_health_damaged() -> void:
+	_update_health()
+	UiFx.flash(_health_bar, Color(2.2, 1.6, 1.6), 0.3)
 
 
 ## Shows `dodge`'s cooldown on the dodge button.
@@ -105,13 +186,31 @@ func track_abilities(abilities: Array[Ability]) -> void:
 			var ability := abilities[match_index]
 			button.label = ability.display_name
 			button.cooldown = ability.cooldown_fraction
+			button.set_accent(ability.hud_color)
 			button.queue_redraw()
 
 
 func _update_health() -> void:
 	_health_bar.max_value = _health.max_health
-	_health_bar.value = _health.current
+	_health_trail.max_value = _health.max_health
 	_health_text.text = "%d / %d" % [_health.current, _health.max_health]
+	var target := float(_health.current)
+	if _health_tween:
+		_health_tween.kill()
+	if _trail_tween:
+		_trail_tween.kill()
+	if target < _health_bar.value:
+		# Down at once; the trail follows after a beat.
+		_health_bar.value = target
+		_trail_tween = create_tween()
+		_trail_tween.tween_interval(0.35)
+		_trail_tween.tween_property(_health_trail, "value", target, 0.45).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	else:
+		# Healing fills smoothly, trail and all.
+		_health_trail.value = maxf(_health_trail.value, target)
+		_health_tween = create_tween().set_parallel()
+		_health_tween.tween_property(_health_bar, "value", target, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		_health_tween.tween_property(_health_trail, "value", target, 0.3)
 
 
 func _process(_delta: float) -> void:

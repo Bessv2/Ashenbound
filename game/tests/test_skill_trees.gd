@@ -112,7 +112,8 @@ func test_kills_give_xp_and_the_hud_shows_it() -> void:
 	health.apply_damage(1000)
 	check(Profile.xp == 10, "a Skeleton Warrior gives 10 XP: %d" % Profile.xp)
 	var bar: ProgressBar = main.get_node("HUD").get_node("%XpBar")
-	check(bar.value == 10 and bar.max_value == 100, "the XP bar: %s / %s" % [bar.value, bar.max_value])
+	check(bar.max_value == 100, "the XP bar's span: %s" % bar.max_value)
+	check(await wait_until(func() -> bool: return bar.value == 10, 120), "the XP bar fills to 10: %s" % bar.value)
 
 
 func test_the_skill_screen_learns_and_pauses() -> void:

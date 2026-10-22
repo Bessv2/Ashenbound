@@ -36,6 +36,7 @@ func open() -> void:
 	_text.text = "Your Warden kept the crypt's tier %d clear for %s.\n\n+%d XP    +%d gold    +%d Ash" % [
 			profile.tier_cleared, OfflineRewards.describe_time(profile.offline_seconds), reward.xp, reward.gold, reward.ash]
 	show()
+	UiFx.pop_layer(self)
 	_collect.grab_focus()
 
 
