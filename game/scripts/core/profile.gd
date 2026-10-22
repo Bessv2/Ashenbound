@@ -30,6 +30,7 @@ const CLAIMED_KEPT := 50
 var save_path: String = DEFAULT_SAVE_PATH
 
 var ash: int = 0
+var gold: int = 0
 var inventory := Inventory.new()
 var equipment := Equipment.new()
 var catalog: ItemCatalog = ItemCatalog.load_default()
@@ -68,6 +69,7 @@ func to_dict() -> Dictionary:
 	return {
 		"version": SAVE_VERSION,
 		"ash": ash,
+		"gold": gold,
 		"claimed": claimed.slice(maxi(claimed.size() - CLAIMED_KEPT, 0)),
 		"inventory": inventory.to_list(),
 		"equipment": equipment.to_dict(),
@@ -138,6 +140,7 @@ func _apply(data: Dictionary) -> bool:
 	if not data.get("inventory") is Array or not data.get("equipment") is Dictionary:
 		return false
 	ash = maxi(int(data.get("ash", 0)), 0)
+	gold = maxi(int(data.get("gold", 0)), 0)
 	_claimed.clear()
 	if data.get("claimed") is Array:
 		for run_id: Variant in data.claimed:
@@ -168,21 +171,69 @@ func _apply_empty() -> void:
 	tier_unlocked = 1
 	tier = 1
 	ash = 0
+	gold = 0
 	_claimed.clear()
 	inventory.load_list([])
 	equipment.load_dict({})
 	_save_pending = false
 
 
-## Adds `amount` Ash for run `run_id` and returns true, unless that run was
-## already paid (then nothing changes and it returns false).
-func grant_run_reward(run_id: String, amount: int) -> bool:
+## Adds `amount` Ash and `gold_amount` gold for run `run_id` and returns
+## true, unless that run was already paid (then nothing changes and it
+## returns false).
+func grant_run_reward(run_id: String, amount: int, gold_amount: int = 0) -> bool:
 	if run_id == "" or _claimed.has(run_id):
 		return false
 	_claimed[run_id] = maxi(amount, 0)
 	ash += maxi(amount, 0)
+	gold += maxi(gold_amount, 0)
 	changed.emit()
 	return true
+
+
+## Breaks bag item `uid` down into gold. Returns the gold gained, or 0 when
+## the item is not in the bag (worn items must be taken off first).
+func salvage(uid: String) -> int:
+	var item := inventory.take(uid)
+	if item == null:
+		return 0
+	var value := Forge.salvage_gold(item)
+	gold += value
+	changed.emit()
+	return value
+
+
+## Why `item` cannot be upgraded now, or "" when it can.
+func upgrade_problem(item: ItemInstance) -> String:
+	if item == null:
+		return "No item."
+	if item.upgrade >= Forge.MAX_UPGRADE:
+		return "Fully upgraded."
+	if gold < Forge.upgrade_gold(item):
+		return "Not enough gold."
+	if ash < Forge.upgrade_ash(item):
+		return "Not enough Ash."
+	return ""
+
+
+## Upgrades `item` (in the bag or worn) one rank, paying gold and Ash.
+## Returns "" or why it could not.
+func upgrade_item(item: ItemInstance) -> String:
+	var problem := upgrade_problem(item)
+	if problem != "":
+		return problem
+	if not inventory.has(item.uid) and not equipment.all().has(item):
+		return "Not yours."
+	gold -= Forge.upgrade_gold(item)
+	ash -= Forge.upgrade_ash(item)
+	item.upgrade += 1
+	if equipment.all().has(item):
+		# Worn: the hero's stats follow.
+		equipment.changed.emit()
+	else:
+		inventory.changed.emit()
+	changed.emit()
+	return ""
 
 
 func has_claimed(run_id: String) -> bool:
@@ -300,6 +351,7 @@ func reset() -> void:
 	tier_unlocked = 1
 	tier = 1
 	ash = 0
+	gold = 0
 	_claimed.clear()
 	inventory.load_list([])
 	equipment.load_dict({})

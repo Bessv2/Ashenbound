@@ -200,5 +200,5 @@ func _on_alternate_chosen() -> void:
 ## The run's summary, as shown on the end screen.
 func summary_text() -> String:
 	var seconds := int(_run.elapsed)
-	return "Tier %d    Time %d:%02d    Enemies slain %d    Damage taken %d\nAsh earned %d    Ash held %d    Items found %d" % [
-			difficulty.tier, seconds / 60, seconds % 60, _run.kills, _run.damage_taken, _run.ash, Profile.ash, _loot_found]
+	return "Tier %d    Time %d:%02d    Enemies slain %d    Damage taken %d\nAsh earned %d    Gold earned %d    Items found %d" % [
+			difficulty.tier, seconds / 60, seconds % 60, _run.kills, _run.damage_taken, _run.ash, _run.gold, _loot_found]

@@ -3,7 +3,8 @@ extends CanvasLayer
 ## The bag and the equipment: nine slots on the left, the bag grid in the
 ## middle, and the card of the selected item on the right with its stats
 ## compared, stat by stat, against what it would replace (docs/LOOT.md, UI).
-## Equip and unequip go through Profile, which never loses an item.
+## Equip, unequip, upgrade and salvage go through Profile, which never loses
+## or duplicates an item. Salvage asks for a second tap.
 ##
 ## Built in code from the theme's controls. Touch first: every target is at
 ## least 88 px. Processes while the game is paused (Main pauses it).
@@ -26,6 +27,10 @@ var _card_title: Label
 var _card_info: Label
 var _card_stats: RichTextLabel
 var _action_button: Button
+var _upgrade_button: Button
+var _salvage_button: Button
+## The bag item whose Salvage was tapped once; a second tap salvages it.
+var _salvage_armed: String = ""
 var _summary: Label
 var _bag_title: Label
 
@@ -75,6 +80,29 @@ func select_slot(slot: int) -> void:
 	_selected_uid = ""
 	_selected_slot = slot
 	_refresh()
+
+
+## Upgrades the selected item one rank. Returns "" or why it could not.
+func press_upgrade() -> String:
+	var problem: String = profile.upgrade_item(selected_item())
+	_refresh()
+	return problem
+
+
+## Salvages the selected bag item on the second tap. Returns the gold gained
+## (0 on the first tap, which only asks for confirmation).
+func press_salvage() -> int:
+	if _selected_uid == "":
+		return 0
+	if _salvage_armed != _selected_uid:
+		_salvage_armed = _selected_uid
+		_refresh()
+		return 0
+	var gained: int = profile.salvage(_selected_uid)
+	_salvage_armed = ""
+	_selected_uid = ""
+	_refresh()
+	return gained
 
 
 ## Equips the selected bag item, or unequips the selected slot.
@@ -216,6 +244,23 @@ func _build() -> void:
 	close_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	close_button.pressed.connect(close_requested.emit)
 	buttons.add_child(close_button)
+	var forge_buttons := HBoxContainer.new()
+	forge_buttons.add_theme_constant_override(&"separation", 10)
+	card_items.add_child(forge_buttons)
+	_upgrade_button = Button.new()
+	_upgrade_button.custom_minimum_size = Vector2(0, 88)
+	_upgrade_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_upgrade_button.clip_text = true
+	_upgrade_button.add_theme_font_size_override(&"font_size", 18)
+	_upgrade_button.pressed.connect(press_upgrade)
+	forge_buttons.add_child(_upgrade_button)
+	_salvage_button = Button.new()
+	_salvage_button.custom_minimum_size = Vector2(0, 88)
+	_salvage_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_salvage_button.clip_text = true
+	_salvage_button.add_theme_font_size_override(&"font_size", 18)
+	_salvage_button.pressed.connect(press_salvage)
+	forge_buttons.add_child(_salvage_button)
 
 
 func _refresh() -> void:
@@ -242,7 +287,9 @@ func _refresh() -> void:
 		cell.pressed.connect(select_bag_item.bind(item.uid))
 		_bag_grid.add_child(cell)
 	_bag_title.text = "Bag %d / %d" % [profile.inventory.items.size(), profile.inventory.capacity]
-	_summary.text = "Ash %d" % profile.ash
+	_summary.text = "Ash %d    Gold %d" % [profile.ash, profile.gold]
+	if _salvage_armed != _selected_uid:
+		_salvage_armed = ""
 	_show_card(selected_item())
 
 
@@ -253,16 +300,21 @@ func _show_card(item: ItemInstance) -> void:
 		_card_info.text = ""
 		_card_stats.text = ""
 		_action_button.visible = false
+		_upgrade_button.visible = false
+		_salvage_button.visible = false
 		return
 	_card_title.text = _name_of(item)
 	_card_title.modulate = Rarity.color_of(item.rarity).lightened(0.25)
 	_card_info.text = "%s · item level %d" % [Rarity.name_of(item.rarity), item.item_level]
+	if item.upgrade > 0:
+		_card_info.text += " · upgraded +%d" % item.upgrade
 	var text := ""
 	for stat in item.base_stats:
-		text += ItemStats.describe(stat, item.base_stats[stat]) + "\n"
+		text += ItemStats.describe(stat, item.stat_value(item.base_stats[stat])) + "\n"
 	for affix in item.affixes:
-		text += "[color=#9fb6d9]%s[/color]\n" % ItemStats.describe(affix.stat, affix.value)
+		text += "[color=#9fb6d9]%s[/color]\n" % ItemStats.describe(affix.stat, item.stat_value(int(affix.value)))
 	var equipped := _selected_slot >= 0
+	text += "\n[color=#D9A44C]%s[/color]\n" % _forge_line(item, equipped)
 	if not equipped:
 		var lines := comparison(item)
 		if not lines.is_empty():
@@ -274,6 +326,22 @@ func _show_card(item: ItemInstance) -> void:
 	_action_button.visible = true
 	_action_button.text = "Unequip" if equipped else "Equip"
 	_action_button.disabled = equipped and profile.inventory.is_full()
+	_upgrade_button.visible = true
+	_upgrade_button.text = "Max +%d" % Forge.MAX_UPGRADE if item.upgrade >= Forge.MAX_UPGRADE else "Upgrade"
+	_upgrade_button.disabled = profile.upgrade_problem(item) != ""
+	_salvage_button.visible = not equipped
+	_salvage_button.text = "Confirm" if _salvage_armed == item.uid else "Salvage"
+
+
+## The prices on the card: the next upgrade, and what salvage gives.
+func _forge_line(item: ItemInstance, equipped: bool) -> String:
+	var line := "Fully upgraded" if item.upgrade >= Forge.MAX_UPGRADE \
+			else "Upgrade to +%d: %d gold, %d Ash" % [item.upgrade + 1, Forge.upgrade_gold(item), Forge.upgrade_ash(item)]
+	if not equipped:
+		line += "\nSalvage: %d gold" % Forge.salvage_gold(item)
+		if _salvage_armed == item.uid:
+			line += " (tap Confirm)"
+	return line
 
 
 ## Gives `button` a frame in the rarity colour of `item` (plain when empty).
@@ -292,4 +360,5 @@ func _frame(button: Button, item: ItemInstance) -> void:
 
 func _name_of(item: ItemInstance) -> String:
 	var base: ItemBase = profile.catalog.base(item.base_id)
-	return base.display_name if base else item.base_id
+	var item_name := base.display_name if base else item.base_id
+	return item_name + (" +%d" % item.upgrade if item.upgrade > 0 else "")

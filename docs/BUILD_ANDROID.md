@@ -221,6 +221,11 @@ checklist below is the full manual pass.
       **SKILLS** opens the trees: learning Stalwart raises max health at once;
       **Reset** gives the points back. The Reaver and Hexbinder tabs are
       previews.
+- [ ] The summary shows the gold earned. In the bag, an item's card shows
+      its upgrade price and salvage value; **Upgrade** raises it (+1 after
+      its name, bigger stats; a worn item changes the health bar at once).
+      **Salvage** turns into **Confirm**; only the second tap removes the
+      item and adds the gold. Worn items cannot be salvaged.
 - [ ] After clearing the crypt, **Descend to tier 2** starts a harder run
       ("Tier 2" message, tougher enemies, more Ash); **Replay** keeps the
       tier. After a fall at tier 2, **Lower to tier 1** goes back. The tier
