@@ -870,3 +870,31 @@ state or duplicate rewards. Passes in automated tests; device check open.
 Recommended next task:
 - Milestone 4: loot design doc, then items and equipment.
 ```
+
+## 19. Milestone 4, design and step 1: the item model (branch `feature/m4-items`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: 4 (first loot loop), step 1 of 5: item model
+Status: Validated (no UI or gameplay yet)
+
+Changes:
+- docs/LOOT.md: the Milestone 4 design (items, rarity, stats, drops, UI,
+  persistence, what comes after, build order, acceptance checks). Owner
+  defaults are marked.
+- ItemBase, AffixDef, ItemCatalog (9 bases covering the 9 slots, 9 affix
+  stats, at least 5 per slot), ItemInstance with JSON round trip, Rarity
+  (six tiers), ItemStats.
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 191 passed, 0 failed (6 new in test_items.gd)
+- Command: probes: duplicate affix stats; Mythic not rolling top values
+  Exit code: 1
+  Result: the matching test failed; file restored and compared byte for byte
+
+Recommended next task:
+- Step 2: CharacterStats and combat.
+```
