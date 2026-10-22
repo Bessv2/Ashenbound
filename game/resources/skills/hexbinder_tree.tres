@@ -172,6 +172,6 @@ requires = "volatile_hex"
 script = ExtResource("1_tree")
 class_id = "hexbinder"
 class_title = "Hexbinder"
-playable = false
+playable = true
 branches = PackedStringArray("Curses", "Soul Siphon", "Cataclysm")
 nodes = Array[ExtResource("2_node")]([SubResource("Node_withering_word"), SubResource("Node_spreading_blight"), SubResource("Node_hex_mastery"), SubResource("Node_frailty"), SubResource("Node_black_testament_mastery"), SubResource("Node_soul_leech"), SubResource("Node_dark_pact"), SubResource("Node_hungering_souls"), SubResource("Node_spirit_ward"), SubResource("Node_reapers_tithe"), SubResource("Node_gathering_storm"), SubResource("Node_volatile_hex"), SubResource("Node_doom_chain"), SubResource("Node_ruin"), SubResource("Node_cataclysm_mastery")])

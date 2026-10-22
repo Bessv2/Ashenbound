@@ -411,7 +411,12 @@ Milestone 3, step 1 ([dungeons/ashen_crypt.md](dungeons/ashen_crypt.md)).
   `PlayerController.push()`, enemy layer off the mask while dashing, a box
   query along the path), `Marked` (multiplies `Health.damage_multiplier` and
   restores it), `BleedAbility` (Ember Brand's damage over time as a separate
-  effect).
+  effect). Hexbinder parts: Hex Bolt is a player-side `RangedAttack`
+  (`scenes/combat/hex_bolt.tscn`), `BlackTestamentAbility` (a "Cursed"
+  `Burning` on a group found with `Targeting.living_around()`),
+  `GraspAbility` with `Slowed` (multiplies `EnemyController.speed_multiplier`
+  and restores it), `UnmakeAbility` (consumes curses for their remaining
+  damage). `Vfx.ring()` draws spell areas.
 - **`Forge`** (`scripts/items/forge.gd`): salvage values, upgrade prices and
   the +10% per rank rule ([LOOT.md](LOOT.md#gold-salvage-and-upgrades)).
   `Profile.salvage()` and `Profile.upgrade_item()` apply them; an item's

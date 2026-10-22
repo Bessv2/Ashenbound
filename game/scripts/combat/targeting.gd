@@ -8,16 +8,26 @@ extends RefCounted
 ## `from`, on `mask`'s layers. `from` itself is excluded when it is a
 ## collision object. Each Health appears once.
 static func living_within(from: Node3D, radius: float, mask: int) -> Array[Health]:
+	var exclude: Array[RID] = []
+	if from is CollisionObject3D:
+		exclude.append((from as CollisionObject3D).get_rid())
+	return living_around(from, from.global_position, radius, mask, exclude)
+
+
+## Every living Health overlapping a sphere of `radius` at `at` (world), on
+## `mask`'s layers, in `in_world`'s 3D world. For area spells placed on the
+## ground, where no body is the centre.
+static func living_around(in_world: Node3D, at: Vector3, radius: float, mask: int,
+		exclude: Array[RID] = []) -> Array[Health]:
 	var sphere := SphereShape3D.new()
 	sphere.radius = radius
 	var query := PhysicsShapeQueryParameters3D.new()
 	query.shape = sphere
-	query.transform = Transform3D(Basis.IDENTITY, from.global_position)
+	query.transform = Transform3D(Basis.IDENTITY, at)
 	query.collision_mask = mask
-	if from is CollisionObject3D:
-		query.exclude = [(from as CollisionObject3D).get_rid()]
+	query.exclude = exclude
 	var targets: Array[Health] = []
-	for result in from.get_world_3d().direct_space_state.intersect_shape(query):
+	for result in in_world.get_world_3d().direct_space_state.intersect_shape(query, 64):
 		var collider := result["collider"] as Node3D
 		var health: Health = Health.of(collider) if collider else null
 		if health and not health.is_dead() and not targets.has(health):

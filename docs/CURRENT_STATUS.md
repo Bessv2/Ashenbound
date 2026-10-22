@@ -48,6 +48,7 @@ Status labels follow the charter:
 | Gold, salvage and upgrades | Validated, verified in runtime | [LOOT.md](LOOT.md#gold-salvage-and-upgrades). PR stacked on the crypt tiers. |
 | Offline rewards | Validated, verified in runtime; **provisional** (device clock) | [OFFLINE_REWARDS.md](OFFLINE_REWARDS.md): highest tier cleared, half a run per hour, 8-hour cap. Milestone 6 groundwork, ahead of Milestone 5. |
 | Second class: Reaver | Validated, verified in runtime | [characters/reaver.md](characters/reaver.md): Twin Slash, Veil Rend, Fan of Blades, Hemorrhage; playable tree; class switch. |
+| Third class: Hexbinder | Validated, verified in runtime | [characters/hexbinder.md](characters/hexbinder.md): Hex Bolt, Black Testament, Grasp of the Grave, Unmake; playable tree. |
 | 5 to 7 | Not started | Offline rewards above are early Milestone 6 work. |
 
 ### Milestone 2 progress
