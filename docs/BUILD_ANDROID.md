@@ -221,6 +221,10 @@ checklist below is the full manual pass.
       **SKILLS** opens the trees: learning Stalwart raises max health at once;
       **Reset** gives the points back. The Reaver and Hexbinder tabs are
       previews.
+- [ ] After clearing the crypt once, send the app to the background (or
+      close it) for more than 5 minutes: coming back shows **While you were
+      away** with XP, gold and Ash; **Collect** adds them once. (Changing the
+      phone's clock also changes this; it is provisional until the server.)
 - [ ] The summary shows the gold earned. In the bag, an item's card shows
       its upgrade price and salvage value; **Upgrade** raises it (+1 after
       its name, bigger stats; a worn item changes the health bar at once).

@@ -23,6 +23,7 @@ var difficulty: Difficulty
 @onready var _loot: LootDropper = $Loot
 @onready var _inventory: InventoryPanel = $Inventory
 @onready var _skills: SkillTreePanel = $Skills
+@onready var _offline: OfflinePanel = $Offline
 
 ## Items picked up this run.
 var _loot_found: int = 0
@@ -38,6 +39,9 @@ func _ready() -> void:
 	_inventory.close_requested.connect(_pause_controller.set_paused.bind(false))
 	_hud.skills_requested.connect(open_skills)
 	_skills.close_requested.connect(_pause_controller.set_paused.bind(false))
+	_offline.close_requested.connect(_pause_controller.set_paused.bind(false))
+	# A method, not a lambda: the connection to the autoload goes when Main goes.
+	Profile.offline_ready.connect(open_offline_rewards)
 	_hud.track_health(_player.health)
 	_hud.track_dodge(_player.dodge)
 	_hud.track_abilities(_player.abilities)
@@ -49,6 +53,7 @@ func _ready() -> void:
 	_loot.collected.connect(_on_loot_collected)
 	_death_screen.restart_requested.connect(_on_restart_chosen)
 	_death_screen.alternate_requested.connect(_on_alternate_chosen)
+	open_offline_rewards()
 	if difficulty.tier > 1:
 		_hud.show_toast("Tier %d: the dead grow stronger" % difficulty.tier, Color("#D9A44C"))
 
@@ -83,6 +88,15 @@ func open_inventory() -> void:
 	_pause_controller.set_paused(true)
 
 
+## Shows what time away earned, when there is something to collect; the
+## game waits until it is collected.
+func open_offline_rewards() -> void:
+	if _run.is_over() or _offline.visible or not _offline.has_rewards():
+		return
+	_offline.open()
+	_pause_controller.set_paused(true)
+
+
 ## Opens the skill trees; the game waits while they are open.
 func open_skills() -> void:
 	if _run.is_over():
@@ -94,10 +108,12 @@ func open_skills() -> void:
 func _on_paused_changed(paused: bool) -> void:
 	# The bag and the skills pause the game too; the pause menu only shows
 	# without them.
-	_pause_menu.set_open(paused and not _inventory.visible and not _skills.visible)
+	_pause_menu.set_open(paused and not _inventory.visible and not _skills.visible and not _offline.visible)
 	if not paused:
 		_inventory.close()
 		_skills.close()
+		# Unpaused without collecting: the time stays banked for later.
+		_offline.hide()
 
 
 ## Starts the scene over from scratch.

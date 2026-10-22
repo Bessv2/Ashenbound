@@ -15,6 +15,8 @@ extends Node
 
 signal changed
 signal leveled_up(level: int)
+## Time away was banked and offline rewards wait to be collected.
+signal offline_ready
 
 ## 2 added level, XP and skills; version 1 saves load with level 1.
 ## 3 added crypt tiers; older saves load with tier 1 open.
@@ -43,6 +45,16 @@ var skill_ranks: Dictionary[String, Dictionary] = {}
 var tier_unlocked: int = 1
 ## The tier the next run is played at.
 var tier: int = 1
+## The highest crypt tier cleared (0 when none): what time away farms.
+var tier_cleared: int = 0
+## When the profile was last saved (device clock, unix seconds); 0 = never.
+var last_seen: int = 0
+## Time away banked for offline rewards, waiting to be collected (seconds,
+## at most OfflineRewards.CAP_SECONDS).
+var offline_seconds: int = 0
+## The clock, replaceable in tests. Device time: provisional until the
+## Milestone 5 server gives trusted time.
+var clock: Callable = func() -> int: return int(Time.get_unix_time_from_system())
 
 ## Runs already paid, by run id, oldest first.
 var _claimed: Dictionary[String, int] = {}
@@ -54,6 +66,15 @@ func _ready() -> void:
 	equipment.changed.connect(request_save)
 	changed.connect(request_save)
 	load_profile()
+	bank_time_away()
+
+
+func _notification(what: int) -> void:
+	# On a phone the app is usually sent to the background, not closed.
+	if what == NOTIFICATION_APPLICATION_PAUSED and save_path != "":
+		save_profile()
+	elif what == NOTIFICATION_APPLICATION_RESUMED:
+		bank_time_away()
 
 
 ## Saves at the end of this frame; several changes in a frame cost one save.
@@ -78,6 +99,9 @@ func to_dict() -> Dictionary:
 		"skills": skill_ranks.duplicate(true),
 		"tier_unlocked": tier_unlocked,
 		"tier": tier,
+		"tier_cleared": tier_cleared,
+		"last_seen": last_seen,
+		"offline_seconds": offline_seconds,
 	}
 
 
@@ -86,6 +110,7 @@ func save_profile() -> Error:
 	_save_pending = false
 	if save_path == "":
 		return ERR_UNAVAILABLE
+	last_seen = clock.call()
 	var temporary := save_path + ".tmp"
 	var file := FileAccess.open(temporary, FileAccess.WRITE)
 	if file == null:
@@ -149,6 +174,10 @@ func _apply(data: Dictionary) -> bool:
 	xp = maxi(int(data.get("xp", 0)), 0)
 	tier_unlocked = clampi(int(data.get("tier_unlocked", 1)), 1, Difficulty.MAX_TIER)
 	tier = clampi(int(data.get("tier", 1)), 1, tier_unlocked)
+	# Saves from before tier_cleared: the tier below the highest one open.
+	tier_cleared = clampi(int(data.get("tier_cleared", tier_unlocked - 1)), tier_unlocked - 1, Difficulty.MAX_TIER)
+	last_seen = maxi(int(data.get("last_seen", 0)), 0)
+	offline_seconds = clampi(int(data.get("offline_seconds", 0)), 0, OfflineRewards.CAP_SECONDS)
 	skill_ranks.clear()
 	if data.get("skills") is Dictionary:
 		for class_id: Variant in data.skills:
@@ -170,6 +199,9 @@ func _apply_empty() -> void:
 	skill_ranks.clear()
 	tier_unlocked = 1
 	tier = 1
+	tier_cleared = 0
+	last_seen = 0
+	offline_seconds = 0
 	ash = 0
 	gold = 0
 	_claimed.clear()
@@ -243,12 +275,48 @@ func has_claimed(run_id: String) -> bool:
 ## Records a clear of crypt tier `cleared`: the next tier opens. Clearing a
 ## tier again changes nothing. Returns true when a new tier opened.
 func complete_tier(cleared: int) -> bool:
+	var was_cleared := tier_cleared
+	tier_cleared = clampi(maxi(tier_cleared, cleared), 0, Difficulty.MAX_TIER)
 	var opened := clampi(cleared + 1, 1, Difficulty.MAX_TIER)
-	if opened <= tier_unlocked:
-		return false
-	tier_unlocked = opened
+	var newly_open := opened > tier_unlocked
+	if newly_open:
+		tier_unlocked = opened
+	if newly_open or tier_cleared != was_cleared:
+		changed.emit()
+	return newly_open
+
+
+## Adds the time since `last_seen` to the offline bank, when a tier has been
+## cleared and the absence is long enough, and starts counting from now. A
+## clock that went backwards banks nothing. Returns the seconds banked.
+func bank_time_away() -> int:
+	var now: int = clock.call()
+	var away := now - last_seen
+	var banked := 0
+	if last_seen > 0 and tier_cleared >= 1 and away >= OfflineRewards.MIN_SECONDS:
+		banked = mini(away, OfflineRewards.CAP_SECONDS - offline_seconds)
+		offline_seconds += banked
+	last_seen = now
+	if banked > 0:
+		changed.emit()
+		offline_ready.emit()
+	return banked
+
+
+## What the banked time would give now: {"xp", "gold", "ash"}.
+func offline_preview() -> Dictionary:
+	return OfflineRewards.earned(offline_seconds, tier_cleared)
+
+
+## Pays the banked time's rewards once and empties the bank. Returns them.
+func claim_offline() -> Dictionary:
+	var reward := offline_preview()
+	offline_seconds = 0
+	ash += reward.ash
+	gold += reward.gold
+	add_xp(reward.xp)
 	changed.emit()
-	return true
+	return reward
 
 
 ## Chooses the tier of the next run, within the open tiers. Returns the tier.
@@ -350,6 +418,9 @@ func reset() -> void:
 	skill_ranks.clear()
 	tier_unlocked = 1
 	tier = 1
+	tier_cleared = 0
+	last_seen = 0
+	offline_seconds = 0
 	ash = 0
 	gold = 0
 	_claimed.clear()

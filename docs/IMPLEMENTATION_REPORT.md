@@ -1105,3 +1105,35 @@ Commands run:
 Not tested:
 - On a phone; the gold economy in real play.
 ```
+
+## 26. Offline rewards, provisional (branch `feature/offline-rewards`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone: Milestone 6 groundwork (owner's vision; ahead of Milestone 5)
+Status: Validated, verified in runtime (desktop software Vulkan); not verified on device; provisional (device clock)
+
+Changes:
+- docs/OFFLINE_REWARDS.md: rules, cap, clock handling, server plan.
+- OfflineRewards: half a run's XP, gold and Ash per hour of the highest tier
+  cleared; 5-minute minimum, 8-hour cap.
+- Profile: tier_cleared, last_seen (stamped on save), offline_seconds bank,
+  bank_time_away() at launch and on Android resume, claim_offline(); saves
+  on going to the background; a replaceable clock for tests.
+- OfflinePanel ("While you were away"), opened by Main, pauses until Collect.
+
+Commands run:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 237 passed, 0 failed (7 new in test_offline_rewards.gd); probes
+  that bank a backwards clock, pay twice, or leave the screen up when
+  unpaused fail the matching tests
+- Command: the away screen rendered under Xvfb
+  Exit code: 0
+  Result: 5 h 20 min at tier 2: +3160 XP, +680 gold, +304 Ash
+
+Not tested:
+- On a phone: background/resume banking (NOTIFICATION_APPLICATION_RESUMED).
+- Clock tampering beyond a backwards clock (accepted until Milestone 5).
+```
