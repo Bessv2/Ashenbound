@@ -20,7 +20,7 @@ func _exit_tree() -> void:
 
 func test_the_look_is_a_saved_setting() -> void:
 	var settings := GameSettings.new()
-	check(settings.art_style == ArtStyle.Look.CLASSIC, "classic by default")
+	check(settings.art_style == ArtStyle.Look.GRIM, "look B by default (the owner's choice)")
 	settings.art_style = ArtStyle.Look.GRIM
 	var config := ConfigFile.new()
 	settings.write_to(config)

@@ -71,15 +71,19 @@ doors stayed shut. The cause and the guard are in
 ## Publishing
 
 CI builds the preview on every run and uploads it as the **ashenbound-web**
-artifact. Putting it on a public link uses GitHub Pages and is deliberately
-manual:
+artifact. **Every push to `main` (every merge) also publishes it** to GitHub
+Pages, so the preview always matches `main`; the owner asked for this on
+2026-10-23, after the preview had sat a day behind. Until then publishing was
+manual, and it still can be, to preview another branch:
 
 1. **Once:** in the repository, **Settings > Pages**, set **Source** to **Deploy
    from a branch**, branch **gh-pages**, folder **/ (root)**.
-2. **Each time:** **Actions > Web preview > Run workflow**, pick the branch to
-   preview, tick **publish**.
-3. After a minute the game is at
-   `https://<owner>.github.io/<repository>/`.
+2. **Another branch:** **Actions > Web preview > Run workflow**, pick the
+   branch, tick **publish**. The next merge to `main` replaces it again.
+3. A minute after the build, the game is at
+   `https://<owner>.github.io/<repository>/` (here
+   <https://bessv2.github.io/Ashenbound/>). Reload fully to drop the old
+   copy.
 
 The publish step replaces the whole `gh-pages` branch with the new build, so
 there is one preview at a time. The repository is public, so the preview is

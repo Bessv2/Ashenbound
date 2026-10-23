@@ -74,3 +74,12 @@ func test_apply_updates_engine_and_listeners() -> void:
 	check_near(get_tree().root.scaling_3d_scale, 0.8, 0.0001, "3D render scale")
 	check_near(joystick.dead_zone, 0.3, 0.0001, "joystick dead zone follows settings")
 	check_near(joystick.sensitivity, 1.5, 0.0001, "joystick sensitivity follows settings")
+
+
+func test_phones_draw_3d_at_most_810_pixels_tall() -> void:
+	var service := Settings
+	check_near(service.scale_3d(1.0, 720.0, true), 1.0, 0.001, "a 720p window is drawn whole")
+	check_near(service.scale_3d(1.0, 1080.0, true), 0.75, 0.001, "a 1080-pixel phone draws 3D at 810")
+	check_near(service.scale_3d(1.0, 1440.0, false), 1.0, 0.001, "desktops are never capped")
+	check_near(service.scale_3d(0.8, 1080.0, true), 0.6, 0.001, "the player's render scale still applies")
+	check(service.scale_3d(1.0, 9000.0, true) >= 0.33, "never below a third")

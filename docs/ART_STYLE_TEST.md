@@ -12,9 +12,12 @@ The owner chose to **see both before choosing**. This test puts both in the
 game behind one switch, so they can be played side by side in any class and
 either dungeon.
 
-**Status:** a test, not a decision. **Classic** (the look so far) stays the
-default until the owner picks a direction. The charter's art direction
-(v2.0 §9) is unchanged until then.
+**Status:** on 2026-10-23 the owner chose **look B** ("really nice", and its
+effects are preferred; look A was "just a cooler toned classic") but found it
+far too slow on their phone. Look B is now the default and has been made much
+cheaper (below). Classic and look A stay selectable until look B is
+confirmed on the phone; then the charter's art direction (v2.0 §9) is
+updated.
 
 ## How to compare
 
@@ -89,6 +92,34 @@ The cost of the two directions differs:
   - `HitFeedback._punch(look)`.
 - The setting: `GameSettings.art_style`. The title screen's look buttons call
   `TitleScreen.choose_look()`.
+
+## Performance
+
+Look B was slow for two reasons, both fixed on 2026-10-23:
+- **Its surface shader** computed noise per pixel (about 120 hashes, for the
+  grime and the relief) and read the photographed stone three times over
+  (triplanar, nine texture reads).
+  - Now the noise is one baked texture, `resources/textures/grime_noise.png`
+    from `tools/art/make_grime_noise.py`: relief normal, fine and coarse
+    noise in one RGBA image.
+  - The stone is read once, along the axis the surface faces most.
+  - A pixel now costs four or five texture reads.
+  - The photographs also now have mipmaps and GPU texture compression;
+    before, every distant pixel read the full 1k image.
+- **Phones draw far more pixels than the game needs.** The web build renders
+  at the screen's full density (about 2400 × 1080 on a typical phone).
+  - On phones (the Android app, or a browser on Android or iOS), the 3D scene
+    is now drawn at most 810 pixels tall and scaled up; the interface stays
+    sharp (`SettingsService.scale_3d`).
+  - The web export now also carries the phone texture formats (ETC2).
+
+Measured:
+- **Desktop, software Vulkan:** the crypt's opening view (a proxy for pixel
+  cost, not phone numbers). Classic took 138 ms a frame. Look B took 222 ms
+  (+61%) before the fixes and 155 ms (+16%) after.
+- **Chromium emulating a phone** (800 × 360 at 3× density, software WebGL):
+  frame rate rose about 40% in both looks with the 3D cap.
+- **Not measured on a real phone.**
 
 ## Checks
 
