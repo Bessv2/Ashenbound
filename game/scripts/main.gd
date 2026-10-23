@@ -260,6 +260,7 @@ func _load_level() -> void:
 ## Looks A and B (ArtStyle) restyle the level's surfaces and its grade.
 func _apply_look() -> void:
 	ArtStyle.dress_world(level)
+	ArtStyle.tint_world(level, level.world_tint)
 	for node in level.find_children("*", "WorldEnvironment", true, false):
 		var world := node as WorldEnvironment
 		world.environment = ArtStyle.environment_for(world.environment)
@@ -332,6 +333,7 @@ func _on_run_ended(victory: bool) -> void:
 				"Lower to tier %d" % (difficulty.tier - 1) if difficulty.tier > 1 else "")
 		return
 	Profile.complete_tier(difficulty.tier)
+	Profile.complete_dungeon(Dungeons.id_of_scene(level_scene.resource_path))
 	# The run is won: nothing can hurt or move the Warden any more, so what
 	# still lies on the floor is gathered for him.
 	_loot.collect_all()

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EncounterData" format=3]
+
+[ext_resource type="Script" path="res://scripts/encounters/encounter_data.gd" id="1_encounter"]
+[ext_resource type="Script" path="res://scripts/encounters/wave_data.gd" id="2_wave"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/bosses/rotwood_witch.tscn" id="3_rotwood_witch"]
+
+[sub_resource type="Resource" id="Resource_wave1"]
+script = ExtResource("2_wave")
+enemies = Array[PackedScene]([ExtResource("3_rotwood_witch")])
+markers = PackedStringArray("North")
+
+[resource]
+script = ExtResource("1_encounter")
+waves = Array[ExtResource("2_wave")]([SubResource("Resource_wave1")])
+rise_time = 2.0

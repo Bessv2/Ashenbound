@@ -22,7 +22,9 @@ signal offline_ready
 ## 3 added crypt tiers; older saves load with tier 1 open.
 ## 4 added materials and camps; older saves load with none, and their camps
 ## start working on load when the crypt was cleared.
-const SAVE_VERSION := 4
+## 5 added the dungeons cleared; older saves count the crypt as cleared when
+## a tier was.
+const SAVE_VERSION := 5
 const MAX_LEVEL := 30
 ## The class a new profile plays.
 const HERO_CLASS := "warden"
@@ -61,6 +63,8 @@ var offline_seconds: int = 0
 ## The clock, replaceable in tests. Device time: provisional until the
 ## Milestone 5 server gives trusted time.
 var clock: Callable = func() -> int: return int(Time.get_unix_time_from_system())
+## The dungeons cleared at least once (Dungeons ids): each opens the next.
+var cleared_dungeons: Array[String] = []
 ## Crafting materials held: Materials id → amount.
 var materials: Dictionary[String, int] = {}
 ## The gathering camps once open: Camps id → {"level", "since"} (since = when
@@ -118,6 +122,7 @@ func to_dict() -> Dictionary:
 		"dungeon": dungeon,
 		"last_seen": last_seen,
 		"offline_seconds": offline_seconds,
+		"cleared_dungeons": cleared_dungeons.duplicate(),
 		"materials": materials.duplicate(),
 		"camps": camps.duplicate(true),
 	}
@@ -196,6 +201,14 @@ func _apply(data: Dictionary) -> bool:
 	tier_cleared = clampi(int(data.get("tier_cleared", tier_unlocked - 1)), tier_unlocked - 1, Difficulty.MAX_TIER)
 	last_seen = maxi(int(data.get("last_seen", 0)), 0)
 	hero_class = str(data.get("hero_class", HERO_CLASS))
+	cleared_dungeons.clear()
+	if data.get("cleared_dungeons") is Array:
+		for id: Variant in data.cleared_dungeons:
+			if Dungeons.INFO.has(str(id)) and not cleared_dungeons.has(str(id)):
+				cleared_dungeons.append(str(id))
+	# Saves from before version 5: a cleared tier means the crypt was cleared.
+	if tier_cleared >= 1 and not cleared_dungeons.has(Dungeons.CRYPT):
+		cleared_dungeons.append(Dungeons.CRYPT)
 	# Saves from before the second dungeon play the crypt.
 	dungeon = str(data.get("dungeon", Dungeons.CRYPT))
 	if not Dungeons.is_open(dungeon, self):
@@ -244,6 +257,7 @@ func _apply_empty() -> void:
 	gold = 0
 	materials.clear()
 	camps.clear()
+	cleared_dungeons.clear()
 	_claimed.clear()
 	inventory.load_list([])
 	equipment.load_dict({})
@@ -386,6 +400,20 @@ func _item_changed(item: ItemInstance) -> void:
 	changed.emit()
 
 
+func has_cleared(dungeon_id: String) -> bool:
+	return cleared_dungeons.has(dungeon_id)
+
+
+## Records a clear of dungeon `dungeon_id`, which opens the next one. Returns
+## true the first time.
+func complete_dungeon(dungeon_id: String) -> bool:
+	if not Dungeons.INFO.has(dungeon_id) or has_cleared(dungeon_id):
+		return false
+	cleared_dungeons.append(dungeon_id)
+	changed.emit()
+	return true
+
+
 ## Whether the camps work: once the crypt has been cleared.
 func camps_open() -> bool:
 	return tier_cleared >= 1
@@ -498,6 +526,9 @@ func complete_tier(cleared: int) -> bool:
 	var newly_open := opened > tier_unlocked
 	if newly_open:
 		tier_unlocked = opened
+	# Any clear means the crypt was cleared: it is the only way in.
+	if cleared >= 1 and not has_cleared(Dungeons.CRYPT):
+		cleared_dungeons.append(Dungeons.CRYPT)
 	_open_camps()
 	if newly_open or tier_cleared != was_cleared:
 		changed.emit()
@@ -663,6 +694,7 @@ func reset() -> void:
 	gold = 0
 	materials.clear()
 	camps.clear()
+	cleared_dungeons.clear()
 	_claimed.clear()
 	inventory.load_list([])
 	equipment.load_dict({})

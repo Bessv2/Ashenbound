@@ -1,0 +1,19 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/enemies/hollow_king.tscn" id="1_base"]
+[ext_resource type="Material" path="res://resources/materials/sunless_oracle_model.tres" id="2_material"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/skeleton_warrior.tscn" id="3_add"]
+
+[node name="SunlessOracle" instance=ExtResource("1_base")]
+display_title = "THE SUNLESS ORACLE"
+add_scene = ExtResource("3_add")
+summon_count = 4
+ash_value = 100
+xp_value = 1000
+gold_value = 200
+
+[node name="Health" parent="."]
+max_health = 1300
+
+[node name="ModelDressing" parent="."]
+material = ExtResource("2_material")

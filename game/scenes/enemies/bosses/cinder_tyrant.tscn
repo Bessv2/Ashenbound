@@ -1,0 +1,41 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/enemies/ashen_lord.tscn" id="1_base"]
+[ext_resource type="Material" path="res://resources/materials/cinder_tyrant_model.tres" id="2_material"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/imp.tscn" id="3_add"]
+[ext_resource type="Material" path="res://resources/materials/demon_horn.tres" id="5_horn"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_horn"]
+material = ExtResource("5_horn")
+top_radius = 0.0
+bottom_radius = 0.1
+height = 0.7
+radial_segments = 8
+rings = 1
+
+[node name="CinderTyrant" instance=ExtResource("1_base")]
+display_title = "THE CINDER TYRANT"
+add_scene = ExtResource("3_add")
+summon_count = 4
+ash_value = 90
+xp_value = 900
+gold_value = 180
+
+[node name="Health" parent="."]
+max_health = 1150
+
+[node name="ModelDressing" parent="."]
+material = ExtResource("2_material")
+
+[node name="Head" type="BoneAttachment3D" parent="Visual/Model/Rig/Skeleton3D"]
+bone_name = "head"
+
+[node name="HornLeft" type="MeshInstance3D" parent="Visual/Model/Rig/Skeleton3D/Head"]
+transform = Transform3D(0.94, -0.34, 0, 0.34, 0.94, 0, 0, 0, 1, -0.34, 0.95, -0.02)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_horn")
+
+[node name="HornRight" type="MeshInstance3D" parent="Visual/Model/Rig/Skeleton3D/Head"]
+transform = Transform3D(0.94, 0.34, 0, -0.34, 0.94, 0, 0, 0, 1, 0.34, 0.95, -0.02)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_horn")

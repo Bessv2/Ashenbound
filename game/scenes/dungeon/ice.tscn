@@ -1,0 +1,772 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/level.gd" id="1_r"]
+[ext_resource type="Environment" path="res://resources/environment/ice_environment.tres" id="2_r"]
+[ext_resource type="Environment" path="res://resources/environment/arena_environment_compatibility.tres" id="3_r"]
+[ext_resource type="Script" path="res://scripts/world/renderer_lighting.gd" id="4_r"]
+[ext_resource type="Script" path="res://scripts/world/baked_navigation_region.gd" id="5_r"]
+[ext_resource type="NavigationMesh" path="res://resources/navigation/ground_navigation_mesh.tres" id="6_r"]
+[ext_resource type="Script" path="res://scripts/dungeon/crypt_room.gd" id="7_r"]
+[ext_resource type="PackedScene" path="res://scenes/dungeon/crypt_gate.tscn" id="8_r"]
+[ext_resource type="Script" path="res://scripts/dungeon/combat_room.gd" id="9_r"]
+[ext_resource type="Script" path="res://scripts/encounters/encounter_controller.gd" id="10_r"]
+[ext_resource type="Script" path="res://scripts/presentation/flame_fx.gd" id="11_r"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/halloween/tree_pine_yellow_medium.gltf" id="12_r"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/hexagon/rock_single_C.gltf" id="13_r"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/halloween/tree_pine_orange_large.gltf" id="14_r"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/hexagon/rock_single_A.gltf" id="15_r"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/halloween/ribcage.gltf" id="16_r"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/halloween/gravestone.gltf" id="17_r"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/hexagon/rock_single_E.gltf" id="18_r"]
+[ext_resource type="Resource" path="res://resources/encounters/ice_pass.tres" id="19_r"]
+[ext_resource type="Resource" path="res://resources/encounters/ice_field.tres" id="20_r"]
+[ext_resource type="Resource" path="res://resources/encounters/ice_barrow.tres" id="21_r"]
+[ext_resource type="Resource" path="res://resources/encounters/ice_throne.tres" id="22_r"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_0_6"]
+height = 3.0
+radius = 0.6
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_1_2"]
+height = 3.0
+radius = 1.2
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_0_8"]
+height = 3.0
+radius = 0.8
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_1_1"]
+height = 3.0
+radius = 1.1
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_1_0"]
+height = 3.0
+radius = 1.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_Pass"]
+size = Vector3(20, 3, 14)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_Field"]
+size = Vector3(24, 3, 22)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_Barrow"]
+size = Vector3(16, 3, 18)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_Throne"]
+size = Vector3(28, 3, 26)
+
+
+[node name="IceWastes" type="Node3D" node_paths=PackedStringArray("player_start", "encounters")]
+script = ExtResource("1_r")
+player_start = NodePath("PlayerStart")
+encounters = [NodePath("Encounters/Pass"), NodePath("Encounters/Field"), NodePath("Encounters/Barrow"), NodePath("Encounters/Throne")]
+victory_title = "The wind dies down"
+item_level = 26
+world_tint = Color(0.82, 0.92, 1.12, 1)
+
+[node name="PlayerStart" type="Marker3D" parent="."]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, 3)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("2_r")
+
+[node name="Moonlight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.7880108, 0.48514786, -0.37903908, 0, 0.6156615, 0.7880107, 0.6156615, -0.62096095, 0.4851479, 0, 12, 0)
+light_color = Color(0.75, 0.88, 1.0, 1)
+light_energy = 0.7
+shadow_enabled = true
+directional_shadow_mode = 0
+directional_shadow_max_distance = 60.0
+
+[node name="RendererLighting" type="Node" parent="." node_paths=PackedStringArray("world_environment", "moonlight")]
+script = ExtResource("4_r")
+world_environment = NodePath("../WorldEnvironment")
+moonlight = NodePath("../Moonlight")
+compatibility_environment = ExtResource("3_r")
+compatibility_moonlight_energy = 0.45
+
+[node name="Navigation" type="NavigationRegion3D" parent="."]
+navigation_mesh = ExtResource("6_r")
+script = ExtResource("5_r")
+
+[node name="Rooms" type="Node3D" parent="Navigation"]
+
+[node name="Stairwell" type="Node3D" parent="Navigation/Rooms"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, 0)
+script = ExtResource("7_r")
+size = Vector2i(12, 12)
+north = 1
+seed = 305
+torch_light_color = Color(0.6, 0.85, 1.0, 1)
+torch_core_color = Color(0.9, 1.0, 1.0, 1)
+torch_edge_color = Color(0.35, 0.6, 1.0, 1)
+
+[node name="Corridor1" type="Node3D" parent="Navigation/Rooms"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -10.0)
+script = ExtResource("7_r")
+size = Vector2i(4, 8)
+north = 2
+south = 2
+seed = 306
+torch_light_color = Color(0.6, 0.85, 1.0, 1)
+torch_core_color = Color(0.9, 1.0, 1.0, 1)
+torch_edge_color = Color(0.35, 0.6, 1.0, 1)
+
+[node name="Pass" type="Node3D" parent="Navigation/Rooms"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -22.0)
+script = ExtResource("7_r")
+size = Vector2i(20, 16)
+north = 1
+south = 1
+seed = 307
+torch_light_color = Color(0.6, 0.85, 1.0, 1)
+torch_core_color = Color(0.9, 1.0, 1.0, 1)
+torch_edge_color = Color(0.35, 0.6, 1.0, 1)
+
+[node name="Corridor2" type="Node3D" parent="Navigation/Rooms"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -34.0)
+script = ExtResource("7_r")
+size = Vector2i(4, 8)
+north = 2
+south = 2
+seed = 308
+torch_light_color = Color(0.6, 0.85, 1.0, 1)
+torch_core_color = Color(0.9, 1.0, 1.0, 1)
+torch_edge_color = Color(0.35, 0.6, 1.0, 1)
+
+[node name="Field" type="Node3D" parent="Navigation/Rooms"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -50.0)
+script = ExtResource("7_r")
+size = Vector2i(24, 24)
+north = 1
+south = 1
+seed = 309
+torch_light_color = Color(0.6, 0.85, 1.0, 1)
+torch_core_color = Color(0.9, 1.0, 1.0, 1)
+torch_edge_color = Color(0.35, 0.6, 1.0, 1)
+
+[node name="Corridor3" type="Node3D" parent="Navigation/Rooms"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -66.0)
+script = ExtResource("7_r")
+size = Vector2i(4, 8)
+north = 2
+south = 2
+seed = 310
+torch_light_color = Color(0.6, 0.85, 1.0, 1)
+torch_core_color = Color(0.9, 1.0, 1.0, 1)
+torch_edge_color = Color(0.35, 0.6, 1.0, 1)
+
+[node name="Barrow" type="Node3D" parent="Navigation/Rooms"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -80.0)
+script = ExtResource("7_r")
+size = Vector2i(16, 20)
+north = 1
+south = 1
+seed = 311
+torch_light_color = Color(0.6, 0.85, 1.0, 1)
+torch_core_color = Color(0.9, 1.0, 1.0, 1)
+torch_edge_color = Color(0.35, 0.6, 1.0, 1)
+
+[node name="Corridor4" type="Node3D" parent="Navigation/Rooms"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -94.0)
+script = ExtResource("7_r")
+size = Vector2i(4, 8)
+north = 2
+south = 2
+seed = 312
+torch_light_color = Color(0.6, 0.85, 1.0, 1)
+torch_core_color = Color(0.9, 1.0, 1.0, 1)
+torch_edge_color = Color(0.35, 0.6, 1.0, 1)
+
+[node name="Throne" type="Node3D" parent="Navigation/Rooms"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -112.0)
+script = ExtResource("7_r")
+size = Vector2i(28, 28)
+south = 1
+seed = 313
+torch_light_color = Color(0.6, 0.85, 1.0, 1)
+torch_core_color = Color(0.9, 1.0, 1.0, 1)
+torch_edge_color = Color(0.35, 0.6, 1.0, 1)
+
+[node name="Gates" type="Node3D" parent="Navigation"]
+
+[node name="Stairwell" parent="Navigation/Gates" instance=ExtResource("8_r")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -6.5)
+open = true
+
+[node name="Pass" parent="Navigation/Gates" instance=ExtResource("8_r")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -30.5)
+
+[node name="Field" parent="Navigation/Gates" instance=ExtResource("8_r")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -62.5)
+
+[node name="Barrow" parent="Navigation/Gates" instance=ExtResource("8_r")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -90.5)
+
+[node name="Props" type="Node3D" parent="Navigation"]
+
+[node name="PassProp1" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -8.0, 0, -28.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/PassProp1"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_0_6")
+
+[node name="Model" parent="Navigation/Props/PassProp1" instance=ExtResource("12_r")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, 0)
+
+[node name="PassProp2" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 8.0, 0, -28.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/PassProp2"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_1_2")
+
+[node name="Model" parent="Navigation/Props/PassProp2" instance=ExtResource("13_r")]
+transform = Transform3D(0, 0, 9.0, 0, 9.0, 0, -9.0, 0, 0, 0, 0, 0)
+
+[node name="PassProp3" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -6.0, 0, -28.4)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/PassProp3"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_0_8")
+
+[node name="Model" parent="Navigation/Props/PassProp3" instance=ExtResource("14_r")]
+transform = Transform3D(-1.0, 0, 0, 0, 1.0, 0, 0, 0, -1.0, 0, 0, 0)
+
+[node name="PassProp4" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -8.4, 0, -24.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/PassProp4"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_0_6")
+
+[node name="Model" parent="Navigation/Props/PassProp4" instance=ExtResource("12_r")]
+transform = Transform3D(0, 0, -1.0, 0, 1.0, 0, 1.0, 0, 0, 0, 0, 0)
+
+[node name="PassProp5" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -8.4, 0, -18.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/PassProp5"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_1_2")
+
+[node name="Model" parent="Navigation/Props/PassProp5" instance=ExtResource("13_r")]
+transform = Transform3D(9.0, 0, 0, 0, 9.0, 0, 0, 0, 9.0, 0, 0, 0)
+
+[node name="PassProp6" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 8.4, 0, -26.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/PassProp6"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_1_1")
+
+[node name="Model" parent="Navigation/Props/PassProp6" instance=ExtResource("15_r")]
+transform = Transform3D(0, 0, 8.0, 0, 8.0, 0, -8.0, 0, 0, 0, 0, 0)
+
+[node name="PassProp7" parent="Navigation/Props" instance=ExtResource("16_r")]
+transform = Transform3D(-1.0, 0, 0, 0, 1.0, 0, 0, 0, -1.0, 8.2, 0, -16.0)
+
+[node name="PassProp8" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -7.6, 0, -15.6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/PassProp8"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_0_6")
+
+[node name="Model" parent="Navigation/Props/PassProp8" instance=ExtResource("17_r")]
+transform = Transform3D(0, 0, -1.0, 0, 1.0, 0, 1.0, 0, 0, 0, 0, 0)
+
+[node name="PassProp9" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 6.0, 0, -15.6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/PassProp9"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_1_0")
+
+[node name="Model" parent="Navigation/Props/PassProp9" instance=ExtResource("18_r")]
+transform = Transform3D(8.0, 0, 0, 0, 8.0, 0, 0, 0, 8.0, 0, 0, 0)
+
+[node name="FieldProp1" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -10.0, 0, -60.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/FieldProp1"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_1_2")
+
+[node name="Model" parent="Navigation/Props/FieldProp1" instance=ExtResource("13_r")]
+transform = Transform3D(0, 0, -9.0, 0, 9.0, 0, 9.0, 0, 0, 0, 0, 0)
+
+[node name="FieldProp2" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 10.0, 0, -60.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/FieldProp2"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_0_8")
+
+[node name="Model" parent="Navigation/Props/FieldProp2" instance=ExtResource("14_r")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, 0)
+
+[node name="FieldProp3" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -6.0, 0, -60.4)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/FieldProp3"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_0_6")
+
+[node name="Model" parent="Navigation/Props/FieldProp3" instance=ExtResource("12_r")]
+transform = Transform3D(0, 0, 1.0, 0, 1.0, 0, -1.0, 0, 0, 0, 0, 0)
+
+[node name="FieldProp4" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -10.4, 0, -52.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/FieldProp4"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_1_2")
+
+[node name="Model" parent="Navigation/Props/FieldProp4" instance=ExtResource("13_r")]
+transform = Transform3D(-9.0, 0, 0, 0, 9.0, 0, 0, 0, -9.0, 0, 0, 0)
+
+[node name="FieldProp5" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -10.4, 0, -42.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/FieldProp5"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_0_8")
+
+[node name="Model" parent="Navigation/Props/FieldProp5" instance=ExtResource("14_r")]
+transform = Transform3D(0, 0, -1.0, 0, 1.0, 0, 1.0, 0, 0, 0, 0, 0)
+
+[node name="FieldProp6" parent="Navigation/Props" instance=ExtResource("16_r")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 10.4, 0, -56.0)
+
+[node name="FieldProp7" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 10.2, 0, -40.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/FieldProp7"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_0_6")
+
+[node name="Model" parent="Navigation/Props/FieldProp7" instance=ExtResource("17_r")]
+transform = Transform3D(0, 0, 1.0, 0, 1.0, 0, -1.0, 0, 0, 0, 0, 0)
+
+[node name="FieldProp8" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -9.6, 0, -39.6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/FieldProp8"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_1_0")
+
+[node name="Model" parent="Navigation/Props/FieldProp8" instance=ExtResource("18_r")]
+transform = Transform3D(-8.0, 0, 0, 0, 8.0, 0, 0, 0, -8.0, 0, 0, 0)
+
+[node name="FieldProp9" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 6.0, 0, -39.6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/FieldProp9"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_1_1")
+
+[node name="Model" parent="Navigation/Props/FieldProp9" instance=ExtResource("15_r")]
+transform = Transform3D(0, 0, -8.0, 0, 8.0, 0, 8.0, 0, 0, 0, 0, 0)
+
+[node name="BarrowProp1" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -6.0, 0, -88.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/BarrowProp1"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_0_8")
+
+[node name="Model" parent="Navigation/Props/BarrowProp1" instance=ExtResource("14_r")]
+transform = Transform3D(-1.0, 0, 0, 0, 1.0, 0, 0, 0, -1.0, 0, 0, 0)
+
+[node name="BarrowProp2" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 6.0, 0, -88.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/BarrowProp2"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_0_6")
+
+[node name="Model" parent="Navigation/Props/BarrowProp2" instance=ExtResource("12_r")]
+transform = Transform3D(0, 0, -1.0, 0, 1.0, 0, 1.0, 0, 0, 0, 0, 0)
+
+[node name="BarrowProp3" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -4.5, 0, -88.4)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/BarrowProp3"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_1_2")
+
+[node name="Model" parent="Navigation/Props/BarrowProp3" instance=ExtResource("13_r")]
+transform = Transform3D(9.0, 0, 0, 0, 9.0, 0, 0, 0, 9.0, 0, 0, 0)
+
+[node name="BarrowProp4" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -6.4, 0, -82.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/BarrowProp4"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_0_8")
+
+[node name="Model" parent="Navigation/Props/BarrowProp4" instance=ExtResource("14_r")]
+transform = Transform3D(0, 0, 1.0, 0, 1.0, 0, -1.0, 0, 0, 0, 0, 0)
+
+[node name="BarrowProp5" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -6.4, 0, -74.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/BarrowProp5"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_0_6")
+
+[node name="Model" parent="Navigation/Props/BarrowProp5" instance=ExtResource("12_r")]
+transform = Transform3D(-1.0, 0, 0, 0, 1.0, 0, 0, 0, -1.0, 0, 0, 0)
+
+[node name="BarrowProp6" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 6.4, 0, -85.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/BarrowProp6"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_0_6")
+
+[node name="Model" parent="Navigation/Props/BarrowProp6" instance=ExtResource("17_r")]
+transform = Transform3D(0, 0, -1.0, 0, 1.0, 0, 1.0, 0, 0, 0, 0, 0)
+
+[node name="BarrowProp7" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 6.2, 0, -72.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/BarrowProp7"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_1_0")
+
+[node name="Model" parent="Navigation/Props/BarrowProp7" instance=ExtResource("18_r")]
+transform = Transform3D(8.0, 0, 0, 0, 8.0, 0, 0, 0, 8.0, 0, 0, 0)
+
+[node name="BarrowProp8" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -5.6, 0, -71.6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/BarrowProp8"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_1_1")
+
+[node name="Model" parent="Navigation/Props/BarrowProp8" instance=ExtResource("15_r")]
+transform = Transform3D(0, 0, 8.0, 0, 8.0, 0, -8.0, 0, 0, 0, 0, 0)
+
+[node name="BarrowProp9" parent="Navigation/Props" instance=ExtResource("16_r")]
+transform = Transform3D(-1.0, 0, 0, 0, 1.0, 0, 0, 0, -1.0, 4.5, 0, -71.6)
+
+[node name="ThroneProp1" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -12.0, 0, -124.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/ThroneProp1"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_0_6")
+
+[node name="Model" parent="Navigation/Props/ThroneProp1" instance=ExtResource("12_r")]
+transform = Transform3D(0, 0, 1.0, 0, 1.0, 0, -1.0, 0, 0, 0, 0, 0)
+
+[node name="ThroneProp2" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 12.0, 0, -124.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/ThroneProp2"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_1_2")
+
+[node name="Model" parent="Navigation/Props/ThroneProp2" instance=ExtResource("13_r")]
+transform = Transform3D(-9.0, 0, 0, 0, 9.0, 0, 0, 0, -9.0, 0, 0, 0)
+
+[node name="ThroneProp3" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -6.0, 0, -124.4)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/ThroneProp3"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_0_8")
+
+[node name="Model" parent="Navigation/Props/ThroneProp3" instance=ExtResource("14_r")]
+transform = Transform3D(0, 0, -1.0, 0, 1.0, 0, 1.0, 0, 0, 0, 0, 0)
+
+[node name="ThroneProp4" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -12.4, 0, -114.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/ThroneProp4"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_0_6")
+
+[node name="Model" parent="Navigation/Props/ThroneProp4" instance=ExtResource("12_r")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, 0)
+
+[node name="ThroneProp5" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -12.4, 0, -102.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/ThroneProp5"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_1_2")
+
+[node name="Model" parent="Navigation/Props/ThroneProp5" instance=ExtResource("13_r")]
+transform = Transform3D(0, 0, 9.0, 0, 9.0, 0, -9.0, 0, 0, 0, 0, 0)
+
+[node name="ThroneProp6" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 12.4, 0, -119.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/ThroneProp6"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_1_0")
+
+[node name="Model" parent="Navigation/Props/ThroneProp6" instance=ExtResource("18_r")]
+transform = Transform3D(-8.0, 0, 0, 0, 8.0, 0, 0, 0, -8.0, 0, 0, 0)
+
+[node name="ThroneProp7" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 12.2, 0, -100.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/ThroneProp7"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_1_1")
+
+[node name="Model" parent="Navigation/Props/ThroneProp7" instance=ExtResource("15_r")]
+transform = Transform3D(0, 0, -8.0, 0, 8.0, 0, 8.0, 0, 0, 0, 0, 0)
+
+[node name="ThroneProp8" parent="Navigation/Props" instance=ExtResource("16_r")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -11.6, 0, -99.6)
+
+[node name="ThroneProp9" type="StaticBody3D" parent="Navigation/Props"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 6.0, 0, -99.6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Navigation/Props/ThroneProp9"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_0_6")
+
+[node name="Model" parent="Navigation/Props/ThroneProp9" instance=ExtResource("17_r")]
+transform = Transform3D(0, 0, 1.0, 0, 1.0, 0, -1.0, 0, 0, 0, 0, 0)
+
+[node name="Fires" type="Node3D" parent="."]
+
+[node name="PassW" type="Node3D" parent="Fires"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -8.0, 2.2, -28.0)
+script = ExtResource("11_r")
+size = 0.6
+core_color = Color(0.9, 1.0, 1.0, 1)
+edge_color = Color(0.35, 0.6, 1.0, 1)
+ember_count = 8
+
+[node name="PassE" type="Node3D" parent="Fires"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 8.0, 2.2, -28.0)
+script = ExtResource("11_r")
+size = 0.6
+core_color = Color(0.9, 1.0, 1.0, 1)
+edge_color = Color(0.35, 0.6, 1.0, 1)
+ember_count = 8
+
+[node name="FieldW" type="Node3D" parent="Fires"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -10.0, 2.2, -60.0)
+script = ExtResource("11_r")
+size = 0.6
+core_color = Color(0.9, 1.0, 1.0, 1)
+edge_color = Color(0.35, 0.6, 1.0, 1)
+ember_count = 8
+
+[node name="FieldE" type="Node3D" parent="Fires"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 10.0, 2.2, -60.0)
+script = ExtResource("11_r")
+size = 0.6
+core_color = Color(0.9, 1.0, 1.0, 1)
+edge_color = Color(0.35, 0.6, 1.0, 1)
+ember_count = 8
+
+[node name="BarrowW" type="Node3D" parent="Fires"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -6.0, 2.2, -88.0)
+script = ExtResource("11_r")
+size = 0.6
+core_color = Color(0.9, 1.0, 1.0, 1)
+edge_color = Color(0.35, 0.6, 1.0, 1)
+ember_count = 8
+
+[node name="BarrowE" type="Node3D" parent="Fires"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 6.0, 2.2, -88.0)
+script = ExtResource("11_r")
+size = 0.6
+core_color = Color(0.9, 1.0, 1.0, 1)
+edge_color = Color(0.35, 0.6, 1.0, 1)
+ember_count = 8
+
+[node name="ThroneW" type="Node3D" parent="Fires"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -12.0, 2.2, -124.0)
+script = ExtResource("11_r")
+size = 0.6
+core_color = Color(0.9, 1.0, 1.0, 1)
+edge_color = Color(0.35, 0.6, 1.0, 1)
+ember_count = 8
+
+[node name="ThroneE" type="Node3D" parent="Fires"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 12.0, 2.2, -124.0)
+script = ExtResource("11_r")
+size = 0.6
+core_color = Color(0.9, 1.0, 1.0, 1)
+edge_color = Color(0.35, 0.6, 1.0, 1)
+ember_count = 8
+
+[node name="Encounters" type="Node3D" parent="."]
+
+[node name="Pass" type="Node3D" parent="Encounters"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -22.0)
+script = ExtResource("10_r")
+data = ExtResource("19_r")
+title = "The Frozen Pass"
+subtitle = "The cold has teeth"
+
+[node name="North" type="Marker3D" parent="Encounters/Pass"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -5.0)
+
+[node name="NorthEast" type="Marker3D" parent="Encounters/Pass"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 7.0, 0, -4.0)
+
+[node name="NorthWest" type="Marker3D" parent="Encounters/Pass"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -7.0, 0, -4.0)
+
+[node name="East" type="Marker3D" parent="Encounters/Pass"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 7.0, 0, 0)
+
+[node name="West" type="Marker3D" parent="Encounters/Pass"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -7.0, 0, 0)
+
+[node name="SouthEast" type="Marker3D" parent="Encounters/Pass"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 6.0, 0, 5.0)
+
+[node name="SouthWest" type="Marker3D" parent="Encounters/Pass"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -6.0, 0, 5.0)
+
+[node name="Field" type="Node3D" parent="Encounters"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -50.0)
+script = ExtResource("10_r")
+data = ExtResource("20_r")
+title = "The Field of the Fallen"
+subtitle = "They froze where they fought"
+
+[node name="North" type="Marker3D" parent="Encounters/Field"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -9.0)
+
+[node name="NorthEast" type="Marker3D" parent="Encounters/Field"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 9.0, 0, -8.0)
+
+[node name="NorthWest" type="Marker3D" parent="Encounters/Field"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -9.0, 0, -8.0)
+
+[node name="East" type="Marker3D" parent="Encounters/Field"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 9.0, 0, 0)
+
+[node name="West" type="Marker3D" parent="Encounters/Field"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -9.0, 0, 0)
+
+[node name="SouthEast" type="Marker3D" parent="Encounters/Field"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 8.0, 0, 9.0)
+
+[node name="SouthWest" type="Marker3D" parent="Encounters/Field"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -8.0, 0, 9.0)
+
+[node name="Barrow" type="Node3D" parent="Encounters"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -80.0)
+script = ExtResource("10_r")
+data = ExtResource("21_r")
+title = "The Rime Barrow"
+subtitle = "Breath hangs and does not fade"
+
+[node name="North" type="Marker3D" parent="Encounters/Barrow"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -7.0)
+
+[node name="NorthEast" type="Marker3D" parent="Encounters/Barrow"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 5.0, 0, -6.0)
+
+[node name="NorthWest" type="Marker3D" parent="Encounters/Barrow"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -5.0, 0, -6.0)
+
+[node name="East" type="Marker3D" parent="Encounters/Barrow"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 5.0, 0, 0)
+
+[node name="West" type="Marker3D" parent="Encounters/Barrow"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -5.0, 0, 0)
+
+[node name="SouthEast" type="Marker3D" parent="Encounters/Barrow"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 4.0, 0, 7.0)
+
+[node name="SouthWest" type="Marker3D" parent="Encounters/Barrow"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -4.0, 0, 7.0)
+
+[node name="Throne" type="Node3D" parent="Encounters"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -112.0)
+script = ExtResource("10_r")
+data = ExtResource("22_r")
+title = "The Rime Throne"
+subtitle = "The Rime King stirs"
+title_color = Color(0.6, 0.85, 1.0, 1)
+
+[node name="North" type="Marker3D" parent="Encounters/Throne"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 0, -11.0)
+
+[node name="NorthEast" type="Marker3D" parent="Encounters/Throne"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 11.0, 0, -10.0)
+
+[node name="NorthWest" type="Marker3D" parent="Encounters/Throne"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -11.0, 0, -10.0)
+
+[node name="East" type="Marker3D" parent="Encounters/Throne"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 11.0, 0, 0)
+
+[node name="West" type="Marker3D" parent="Encounters/Throne"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -11.0, 0, 0)
+
+[node name="SouthEast" type="Marker3D" parent="Encounters/Throne"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 10.0, 0, 11.0)
+
+[node name="SouthWest" type="Marker3D" parent="Encounters/Throne"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -10.0, 0, 11.0)
+
+[node name="SummonNW" type="Marker3D" parent="Encounters/Throne"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -7.5, 0, -7.5)
+
+[node name="SummonNE" type="Marker3D" parent="Encounters/Throne"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 7.5, 0, -7.5)
+
+[node name="SummonSW" type="Marker3D" parent="Encounters/Throne"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, -7.5, 0, 7.5)
+
+[node name="SummonSE" type="Marker3D" parent="Encounters/Throne"]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 7.5, 0, 7.5)
+
+[node name="CombatRooms" type="Node3D" parent="."]
+
+[node name="Pass" type="Area3D" parent="CombatRooms" node_paths=PackedStringArray("encounter", "seal_gates", "exit_gates")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, -23.0)
+script = ExtResource("9_r")
+encounter = NodePath("../../Encounters/Pass")
+seal_gates = [NodePath("../../Navigation/Gates/Stairwell")]
+exit_gates = [NodePath("../../Navigation/Gates/Pass")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CombatRooms/Pass"]
+shape = SubResource("BoxShape3D_Pass")
+
+[node name="Field" type="Area3D" parent="CombatRooms" node_paths=PackedStringArray("encounter", "seal_gates", "exit_gates")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, -51.0)
+script = ExtResource("9_r")
+encounter = NodePath("../../Encounters/Field")
+seal_gates = [NodePath("../../Navigation/Gates/Pass")]
+exit_gates = [NodePath("../../Navigation/Gates/Field")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CombatRooms/Field"]
+shape = SubResource("BoxShape3D_Field")
+
+[node name="Barrow" type="Area3D" parent="CombatRooms" node_paths=PackedStringArray("encounter", "seal_gates", "exit_gates")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, -81.0)
+script = ExtResource("9_r")
+encounter = NodePath("../../Encounters/Barrow")
+seal_gates = [NodePath("../../Navigation/Gates/Field")]
+exit_gates = [NodePath("../../Navigation/Gates/Barrow")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CombatRooms/Barrow"]
+shape = SubResource("BoxShape3D_Barrow")
+
+[node name="Throne" type="Area3D" parent="CombatRooms" node_paths=PackedStringArray("encounter", "seal_gates")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, 1.5, -113.0)
+script = ExtResource("9_r")
+encounter = NodePath("../../Encounters/Throne")
+seal_gates = [NodePath("../../Navigation/Gates/Barrow")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CombatRooms/Throne"]
+shape = SubResource("BoxShape3D_Throne")

@@ -1,0 +1,19 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/enemies/hollow_king.tscn" id="1_base"]
+[ext_resource type="Material" path="res://resources/materials/rotwood_witch_model.tres" id="2_material"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/ghoul.tscn" id="3_add"]
+
+[node name="RotwoodWitch" instance=ExtResource("1_base")]
+display_title = "THE ROTWOOD WITCH"
+add_scene = ExtResource("3_add")
+summon_count = 4
+ash_value = 80
+xp_value = 800
+gold_value = 160
+
+[node name="Health" parent="."]
+max_health = 1000
+
+[node name="ModelDressing" parent="."]
+material = ExtResource("2_material")

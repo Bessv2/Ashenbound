@@ -1,0 +1,19 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/enemies/ashen_lord.tscn" id="1_base"]
+[ext_resource type="Material" path="res://resources/materials/iron_castellan_model.tres" id="2_material"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/fallen_knight.tscn" id="3_add"]
+
+[node name="IronCastellan" instance=ExtResource("1_base")]
+display_title = "THE IRON CASTELLAN"
+add_scene = ExtResource("3_add")
+summon_count = 2
+ash_value = 70
+xp_value = 700
+gold_value = 140
+
+[node name="Health" parent="."]
+max_health = 900
+
+[node name="ModelDressing" parent="."]
+material = ExtResource("2_material")

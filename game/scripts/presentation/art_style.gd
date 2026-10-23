@@ -205,6 +205,46 @@ static func _copy_colors(source: Material, styled: ShaderMaterial) -> void:
 			styled.set_shader_parameter(&"emission_energy", base.emission_energy_multiplier * 0.6)
 
 
+## Casts `tint` over every surface under `root` (a region's stone: the
+## temple's sand, the wastes' frost), whatever the look. Each material is
+## copied once per call and the copy shared, so tiles stay batched. Effects
+## (glowing, transparent) are left alone.
+static func tint_world(root: Node, tint: Color) -> void:
+	if tint == Color.WHITE:
+		return
+	var copies := {}
+	var tinted := func(source: Material) -> Material:
+		if source == null:
+			return null
+		if copies.has(source):
+			return copies[source]
+		var copy: Material = source.duplicate()
+		if copy is BaseMaterial3D:
+			(copy as BaseMaterial3D).albedo_color *= tint
+		elif copy is ShaderMaterial:
+			var shader_copy := copy as ShaderMaterial
+			var current: Variant = shader_copy.get_shader_parameter(&"tint")
+			shader_copy.set_shader_parameter(&"tint", (current as Color if current is Color else Color.WHITE) * tint)
+		copies[source] = copy
+		return copy
+	for node in root.find_children("*", "GeometryInstance3D", true, false):
+		var geometry := node as GeometryInstance3D
+		if _is_effect(geometry):
+			continue
+		if geometry.material_override:
+			geometry.material_override = tinted.call(geometry.material_override)
+		elif geometry is MultiMeshInstance3D:
+			var tiles := geometry as MultiMeshInstance3D
+			if tiles.multimesh and tiles.multimesh.mesh:
+				tiles.material_override = tinted.call(tiles.multimesh.mesh.surface_get_material(0))
+		elif geometry is MeshInstance3D:
+			var mesh_node := geometry as MeshInstance3D
+			if mesh_node.mesh == null:
+				continue
+			for surface in mesh_node.mesh.get_surface_count():
+				mesh_node.set_surface_override_material(surface, tinted.call(mesh_node.get_active_material(surface)))
+
+
 ## Forgets restyled materials (tests switching looks).
 static func clear_cache() -> void:
 	_cache.clear()

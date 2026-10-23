@@ -28,7 +28,7 @@ From its store listing:
 | Pocket Crafter 2 | Ashenbound | State |
 |---|---|---|
 | Tap to dig | Active dungeon runs: real-time combat | Built |
-| Biomes | Regions with dungeons and level ranges: Ashen Crypt, Forgotten Catacombs, then Ruined Keep, Cursed Forest, Volcanic Depths, Ancient Temple, Ice Wastes | Two built; five planned |
+| Biomes | Regions with dungeons and level ranges: Ashen Crypt, Forgotten Catacombs, then Ruined Keep, Cursed Forest, Volcanic Depths, Ancient Temple, Ice Wastes | Built, [dungeons/regions.md](dungeons/regions.md) |
 | Ores, wood, herbs, hunting | The sheet's six materials: iron ore, wood, leather, herbs, crystal, soul shard. Dropped in runs and gathered while idle | Built, [CRAFTING.md](CRAFTING.md) |
 | Craft gear | The sheet's chain: upgrade → enchant → craft → legendary | Built, [CRAFTING.md](CRAFTING.md) |
 | Automate gathering | Gathering camps (mine, lumber, hunt, forage) that work while the player is away, once the crypt is cleared; upgraded with gold and another camp's material | Built, [CRAFTING.md](CRAFTING.md#gathering-camps) |
@@ -49,5 +49,6 @@ From its store listing:
    step 5.
 3. **Materials, crafting and gathering camps**: the idle loop. Built, see
    [CRAFTING.md](CRAFTING.md).
-4. **New regions and Demons.**
+4. **New regions and Demons.** Built, see
+   [dungeons/regions.md](dungeons/regions.md).
 5. **Quests, achievements and daily challenges.**

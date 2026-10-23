@@ -1844,3 +1844,53 @@ Checks:
   chosen.
   - The first capture cut off the card's Upgrade label; its button font
     was made smaller.
+
+## 45. Five regions and the Demons (branch `feature/regions`)
+
+Step 4 of [GAME_LOOP.md](GAME_LOOP.md); the design is in
+[dungeons/regions.md](dungeons/regions.md).
+
+What changed:
+- **`tools/levels/make_regions.py`** writes, from recipes:
+  - the five levels, each a stairwell, three fights, a boss hall,
+    corridors, gates, props and fires;
+  - their encounter waves and environments;
+  - five boss variants (inherited Ashen Lord or Hollow King scenes) and
+    their materials.
+- **`tools/art/fetch_kaykit_props.py`** copies 24 CC0 props from KayKit
+  Halloween Bits and Medieval Hexagon, at pinned commits.
+- **Demon and Imp:**
+  - The Demon has a claw and a 360° ground slam; the Imp throws fire bolts
+    (new `fire_bolt.tscn`).
+  - Both have horns and eyes on the head bone.
+  - Their sounds and mocap are recorded in `assign_sounds.py` and
+    `assign_mocap.py`; both tools reproduce the scenes exactly.
+- **`Level.world_tint` and `ArtStyle.tint_world`:** a region's colour cast
+  over every surface, one material copy per source so tiles stay batched.
+  The cutout shader gained a `tint` uniform.
+- **`Dungeons`:**
+  - seven dungeons in order, each with its title, short name, icon, level
+    range and materials;
+  - `is_open` follows the chain;
+  - `lock_reason` names the dungeon to clear.
+- **`Profile`** (save version 5):
+  - It holds `cleared_dungeons`, with `complete_dungeon` and `has_cleared`.
+  - Main records a dungeon's clear on victory.
+  - A cleared tier counts the crypt as cleared, for older saves and
+    `complete_tier`.
+- **Title screen:** the dungeon cards scroll sideways and keep the chosen
+  one in view.
+- **HUD:** the boss bar is narrower, so it no longer touches the hero's
+  health bar.
+
+Checks:
+- `tests/test_regions.gd` (5 tests):
+  - every region builds, bakes navigation, starts the hero on walkable
+    floor, has four fights ending in a named boss, and maps its nine rooms;
+  - a volcano fight raises demons;
+  - the regions open in order, and the clears are saved and migrated;
+  - every region has an icon, materials and a level range;
+  - the Demon and Imp are ready to fight and can be champions.
+- Captures under Xvfb (look B) of a fight in each region, and of the
+  Cinder Tyrant's and Rotwood Witch's halls. The boss bars show their
+  names.
