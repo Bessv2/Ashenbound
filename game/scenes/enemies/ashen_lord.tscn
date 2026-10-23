@@ -114,6 +114,7 @@ hidden_parts = PackedStringArray("1H_Sword", "1H_Sword_Offhand", "Badge_Shield",
 
 [node name="Animator" type="Node" parent="." node_paths=PackedStringArray("body", "enemy", "animation_player", "health", "attacks")]
 script = ExtResource("18_animator")
+mocap_attacks = Array[String](["Sword_Attack", "Sword_Regular_C", ""])
 body = NodePath("..")
 enemy = NodePath("..")
 animation_player = NodePath("../Visual/Model/AnimationPlayer")

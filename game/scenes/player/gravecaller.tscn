@@ -111,6 +111,10 @@ outline_width = 0.018
 
 [node name="Animator" type="Node" parent="." node_paths=PackedStringArray("body", "animation_player", "health", "dodge", "attacks", "abilities")]
 script = ExtResource("24_animator")
+mocap_death = "Death01"
+mocap_hit = "Hit_Chest|Hit_Head"
+mocap_abilities = Array[String](["Spell_Simple_Enter", "Spell_Simple_Shoot", "Spell_Simple_Enter"])
+mocap_attacks = Array[String](["Spell_Simple_Shoot"])
 body = NodePath("..")
 animation_player = NodePath("../Visual/Model/AnimationPlayer")
 health = NodePath("../Health")
