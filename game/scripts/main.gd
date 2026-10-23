@@ -224,6 +224,7 @@ func _load_level() -> void:
 		_player.reset_physics_interpolation()
 		_camera_rig.snap_to_target()
 	_run.watch(level.encounters)
+	_hud.track_minimap(level, _player, _camera_rig.yaw_degrees)
 	_sound.watch_level(level, Dungeons.id_of_scene(level_scene.resource_path))
 	for node in level.find_children("*", "Node3D", true, false):
 		if node is EncounterController:
@@ -284,7 +285,7 @@ func _show_hero_name() -> void:
 	if stats == null or stats.skill_tree == null:
 		return
 	var color := _player.abilities[0].hud_color if not _player.abilities.is_empty() else Color.WHITE
-	_hud.set_hero(stats.skill_tree.class_title, color.lerp(Color.WHITE, 0.25))
+	_hud.set_hero(stats.skill_tree.class_title, color.lerp(Color.WHITE, 0.25), hero_class_of(Profile))
 
 
 ## Seconds between the killing blow that wins the run and the summary.

@@ -1,0 +1,84 @@
+# Game icons
+
+From [game-icons.net](https://game-icons.net), licensed
+[CC BY 3.0](https://creativecommons.org/licenses/by/3.0/): credit the authors below.
+Written by `tools/art/fetch_icons.py` (white, recoloured in the game); do not
+edit by hand.
+
+| File | Icon | Author |
+|---|---|---|
+| `idle.svg` | [hourglass](https://game-icons.net/1x1/lorc/hourglass.html) | lorc |
+| `bag.svg` | [backpack](https://game-icons.net/1x1/delapouite/backpack.html) | delapouite |
+| `skills.svg` | [upgrade](https://game-icons.net/1x1/delapouite/upgrade.html) | delapouite |
+| `character.svg` | [visored-helm](https://game-icons.net/1x1/lorc/visored-helm.html) | lorc |
+| `quests.svg` | [scroll-unfurled](https://game-icons.net/1x1/lorc/scroll-unfurled.html) | lorc |
+| `map.svg` | [treasure-map](https://game-icons.net/1x1/lorc/treasure-map.html) | lorc |
+| `close.svg` | [cross-mark](https://game-icons.net/1x1/lorc/cross-mark.html) | lorc |
+| `gold.svg` | [two-coins](https://game-icons.net/1x1/delapouite/two-coins.html) | delapouite |
+| `ash.svg` | [gems](https://game-icons.net/1x1/lorc/gems.html) | lorc |
+| `dodge.svg` | [dodge](https://game-icons.net/1x1/felbrigg/dodge.html) | felbrigg |
+| `potion.svg` | [health-potion](https://game-icons.net/1x1/delapouite/health-potion.html) | delapouite |
+| `level.svg` | [laurel-crown](https://game-icons.net/1x1/lorc/laurel-crown.html) | lorc |
+| `trophy.svg` | [trophy](https://game-icons.net/1x1/lorc/trophy.html) | lorc |
+| `attack_warden.svg` | [broadsword](https://game-icons.net/1x1/lorc/broadsword.html) | lorc |
+| `attack_reaver.svg` | [daggers](https://game-icons.net/1x1/lorc/daggers.html) | lorc |
+| `attack_hexbinder.svg` | [skull-staff](https://game-icons.net/1x1/delapouite/skull-staff.html) | delapouite |
+| `attack_dreadhunter.svg` | [bow-arrow](https://game-icons.net/1x1/delapouite/bow-arrow.html) | delapouite |
+| `attack_reliquary.svg` | [flail](https://game-icons.net/1x1/delapouite/flail.html) | delapouite |
+| `attack_gravecaller.svg` | [reaper-scythe](https://game-icons.net/1x1/lorc/reaper-scythe.html) | lorc |
+| `ability_cleave.svg` | [axe-swing](https://game-icons.net/1x1/lorc/axe-swing.html) | lorc |
+| `ability_guard.svg` | [checked-shield](https://game-icons.net/1x1/lorc/checked-shield.html) | lorc |
+| `ability_brand.svg` | [fire-silhouette](https://game-icons.net/1x1/lorc/fire-silhouette.html) | lorc |
+| `ability_veil.svg` | [cloak-dagger](https://game-icons.net/1x1/lorc/cloak-dagger.html) | lorc |
+| `ability_fan.svg` | [thrown-daggers](https://game-icons.net/1x1/lorc/thrown-daggers.html) | lorc |
+| `ability_bleed.svg` | [bleeding-wound](https://game-icons.net/1x1/lorc/bleeding-wound.html) | lorc |
+| `ability_curse.svg` | [evil-book](https://game-icons.net/1x1/lorc/evil-book.html) | lorc |
+| `ability_grasp.svg` | [grasping-claws](https://game-icons.net/1x1/lorc/grasping-claws.html) | lorc |
+| `ability_unmake.svg` | [death-zone](https://game-icons.net/1x1/lorc/death-zone.html) | lorc |
+| `ability_snare.svg` | [wolf-trap](https://game-icons.net/1x1/lorc/wolf-trap.html) | lorc |
+| `ability_shot.svg` | [arrowhead](https://game-icons.net/1x1/lorc/arrowhead.html) | lorc |
+| `ability_raven.svg` | [raven](https://game-icons.net/1x1/lorc/raven.html) | lorc |
+| `ability_bless.svg` | [holy-symbol](https://game-icons.net/1x1/lorc/holy-symbol.html) | lorc |
+| `ability_lantern.svg` | [old-lantern](https://game-icons.net/1x1/delapouite/old-lantern.html) | delapouite |
+| `ability_judge.svg` | [thor-hammer](https://game-icons.net/1x1/delapouite/thor-hammer.html) | delapouite |
+| `ability_raise.svg` | [raise-skeleton](https://game-icons.net/1x1/skoll/raise-skeleton.html) | skoll |
+| `ability_wraiths.svg` | [ghost](https://game-icons.net/1x1/lorc/ghost.html) | lorc |
+| `ability_harvest.svg` | [scythe](https://game-icons.net/1x1/lorc/scythe.html) | lorc |
+| `slot_weapon.svg` | [broadsword](https://game-icons.net/1x1/lorc/broadsword.html) | lorc |
+| `slot_helmet.svg` | [visored-helm](https://game-icons.net/1x1/lorc/visored-helm.html) | lorc |
+| `slot_chest.svg` | [chest-armor](https://game-icons.net/1x1/delapouite/chest-armor.html) | delapouite |
+| `slot_gloves.svg` | [gauntlet](https://game-icons.net/1x1/delapouite/gauntlet.html) | delapouite |
+| `slot_boots.svg` | [metal-boot](https://game-icons.net/1x1/delapouite/metal-boot.html) | delapouite |
+| `slot_ring.svg` | [diamond-ring](https://game-icons.net/1x1/delapouite/diamond-ring.html) | delapouite |
+| `slot_amulet.svg` | [gem-pendant](https://game-icons.net/1x1/lorc/gem-pendant.html) | lorc |
+| `slot_relic.svg` | [holy-grail](https://game-icons.net/1x1/lorc/holy-grail.html) | lorc |
+| `stat_health.svg` | [hearts](https://game-icons.net/1x1/skoll/hearts.html) | skoll |
+| `stat_damage.svg` | [sword-wound](https://game-icons.net/1x1/lorc/sword-wound.html) | lorc |
+| `stat_armor.svg` | [checked-shield](https://game-icons.net/1x1/lorc/checked-shield.html) | lorc |
+| `stat_crit.svg` | [target-dummy](https://game-icons.net/1x1/lorc/target-dummy.html) | lorc |
+| `stat_speed.svg` | [running-shoe](https://game-icons.net/1x1/delapouite/running-shoe.html) | delapouite |
+| `iron_ore.svg` | [stone-block](https://game-icons.net/1x1/lorc/stone-block.html) | lorc |
+| `wood.svg` | [log](https://game-icons.net/1x1/delapouite/log.html) | delapouite |
+| `leather.svg` | [animal-hide](https://game-icons.net/1x1/delapouite/animal-hide.html) | delapouite |
+| `herbs.svg` | [herbs-bundle](https://game-icons.net/1x1/delapouite/herbs-bundle.html) | delapouite |
+| `crystal.svg` | [crystal-cluster](https://game-icons.net/1x1/lorc/crystal-cluster.html) | lorc |
+| `soul_shard.svg` | [crystal-shine](https://game-icons.net/1x1/lorc/crystal-shine.html) | lorc |
+| `upgrade.svg` | [anvil](https://game-icons.net/1x1/lorc/anvil.html) | lorc |
+| `enchant.svg` | [magic-swirl](https://game-icons.net/1x1/lorc/magic-swirl.html) | lorc |
+| `craft.svg` | [sword-smithing](https://game-icons.net/1x1/lorc/sword-smithing.html) | lorc |
+| `legendary.svg` | [laurels-trophy](https://game-icons.net/1x1/delapouite/laurels-trophy.html) | delapouite |
+| `salvage.svg` | [hammer-break](https://game-icons.net/1x1/delapouite/hammer-break.html) | delapouite |
+| `mine.svg` | [mining](https://game-icons.net/1x1/lorc/mining.html) | lorc |
+| `lumber.svg` | [wood-axe](https://game-icons.net/1x1/lorc/wood-axe.html) | lorc |
+| `hunt.svg` | [hunting-horn](https://game-icons.net/1x1/lorc/hunting-horn.html) | lorc |
+| `forage.svg` | [herbs-bundle](https://game-icons.net/1x1/delapouite/herbs-bundle.html) | delapouite |
+| `region_crypt.svg` | [tombstone](https://game-icons.net/1x1/lorc/tombstone.html) | lorc |
+| `region_catacombs.svg` | [crypt-entrance](https://game-icons.net/1x1/delapouite/crypt-entrance.html) | delapouite |
+| `region_keep.svg` | [castle-ruins](https://game-icons.net/1x1/delapouite/castle-ruins.html) | delapouite |
+| `region_forest.svg` | [evil-tree](https://game-icons.net/1x1/lorc/evil-tree.html) | lorc |
+| `region_volcano.svg` | [volcano](https://game-icons.net/1x1/lorc/volcano.html) | lorc |
+| `region_temple.svg` | [greek-temple](https://game-icons.net/1x1/delapouite/greek-temple.html) | delapouite |
+| `region_ice.svg` | [snowflake-2](https://game-icons.net/1x1/lorc/snowflake-2.html) | lorc |
+| `enemy_skeleton.svg` | [skeleton](https://game-icons.net/1x1/skoll/skeleton.html) | skoll |
+| `enemy_demon.svg` | [imp-laugh](https://game-icons.net/1x1/lorc/imp-laugh.html) | lorc |
+| `boss.svg` | [crowned-skull](https://game-icons.net/1x1/lorc/crowned-skull.html) | lorc |

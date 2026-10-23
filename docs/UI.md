@@ -24,7 +24,29 @@ here is visual only: no effect deals damage or changes a number.
 
 ## The HUD
 
-- The top left names the hero's class in its colour.
+Laid out like the concept sheet's in-game panel (2026-10-23):
+- **Top left:** a round portrait (the class's weapon, ringed in its colour,
+  with the level in a badge), then the class name, the red health bar and
+  the blue XP bar ("Lv N").
+  - The sheet's blue bar is mana; Ashenbound has no mana, so the blue bar
+    is the XP toward the next level.
+- **Top right:** the skills, bag and pause buttons as icons, and under them
+  the round **minimap**.
+  - The minimap shows the level's rooms around the hero, turned with the
+    camera so up on the map is up on screen.
+  - A room appears once the hero has been in it or near it.
+  - Enemies are red marks (a boss bigger); the hero is an ember arrow
+    pointing where they face.
+  - It is hidden in levels without rooms (the test arena).
+- **Bottom:** the stick on the left. On the right, round icon buttons:
+  attack (the class's weapon), dodge, the three abilities and the potion.
+- **Icons** come from game-icons.net (CC BY 3.0,
+  [ART_ASSET_PIPELINE.md](ART_ASSET_PIPELINE.md#icons-2026-10-23)). They are
+  white and tinted in the game; `Icons` finds them by key.
+- **Damage numbers** on enemies are red, as on the sheet; the hero's own
+  are pale.
+- **Swings** (look B) are crescents near the end of the reach: thin and
+  faint where the blade started, thick and bright where it finished.
 - **Health** drops at once and a pale trail follows a moment later, so a
   hit's size reads at a glance; the bar flashes when hit; heals fill
   smoothly. **XP** fills smoothly.

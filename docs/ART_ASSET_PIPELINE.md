@@ -99,3 +99,17 @@ divided by its own average brightness, so stone keeps the level's hue.
 | Pack | Source | Licence | Files | Used for |
 |---|---|---|---|---|
 | Universal Animation Library 1 and 2, Standard (Quaternius) | quaternius.itch.io/universal-animation-library, /universal-animation-library-2 | CC0 1.0 (`LICENSE.txt`) | `game/assets/third_party/quaternius/mocap.res`: 28 clips retargeted onto the KayKit rig by `tools/anim/retarget_ual.gd`, from the downloads of `tools/anim/fetch_ual.py` | Attacks, abilities, hits and deaths in looks A and B ([ANIMATION.md](ANIMATION.md)) |
+
+## Icons (2026-10-23)
+
+| Pack | Source | Licence | Files | Used for |
+|---|---|---|---|---|
+| Game Icons (Lorc, Delapouite, Skoll, Felbrigg) | game-icons.net, through the `@iconify-json/game-icons` 1.2.4 package on npm | CC BY 3.0: credit required | 75 SVGs in `game/assets/third_party/game_icons/`, written by `tools/art/fetch_icons.py`, with `CREDITS.md` naming each icon's author | HUD buttons and portrait; menus, items, materials and regions as they arrive |
+
+- The icons are written white and tinted in the game.
+- They are imported at twice their size (256 px) with mipmaps, so they stay
+  sharp on a phone's dense screen.
+- **Attribution:** CC BY needs the credit to reach players. `CREDITS.md` is
+  in the repository; an in-game credits screen should list it before
+  release (open).
+

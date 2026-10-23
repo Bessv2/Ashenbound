@@ -31,6 +31,9 @@ extends CharacterBody3D
 signal despawned
 signal state_changed(previous: State, current: State)
 
+## Every living or dying enemy (the minimap reads it).
+const GROUP := &"enemies"
+
 enum State { IDLE, APPROACH, TELEGRAPH, ATTACK, RECOVERY, DEAD, RISING }
 
 ## How far the player may move from the end of the current path before a new
@@ -82,6 +85,7 @@ var _rise_left: float = 0.0
 
 
 func _ready() -> void:
+	add_to_group(GROUP)
 	if movement == null:
 		movement = MovementStats.new()
 	if behavior == null:

@@ -39,6 +39,7 @@ Status labels follow the charter:
 | 2026-10-23 | The owner opened the environment's network to asset sites: "I opened up network access. Go wild." Acquiring free (CC0) resource packs began with sound: [AUDIO.md](AUDIO.md). |
 | 2026-10-23 | **Look B chosen**: "Look B is really nice but it's extremely poor performance. I like the effects better. Look A is just a cooler toned classic." Look B is now the default; its cost was cut (see [ART_STYLE_TEST.md](ART_STYLE_TEST.md#performance)). Classic and look A stay selectable until look B is confirmed on the owner's phone. |
 | 2026-10-23 | **The web preview always reflects `main`**: every merge publishes it ([WEB_PREVIEW.md](WEB_PREVIEW.md#publishing)). |
+| 2026-10-23 | **Build the concept sheet's game**: its HUD, menus, crafting, more regions and Demons ("2 3 4 5 should be achieved easily"), as "something of a full game like idle miner. Or Diablo 4 style mechanics", with Idle Pocket Crafter 2 as the baseline for active play against idle time. Plan and mapping: [GAME_LOOP.md](GAME_LOOP.md). Realistic characters (gap 1) are not in this order. |
 | 2026-10-21 | **A browser build is a playtest preview** ([WEB_PREVIEW.md](WEB_PREVIEW.md)), not a platform change: Android stays the target. |
 
 ## Milestones
@@ -57,6 +58,7 @@ Status labels follow the charter:
 | Offline rewards | Validated, verified in runtime; **provisional** (device clock) | [OFFLINE_REWARDS.md](OFFLINE_REWARDS.md): highest tier cleared, half a run per hour, 8-hour cap. Milestone 6 groundwork, ahead of Milestone 5. |
 | Second class: Reaver | Validated, verified in runtime | [characters/reaver.md](characters/reaver.md): Twin Slash, Veil Rend, Fan of Blades, Hemorrhage; playable tree; class switch. |
 | Third class: Hexbinder | Validated, verified in runtime | [characters/hexbinder.md](characters/hexbinder.md): Hex Bolt, Black Testament, Grasp of the Grave, Unmake; playable tree. |
+| Concept HUD | Validated, verified in runtime | [UI.md](UI.md#the-hud): portrait, blue XP bar, minimap, icon buttons (game-icons.net, CC BY 3.0), red damage numbers, crescent slashes. |
 | Visuals and living UI | Validated, verified in runtime | [UI.md](UI.md): fire, dust, grade, vignette, outlines, hit punch; health trail, banners, coloured buttons; title screen with class select. |
 | Second dungeon: the Forgotten Catacombs | Validated, verified in runtime | [dungeons/forgotten_catacombs.md](dungeons/forgotten_catacombs.md): opens after a crypt clear. Ghouls, three combat rooms, and the Hollow King (volley, spikes, nova, Ghoul adds); dungeon choice on the title screen. |
 | Art style test: Look A against Look B | Validated, verified in runtime | [ART_STYLE_TEST.md](ART_STYLE_TEST.md): a title-screen switch (Classic, A, B) restyles characters, the world, the grade, hits, kills and swings; both looks add hit-stop and lunges. Classic stays the default until the owner chooses. |
@@ -124,21 +126,17 @@ merged into `main`, apart from #6.
 
 ## Next task
 
-Two open questions for the owner (2026-10-23):
-- **Performance.** Fog and phone shadows are now cut
-  ([ART_STYLE_TEST.md](ART_STYLE_TEST.md#performance)). If look B still lags,
-  the next cuts are a lower 3D resolution on phones, then fewer torch lights
-  and less glow.
-- **Direction.** The owner is not sure the build matches their intent. The
-  concept sheet ([ART_DIRECTION.md](ART_DIRECTION.md)) shows things the game
-  does not have yet:
-  - realistic, painterly heroes rather than the chibi KayKit models;
-  - its HUD: a portrait, a mana bar, a minimap and icon skill buttons;
-  - its screens: character stats, an inventory grid with item icons, quests,
-    and dungeon cards;
-  - crafting resources and the upgrade → enchant → craft chain;
-  - more regions and Demons.
-  The owner picks which gap comes first; that is the next task.
+Build the rest of [GAME_LOOP.md](GAME_LOOP.md#order-of-work), in order:
+1. The menus from the concept sheet: character stats, an inventory grid
+   with item icons, gold and Ash in the header, quests, and dungeon cards.
+2. Materials, the crafting chain, and gathering camps that work while away.
+3. New regions and Demons.
+4. Quests, achievements and daily challenges.
+
+Still open from the owner: whether look B runs well enough on their phone
+since fog and phone shadows were cut
+([ART_STYLE_TEST.md](ART_STYLE_TEST.md#performance)). If not, the next cuts
+are a lower 3D resolution on phones, then fewer torch lights and less glow.
 
 Device checks for Milestones 1 to 4 are still open: they need the Android app
 on a phone ([DEVICE_TESTING.md](DEVICE_TESTING.md)). The owner's playtests so

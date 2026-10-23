@@ -1,7 +1,9 @@
 class_name Hud
 extends CanvasLayer
-## In-game overlay: the hero's name, health and XP, the menu buttons, touch
-## controls, banners (rooms, bosses, level-ups), messages and a debug readout.
+## In-game overlay, laid out like the concept sheet (docs/UI.md): the hero's
+## portrait, name, health and XP at the top left; the menu buttons and the
+## minimap at the top right; the stick and the icon buttons at the bottom;
+## banners (rooms, bosses, level-ups), messages and a debug readout.
 ## Emits requests; it does not change game state itself.
 ##
 ## The bars move rather than jump: health drops at once and a pale trail
@@ -23,7 +25,8 @@ signal skills_requested
 
 const HEALTH_FILL := Color("#B3261E")
 const HEALTH_TRAIL := Color("#F2C9A0")
-const XP_FILL := Color("#D9A44C")
+## The concept sheet's blue bar under the health bar: XP toward the next level.
+const XP_FILL := Color("#3C9DBE")
 
 var _health: Health
 var _toasts: VBoxContainer
@@ -52,6 +55,10 @@ func _ready() -> void:
 	_pause_button.pressed.connect(pause_requested.emit)
 	(%BagButton as Button).pressed.connect(inventory_requested.emit)
 	(%SkillsButton as Button).pressed.connect(skills_requested.emit)
+	(%BagButton as Button).icon = Icons.of("bag")
+	(%SkillsButton as Button).icon = Icons.of("skills")
+	(%DodgeButton as TouchActionButton).icon = Icons.of("dodge")
+	(%PotionButton as TouchActionButton).icon = Icons.of("potion")
 	var profile := get_node_or_null(^"/root/Profile")
 	if profile:
 		profile.changed.connect(_update_level.bind(profile))
@@ -66,11 +73,30 @@ func _ready() -> void:
 	_fit_to_safe_area()
 
 
-## Shows the hero's class name in its colour where the game's title was.
-func set_hero(title: String, color: Color) -> void:
+## Shows the hero's class name in its colour where the game's title was, and
+## the class's weapon in the portrait and on the attack button.
+func set_hero(title: String, color: Color, class_id: String = "") -> void:
 	var label := $Root/TopBar/Row/TitleBlock/Title as Label
 	label.text = title.to_upper()
 	label.modulate = color
+	var portrait := %Portrait as HeroPortrait
+	portrait.accent = color
+	if class_id != "":
+		portrait.icon = Icons.for_attack(class_id)
+		(%AttackButton as TouchActionButton).icon = Icons.for_attack(class_id)
+
+
+## Shows `level`'s rooms on the minimap around `player`, turned like the
+## camera (`yaw_degrees`).
+func track_minimap(level: Node, player: Node3D, yaw_degrees: float) -> void:
+	var map := %Minimap as Minimap
+	map.player = player
+	map.yaw_degrees = yaw_degrees
+	map.track_level(level)
+
+
+func minimap() -> Minimap:
+	return %Minimap as Minimap
 
 
 ## Shows a big title (a room, a boss, a level gained) for a moment.
@@ -121,7 +147,8 @@ func _update_level(profile: Node) -> void:
 		_xp_tween = create_tween()
 		_xp_tween.tween_property(bar, "value", float(profile.xp), 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	var points: int = profile.points_available(profile.hero_class)
-	(%LevelText as Label).text = "Level %d" % profile.level + ("  ·  %d to spend" % points if points > 0 else "")
+	(%LevelText as Label).text = "Lv %d" % profile.level + ("  ·  %d to spend" % points if points > 0 else "")
+	(%Portrait as HeroPortrait).level = profile.level
 
 
 ## Shows `text` for a moment above the controls (loot picked up). New
@@ -195,6 +222,7 @@ func track_abilities(abilities: Array[Ability]) -> void:
 		if match_index >= 0:
 			var ability := abilities[match_index]
 			button.label = ability.display_name
+			button.icon = Icons.for_ability(ability.display_name)
 			button.cooldown = ability.cooldown_fraction
 			button.set_accent(ability.hud_color)
 			button.badge_source = ability.badge_text if ability.badge_text() != "" else Callable()

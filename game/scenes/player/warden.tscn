@@ -86,7 +86,7 @@ health = NodePath("../Health")
 visual = NodePath("../Visual")
 flash_material = ExtResource("11_flash")
 number_height = 2.3
-number_color = Color(1, 0.35, 0.3, 1)
+number_color = Color(1, 0.88, 0.8, 1)
 spark_color = Color(1, 0.25, 0.2, 1)
 death_burst = false
 
