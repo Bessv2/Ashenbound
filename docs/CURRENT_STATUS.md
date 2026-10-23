@@ -5,7 +5,7 @@ Update this file whenever a milestone's state, a decision or the next task
 changes. The full history of what was built, and how it was checked, is in
 [IMPLEMENTATION_REPORT.md](IMPLEMENTATION_REPORT.md).
 
-**Last updated:** 2026-10-22
+**Last updated:** 2026-10-23
 
 Status labels follow the charter:
 
@@ -36,6 +36,7 @@ Status labels follow the charter:
 | 2026-10-22 | "Merge them and keep going with a second dungeon. You don't have to check in with me to merge them. I want a fully playable test version of the game with mechanics we talked about by today." |
 | 2026-10-22 | The charter was updated to v2.0 (`CLAUDE.md`) and reconciled with the repository. |
 | 2026-10-23 | "The graphics are still too basic. Too cartoony." Two directions named: (A) cartoony characters with realistic attack animations and effects, or (B) hyper-realistic characters and atmosphere with Castle Crashers-style effects. The owner chose to **see both first**: [ART_STYLE_TEST.md](ART_STYLE_TEST.md). **Pending: the owner's pick.** |
+| 2026-10-23 | The owner opened the environment's network to asset sites: "I opened up network access. Go wild." Acquiring free (CC0) resource packs began with sound: [AUDIO.md](AUDIO.md). |
 | 2026-10-21 | **A browser build is a playtest preview** ([WEB_PREVIEW.md](WEB_PREVIEW.md)), not a platform change: Android stays the target. |
 
 ## Milestones
@@ -58,6 +59,7 @@ Status labels follow the charter:
 | Second dungeon: the Forgotten Catacombs | Validated, verified in runtime | [dungeons/forgotten_catacombs.md](dungeons/forgotten_catacombs.md): opens after a crypt clear. Ghouls, three combat rooms, and the Hollow King (volley, spikes, nova, Ghoul adds); dungeon choice on the title screen. |
 | Art style test: Look A against Look B | Validated, verified in runtime | [ART_STYLE_TEST.md](ART_STYLE_TEST.md): a title-screen switch (Classic, A, B) restyles characters, the world, the grade, hits, kills and swings; both looks add hit-stop and lunges. Classic stays the default until the owner chooses. |
 | Fifth and sixth classes: Reliquary and Gravecaller | Validated, verified in runtime | [characters/reliquary.md](characters/reliquary.md), [characters/gravecaller.md](characters/gravecaller.md). All six classes are playable, with playable trees. Reliquary: capped heals, a lantern, a health-cost smite with safeguards, zeal. Gravecaller: skeleton summons with defined lifetime and cleanup, marking wraiths, soul harvest. |
+| Sound and music | Validated, verified in runtime (mix measured; not listened to) | [AUDIO.md](AUDIO.md): 65 cues and 6 tracks, all CC0 (Kenney, OpenGameArt), rebuilt from source by `tools/audio/`. Combat, enemy telegraphs, abilities, loot, gates, interface, and music that follows the run; volume sliders in the pause menu. |
 | Fourth class: Dreadhunter | Validated, verified in runtime | [characters/dreadhunter.md](characters/dreadhunter.md): crossbow, Deadfall, Charged Shot, Carrion Raven; playable tree. |
 | Champions and health potions | Validated, verified in runtime | [CHAMPIONS.md](CHAMPIONS.md): ordinary enemies may rise as champions with affixes (Hasted, Stoneskin, Vampiric, Ember-wreathed, Vengeful) and a guaranteed Rare drop; three potions per run, refilled by kills. |
 | 5 to 7 | Not started | Offline rewards above are early Milestone 6 work. |
@@ -88,7 +90,8 @@ merged into `main`, apart from #6.
 | #34 | `feature/champions` | Merged: champions and health potions. |
 | #35 | `feature/dreadhunter` | The Dreadhunter; merged once its checks pass. |
 | #36 to #38 | `feature/second-dungeon`, `feature/full-roster` | Merged: the catacombs and the full roster. |
-| (new) | `feature/style-lab` | The art style test. |
+| #39 | `feature/style-lab` | Merged: the art style test. |
+| (new) | `feature/audio` | Sound and music. |
 | #6 | `feature/loot` | Open draft, **obsolete**: the early loot work, superseded by Milestone 4's loot. Kept for reference; it can be closed. |
 
 ## Deviations from the charter
@@ -114,7 +117,13 @@ merged into `main`, apart from #6.
 
 ## Next task
 
-The owner plays **Look A** and **Look B** ([ART_STYLE_TEST.md](ART_STYLE_TEST.md))
+The owner listens to the new sound in the web preview and says what to
+change; any cue can be swapped in `tools/audio/import_audio.py`. More free
+packs follow now that the network is open: real effect sprites and surface
+textures, then an animation library for the attacks
+([ART_STYLE_TEST.md](ART_STYLE_TEST.md#what-this-test-cannot-show-yet)).
+
+The owner also plays **Look A** and **Look B** ([ART_STYLE_TEST.md](ART_STYLE_TEST.md))
 and picks a direction. Then the chosen look becomes the default and is
 pushed through every class, enemy, boss and dungeon, and the charter's art
 direction (§9) is updated. Look B needs realistic rigged character models,

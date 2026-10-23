@@ -13,6 +13,7 @@ size = Vector3(0.16, 0.22, 0.06)
 
 [node name="CrossbowBolt" type="Node3D"]
 script = ExtResource("1_projectile")
+impact_sound = &"hit_stone"
 
 [node name="Shaft" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.2)

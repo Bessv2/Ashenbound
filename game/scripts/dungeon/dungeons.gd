@@ -15,6 +15,7 @@ const INFO := {
 		"enter": "Enter the crypt",
 		"scene": "res://scenes/dungeon/crypt.tscn",
 		"color": Color(1.0, 0.55, 0.25),
+		"music": &"music_crypt",
 	},
 	CATACOMBS: {
 		"title": "The Forgotten Catacombs",
@@ -22,6 +23,7 @@ const INFO := {
 		"enter": "Enter the catacombs",
 		"scene": "res://scenes/dungeon/catacombs.tscn",
 		"color": Color(0.4, 0.85, 1.0),
+		"music": &"music_catacombs",
 	},
 }
 
@@ -36,3 +38,16 @@ static func is_open(id: String, profile: Node) -> bool:
 ## The level scene of dungeon `id` (the crypt's for an unknown id).
 static func scene_path(id: String) -> String:
 	return INFO.get(id, INFO[CRYPT]).scene
+
+
+## The music played while exploring dungeon `id` (a SoundBank track).
+static func music_of(id: String) -> StringName:
+	return INFO.get(id, INFO[CRYPT]).music
+
+
+## The dungeon whose level is `scene_path` (the crypt's for any other level).
+static func id_of_scene(scene_path: String) -> String:
+	for id in ORDER:
+		if INFO[id].scene == scene_path:
+			return id
+	return CRYPT

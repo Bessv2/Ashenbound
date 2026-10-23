@@ -653,13 +653,28 @@ Known simplifications:
 ## Settings
 
 - `GameSettings` (Resource) holds player options: joystick dead zone and
-  sensitivity (controls), and render scale and FPS cap (graphics).
+  sensitivity (controls), render scale, FPS cap, screen shake and the look
+  (graphics), and the music and effects volumes (audio).
 - The `Settings` autoload loads `user://settings.cfg` at startup (a missing file
   means defaults), applies graphics options to the engine, and emits `changed`.
   Values read from disk are type-checked and clamped.
 - Systems pull what they need on `changed`. For example, the HUD forwards the
-  joystick options to `TouchJoystick`. There is no settings screen yet.
-  `Settings.save_to()` is ready for one.
+  joystick options to `TouchJoystick`, and `Audio` sets its bus volumes. The
+  pause menu changes screen shake and the two volumes, and saves them.
+
+## Sound
+
+[AUDIO.md](AUDIO.md) has the detail. In short:
+- the `Audio` autoload plays named cues and the music, and owns the buses;
+- `SoundBank` holds how each cue plays, and the generated `SoundFiles` its
+  files;
+- each character scene has a `CharacterSounds` node that plays its sounds
+  from its siblings' signals, with the sounds named in the data (AttackData,
+  `Ability.sound`, `Projectile.impact_sound`);
+- `SoundDirector` in `main.tscn` runs the music and the world's events.
+
+Sound is fire-and-forget and never changes gameplay. The listener is an
+`AudioListener3D` on the camera rig, at the hero.
 
 ## Rendering
 

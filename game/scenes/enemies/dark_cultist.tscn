@@ -18,6 +18,7 @@
 [ext_resource type="PackedScene" path="res://scenes/combat/shadow_bolt.tscn" id="19_bolt"]
 [ext_resource type="Material" path="res://resources/materials/cultist_model.tres" id="20_model_material"]
 [ext_resource type="Resource" path="res://resources/loot/dark_cultist_drops.tres" id="21_drops"]
+[ext_resource type="Script" path="res://scripts/audio/character_sounds.gd" id="sounds_script"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
@@ -99,3 +100,10 @@ idle_animation = &"Idle_Combat"
 run_animation = &"Running_B"
 death_animation = &"Death_C_Skeletons"
 run_reference_speed = 3.0
+
+[node name="Sounds" type="Node" parent="."]
+script = ExtResource("sounds_script")
+pitch = 1.1
+death_layer = &"bones_collapse"
+death = &"ghost_moan"
+impact = &"hit_bone"

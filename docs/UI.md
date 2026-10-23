@@ -47,7 +47,9 @@ drifting embers, a card per class (the playable ones can be chosen; the
 others show what is coming), level, Ash and gold, the crypt tier (`<` and
 `>` within the open tiers), and **Enter the crypt** (focused: Enter starts
 it). The pause menu's **Leave the crypt** returns to it; a run left early
-pays nothing (its rewards are paid when it ends).
+pays nothing (its rewards are paid when it ends). The pause menu also has
+**Music** and **Effects** volume sliders and the screen shake switch, all
+saved ([AUDIO.md](AUDIO.md)).
 - A **dungeon row** under the cards: the Ashen Crypt, and the Forgotten
   Catacombs once the crypt is cleared. The way in names the chosen dungeon.
 - At the end of that row, **Classic**, **Look A** and **Look B**: the art

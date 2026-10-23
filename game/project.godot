@@ -23,6 +23,7 @@ config/icon="res://icon.svg"
 
 Settings="*res://scripts/core/settings_service.gd"
 Profile="*res://scripts/core/profile.gd"
+Audio="*res://scripts/audio/audio_service.gd"
 
 [display]
 

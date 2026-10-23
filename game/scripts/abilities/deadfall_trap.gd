@@ -88,6 +88,7 @@ func _physics_process(delta: float) -> void:
 			erupted_on.append(health)
 	var parent := get_parent()
 	Vfx.ring(parent, global_position, radius, DeadfallAbility.COLOR, 0.35)
+	Audio.play(&"trap_snap", global_position)
 	for i in bolts:
 		var angle := TAU * i / bolts
 		var out := Vector3(cos(angle), 0.0, sin(angle))

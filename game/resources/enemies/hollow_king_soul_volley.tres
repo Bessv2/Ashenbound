@@ -4,6 +4,9 @@
 
 [resource]
 script = ExtResource("1_data")
+sound_pitch = 0.6
+swing_sound = &"spell_cast"
+windup_sound = &"ghost_moan"
 damage = 14
 reach = 14.0
 arc_degrees = 40.0
