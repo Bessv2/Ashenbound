@@ -3,7 +3,9 @@ extends Node
 ## Gives the Compatibility renderer (the web preview, see docs/WEB_PREVIEW.md)
 ## its own lighting. It lights the same scene noticeably brighter and flatter
 ## than the Mobile renderer the Android build uses, so the level carries a
-## second environment and moonlight strength for it. Visual only.
+## second environment and moonlight strength for it. On phones the moonlight
+## casts no shadows: the shadow pass draws every character a second time, and
+## the owner found the game laggy with it (2026-10-23). Visual only.
 
 @export var world_environment: WorldEnvironment
 @export var moonlight: DirectionalLight3D
@@ -12,6 +14,8 @@ extends Node
 
 
 func _ready() -> void:
+	if moonlight and Settings.is_phone():
+		moonlight.shadow_enabled = false
 	if RenderingServer.get_current_rendering_method() != "gl_compatibility":
 		return
 	if world_environment and compatibility_environment:

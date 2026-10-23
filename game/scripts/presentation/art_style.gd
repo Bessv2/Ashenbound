@@ -172,7 +172,6 @@ static func environment_for(base: Environment) -> Environment:
 	else:
 		environment.adjustment_saturation = base.adjustment_saturation * 0.72
 		environment.adjustment_contrast = base.adjustment_contrast * 1.12
-		environment.fog_density = base.fog_density * 1.8
 		environment.glow_bloom = base.glow_bloom * 0.5
 		environment.tonemap_exposure = base.tonemap_exposure * 1.05
 	return environment

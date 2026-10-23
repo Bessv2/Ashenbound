@@ -35,7 +35,7 @@ run: press **Enter the crypt** after choosing.
 |---|---|---|
 | **Characters** (heroes, enemies, summons) | Cel-shaded in three hard light bands, more saturated colour, a bright rim on the silhouette, a thick ink outline. | Worn, real materials: muted colour, fine relief and grime, grey steel turned metallic and glossy. |
 | **World** | As built. | Real photographed stone (Poly Haven, CC0): flagstones on the floors and rock blocks on the walls, with their relief and roughness, and damp grimy hollows that catch the torchlight, in muted colour. Walls keep the see-through hole around the hero. (Until 2026-10-23 the tiled floors and walls were left out by mistake; only props and gates were dressed.) |
-| **Grade** | Warmer and more saturated, a little more glow. | Desaturated, more contrast, thicker fog, less bloom. |
+| **Grade** | Warmer and more saturated, a little more glow. | Desaturated, more contrast, less bloom. |
 | **Hits** | White-hot spark streaks that fall and cool, a glare at the point of contact, a flash of light, smoke, bone chips (undead) or blood droplets (heroes). | A comic star that pops at the impact, and fat ink-outlined blobs (bone or blood) that bounce and squash. |
 | **Kills** | A dust cloud and debris, and a blood pool spreading on the floor for the living. | A ring of round, outlined puffs and a big star. |
 | **Swings** | A thin, white-hot motion-blur streak. | A thick, solid, ink-outlined smear. |
@@ -120,6 +120,19 @@ Measured:
 - **Chromium emulating a phone** (800 × 360 at 3× density, software WebGL):
   frame rate rose about 40% in both looks with the 3D cap.
 - **Not measured on a real phone.**
+
+The owner still found it laggy on their phone, so a second cut followed the
+same day:
+- **No fog** in any look or level (`fog_enabled = false` in every
+  `resources/environment/*.tres`; look B no longer thickens it).
+- **No dynamic shadows on phones.** The only shadow-casting light was the
+  moonlight (the torches never cast shadows); its shadow pass drew every
+  character and wall a second time. `RendererLighting` turns it off when
+  `SettingsService.is_phone()`. Desktop keeps it.
+- The torches keep their light and flames.
+- Measured in the same phone emulation: 1.2 to 1.3–1.4 frames a second. These
+  are software-rendering numbers, useful only for comparison; the real test is
+  the owner's phone.
 
 ## Checks
 
