@@ -1713,3 +1713,43 @@ Checks:
 - Web export, then Chromium emulating a phone (800 × 360 at 3× density, software
   WebGL), two runs each: main 1.2 frames a second, this branch 1.3–1.4.
   Software rendering only; not measured on a real phone.
+
+## 42. The concept sheet's HUD (branch `feature/concept-hud`)
+
+The owner asked for the concept sheet's game, with Idle Pocket Crafter 2 as
+the baseline for active play against idle time. The plan is in
+[GAME_LOOP.md](GAME_LOOP.md). The first step is the HUD.
+
+What changed:
+- **Icons:** 75 icons from game-icons.net (CC BY 3.0).
+  - `tools/art/fetch_icons.py` writes them white to
+    `assets/third_party/game_icons/`, with `CREDITS.md` naming each icon's
+    author (from the site's sitemaps).
+  - They are imported at 256 px with mipmaps.
+  - `Icons` finds them by key.
+- **Portrait** (`HeroPortrait`): the class's weapon in a ring of its colour,
+  with the level badge.
+- **XP bar:** now blue and labelled "Lv N".
+- **Icon buttons:** the skills and bag buttons and every touch button are
+  icons. `TouchActionButton.icon` is drawn in place of the label; the label
+  stays as the button's name.
+- **Minimap** (`Minimap`):
+  - It shows the level's `CryptRoom`s around the hero, turned with the
+    camera and clipped to the disc.
+  - Rooms appear when the hero comes within 6 m of them.
+  - Enemies come from the new `enemies` group (`EnemyController.GROUP`).
+- **Damage numbers:** red on enemies; pale on the heroes and their skeletons.
+- **Look B swings:** crescents that grow and brighten toward the end of the
+  swing.
+
+Checks:
+- `tests/test_concept_hud.gd` (5 tests):
+  - every class's attack and abilities, every slot and the menu keys have
+    icons;
+  - the buttons and the portrait show them;
+  - the minimap hides in the arena;
+  - it maps the crypt's rooms, showing the start room and not a far one;
+  - it turns with the camera.
+- Captures under Xvfb of the Warden, Reaver and Gravecaller in the crypt
+  (verified in runtime). This is where the minimap's first size overlapped
+  the top ability button; it was made smaller.

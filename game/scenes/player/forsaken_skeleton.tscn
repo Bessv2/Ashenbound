@@ -42,6 +42,7 @@ health = NodePath("../Health")
 visual = NodePath("../Visual")
 flash_material = ExtResource("6_flash")
 number_height = 2.0
+number_color = Color(1, 0.88, 0.8, 1)
 death_burst = false
 
 [node name="Claw" type="Node" parent="."]

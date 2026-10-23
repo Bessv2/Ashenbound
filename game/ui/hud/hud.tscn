@@ -4,6 +4,8 @@
 [ext_resource type="Script" path="res://ui/hud/touch_joystick.gd" id="2_joystick"]
 [ext_resource type="Script" path="res://ui/hud/touch_action_button.gd" id="3_action_button"]
 [ext_resource type="Script" path="res://ui/hud/boss_bar.gd" id="90_boss_bar"]
+[ext_resource type="Script" path="res://ui/hud/hero_portrait.gd" id="91_portrait"]
+[ext_resource type="Script" path="res://ui/hud/minimap.gd" id="92_minimap"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -30,6 +32,15 @@ theme_override_constants/margin_right = 32
 [node name="Row" type="HBoxContainer" parent="Root/TopBar"]
 layout_mode = 2
 mouse_filter = 2
+theme_override_constants/separation = 14
+
+[node name="Portrait" type="Control" parent="Root/TopBar/Row"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 104)
+layout_mode = 2
+size_flags_vertical = 0
+mouse_filter = 2
+script = ExtResource("91_portrait")
 
 [node name="TitleBlock" type="VBoxContainer" parent="Root/TopBar/Row"]
 layout_mode = 2
@@ -49,7 +60,7 @@ theme_override_constants/separation = 12
 
 [node name="HealthBar" type="ProgressBar" parent="Root/TopBar/Row/TitleBlock/HealthRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(260, 18)
+custom_minimum_size = Vector2(300, 22)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
@@ -69,7 +80,7 @@ theme_override_constants/separation = 12
 
 [node name="XpBar" type="ProgressBar" parent="Root/TopBar/Row/TitleBlock/XpRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(260, 8)
+custom_minimum_size = Vector2(300, 10)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
@@ -79,7 +90,7 @@ show_percentage = false
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"DimLabel"
-text = "Level 1"
+text = "Lv 1"
 
 [node name="DebugLabel" type="Label" parent="Root/TopBar/Row/TitleBlock"]
 unique_name_in_owner = true
@@ -89,23 +100,27 @@ text = "FPS --"
 
 [node name="SkillsButton" type="Button" parent="Root/TopBar/Row"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(140, 96)
+custom_minimum_size = Vector2(84, 84)
 layout_mode = 2
 size_flags_vertical = 0
 focus_mode = 0
-text = "SKILLS"
+text = ""
+icon_alignment = 1
+expand_icon = true
 
 [node name="BagButton" type="Button" parent="Root/TopBar/Row"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(120, 96)
+custom_minimum_size = Vector2(84, 84)
 layout_mode = 2
 size_flags_vertical = 0
 focus_mode = 0
-text = "BAG"
+text = ""
+icon_alignment = 1
+expand_icon = true
 
 [node name="PauseButton" type="Button" parent="Root/TopBar/Row"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(96, 96)
+custom_minimum_size = Vector2(84, 84)
 layout_mode = 2
 size_flags_vertical = 0
 focus_mode = 0
@@ -136,6 +151,20 @@ custom_minimum_size = Vector2(0, 18)
 layout_mode = 2
 mouse_filter = 2
 show_percentage = false
+
+[node name="Minimap" type="Control" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -196.0
+offset_top = 118.0
+offset_right = -32.0
+offset_bottom = 282.0
+grow_horizontal = 0
+mouse_filter = 2
+script = ExtResource("92_minimap")
 
 [node name="TouchJoystick" type="Control" parent="Root"]
 unique_name_in_owner = true

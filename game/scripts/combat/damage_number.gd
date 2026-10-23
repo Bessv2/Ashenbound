@@ -4,7 +4,9 @@ extends Label3D
 
 const RISE := 0.9
 const DURATION := 0.75
-const DEFAULT_COLOR := Color(1.0, 0.82, 0.55)
+## Damage dealt to enemies: red, as on the concept sheet. The heroes' own
+## numbers are pale (their HitFeedback's number_color).
+const DEFAULT_COLOR := Color(1.0, 0.24, 0.16)
 
 
 ## Spawns a number above `parent`'s origin at `height` meters.

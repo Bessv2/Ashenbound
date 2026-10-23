@@ -14,6 +14,11 @@ const NO_TOUCH := -1
 
 @export var action: StringName = GameplayActions.ATTACK
 @export var label: String = "ATTACK"
+## Drawn in place of the label when set, tinted with the text colour.
+@export var icon: Texture2D:
+	set(value):
+		icon = value
+		queue_redraw()
 
 @export_group("Appearance")
 @export var fill_color: Color = Color(0.09, 0.07, 0.09, 0.6)
@@ -139,9 +144,16 @@ func _draw() -> void:
 		draw_arc(center, radius - 1.5 + (1.0 - _ready_flash) * 10.0, 0.0, TAU, 64, glow, 2.0 + 5.0 * _ready_flash, true)
 	var font := get_theme_default_font()
 	var font_size := get_theme_default_font_size()
-	var text_size := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)
-	draw_string(font, center + Vector2(-text_size.x * 0.5, font.get_ascent(font_size) * 0.35),
-			label, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, text_color)
+	if icon:
+		# The icon, with a soft dark shadow so it reads over any floor.
+		var side := radius * 1.15
+		var rect := Rect2(center - Vector2.ONE * side * 0.5, Vector2.ONE * side)
+		draw_texture_rect(icon, Rect2(rect.position + Vector2(0, 3), rect.size), false, Color(0, 0, 0, 0.55))
+		draw_texture_rect(icon, rect, false, text_color.lerp(Color.WHITE, _press * 0.6))
+	else:
+		var text_size := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)
+		draw_string(font, center + Vector2(-text_size.x * 0.5, font.get_ascent(font_size) * 0.35),
+				label, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, text_color)
 	if badge != "":
 		var spot := center + Vector2(radius * 0.72, -radius * 0.72)
 		draw_circle(spot, 17.0, Color(0.06, 0.04, 0.05, 0.95), true, -1.0, true)
