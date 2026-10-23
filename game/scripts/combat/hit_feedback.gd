@@ -31,12 +31,20 @@ func _ready() -> void:
 
 func _on_damaged(amount: int, _remaining: int) -> void:
 	var body := get_parent() as Node3D
+	var look := ArtStyle.current()
 	if body:
 		DamageNumber.spawn(body, amount, number_height, number_color)
-		Vfx.burst(body, body.global_position + Vector3.UP * number_height * 0.45, spark_color, 14, 4.5, 0.35)
+		var at := body.global_position + Vector3.UP * number_height * 0.45
+		match look:
+			ArtStyle.Look.HEROIC:
+				RealFx.impact(body, at, _is_flesh())
+			ArtStyle.Look.GRIM:
+				ToonFx.impact(body, at, _is_flesh())
+			_:
+				Vfx.burst(body, at, spark_color, 14, 4.5, 0.35)
 	if visual == null:
 		return
-	_punch()
+	_punch(look)
 	if flash_material == null:
 		return
 	_set_overlay(flash_material)
@@ -48,22 +56,44 @@ func _on_damaged(amount: int, _remaining: int) -> void:
 	_flash_tween.tween_callback(_set_overlay.bind(null))
 
 
-## Squashes the visual and lets it spring back: the body takes the blow.
-func _punch() -> void:
+## The body takes the blow: a squash that springs back. Look A flinches
+## instead (a jolt backward that recovers); look B squashes much harder.
+func _punch(look: ArtStyle.Look = ArtStyle.Look.CLASSIC) -> void:
 	if _punch_tween:
 		_punch_tween.kill()
-	visual.scale = _visual_scale * Vector3(1.14, 0.86, 1.14)
 	_punch_tween = create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
-	_punch_tween.tween_property(visual, "scale", _visual_scale, 0.22).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+	match look:
+		ArtStyle.Look.HEROIC:
+			visual.scale = _visual_scale * Vector3(1.04, 0.96, 1.04)
+			visual.rotation.x = -0.28
+			_punch_tween.set_parallel()
+			_punch_tween.tween_property(visual, "rotation:x", 0.0, 0.28).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+			_punch_tween.tween_property(visual, "scale", _visual_scale, 0.2)
+		ArtStyle.Look.GRIM:
+			visual.scale = _visual_scale * Vector3(1.38, 0.62, 1.38)
+			_punch_tween.tween_property(visual, "scale", _visual_scale, 0.35).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+		_:
+			visual.scale = _visual_scale * Vector3(1.14, 0.86, 1.14)
+			_punch_tween.tween_property(visual, "scale", _visual_scale, 0.22).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 
+
+## Heroes bleed; the undead shed bone.
+func _is_flesh() -> bool:
+	return get_parent() is PlayerController
 
 func _on_died() -> void:
 	var body := get_parent() as Node3D
 	if body == null or not death_burst:
 		return
 	var at := body.global_position + Vector3.UP * 0.8
-	Vfx.burst(body.get_parent(), at, Color(0.45, 0.42, 0.4), 30, 3.5, 0.9, 0.16)
-	Vfx.burst(body.get_parent(), at, Color(1.0, 0.45, 0.12), 20, 5.5, 0.6, 0.12)
+	match ArtStyle.current():
+		ArtStyle.Look.HEROIC:
+			RealFx.death(body.get_parent(), at, _is_flesh())
+		ArtStyle.Look.GRIM:
+			ToonFx.death(body.get_parent(), at, _is_flesh())
+		_:
+			Vfx.burst(body.get_parent(), at, Color(0.45, 0.42, 0.4), 30, 3.5, 0.9, 0.16)
+			Vfx.burst(body.get_parent(), at, Color(1.0, 0.45, 0.12), 20, 5.5, 0.6, 0.12)
 
 
 func _set_overlay(material: Material) -> void:

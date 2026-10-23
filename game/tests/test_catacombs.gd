@@ -155,7 +155,7 @@ func test_the_title_screen_offers_the_open_dungeons() -> void:
 	title.enter_requested.disconnect(title._go_to_crypt)
 	var row := title.find_child("Dungeons", true, false)
 	var catacombs := row.get_node(Dungeons.CATACOMBS) as Button
-	check(row.get_child_count() == 2 and catacombs.disabled, "two dungeons, the second locked")
+	check(row.has_node(Dungeons.CRYPT) and catacombs.disabled, "two dungeons, the second locked")
 	check(not title.choose_dungeon(Dungeons.CATACOMBS), "a locked one cannot be chosen")
 	Profile.complete_tier(1)
 	title._refresh()

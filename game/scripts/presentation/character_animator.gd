@@ -38,6 +38,7 @@ extends Node
 ## The one-shot clip playing now, or &"" while the locomotion clips run.
 var action: StringName = &""
 var _dead := false
+var _lunge_tween: Tween
 
 
 func _ready() -> void:
@@ -72,6 +73,37 @@ func _process(_delta: float) -> void:
 
 func _on_attack_started(attack: MeleeAttack, clip: StringName) -> void:
 	_play_action(clip, attack.data.windup + attack.data.recovery)
+	_lunge(attack)
+
+
+## Looks A and B (ArtStyle) give attacks weight the clips lack: the body
+## draws back through the windup, drives forward as the blow lands, and
+## settles. Moves only the visual, never the body, so reach and collision
+## are unchanged. Look B lunges further.
+func _lunge(attack: MeleeAttack) -> void:
+	var look := ArtStyle.current()
+	var visual: Node3D = body.get(&"visual") if body and &"visual" in body else null
+	if look == ArtStyle.Look.CLASSIC or visual == null:
+		return
+	var forward := Vector2(attack.direction.x, attack.direction.z).normalized()
+	var reach := 0.32 if look == ArtStyle.Look.HEROIC else 0.5
+	var windup := maxf(attack.windup_time(), 0.06)
+	var drawn := -forward * 0.12
+	if _lunge_tween:
+		_lunge_tween.kill()
+	_lunge_tween = create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
+	_lunge_tween.tween_method(_set_visual_offset.bind(visual), Vector2.ZERO, drawn, windup * 0.85) \
+			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_lunge_tween.tween_method(_set_visual_offset.bind(visual), drawn, forward * reach, maxf(windup * 0.15, 0.04)) \
+			.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
+	_lunge_tween.tween_method(_set_visual_offset.bind(visual), forward * reach, Vector2.ZERO, 0.28) \
+			.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+
+
+func _set_visual_offset(offset: Vector2, visual: Node3D) -> void:
+	if is_instance_valid(visual):
+		visual.position.x = offset.x
+		visual.position.z = offset.y
 
 
 ## Plays `clip` once, sped up to last `fit_time` seconds when that is given.

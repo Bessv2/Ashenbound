@@ -50,6 +50,9 @@ it). The pause menu's **Leave the crypt** returns to it; a run left early
 pays nothing (its rewards are paid when it ends).
 - A **dungeon row** under the cards: the Ashen Crypt, and the Forgotten
   Catacombs once the crypt is cleared. The way in names the chosen dungeon.
+- At the end of that row, **Classic**, **Look A** and **Look B**: the art
+  style test ([ART_STYLE_TEST.md](ART_STYLE_TEST.md)), saved, applied from the
+  next run.
 
 ## Performance notes
 
