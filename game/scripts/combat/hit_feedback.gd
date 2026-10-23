@@ -42,6 +42,8 @@ func _on_damaged(amount: int, _remaining: int) -> void:
 				ToonFx.impact(body, at, _is_flesh())
 			_:
 				Vfx.burst(body, at, spark_color, 14, 4.5, 0.35)
+				if not _is_flesh():
+					Vfx.debris(body, at, Color(0.85, 0.8, 0.7), 3, 3.5, 0.3)
 	if visual == null:
 		return
 	_punch(look)
@@ -92,7 +94,8 @@ func _on_died() -> void:
 		ArtStyle.Look.GRIM:
 			ToonFx.death(body.get_parent(), at, _is_flesh())
 		_:
-			Vfx.burst(body.get_parent(), at, Color(0.45, 0.42, 0.4), 30, 3.5, 0.9, 0.16)
+			Vfx.smoke(body.get_parent(), at, Color(0.5, 0.47, 0.44), 10, 2.0, 1.3)
+			Vfx.debris(body.get_parent(), at, Color(0.85, 0.8, 0.72), 8, 4.5, 0.65)
 			Vfx.burst(body.get_parent(), at, Color(1.0, 0.45, 0.12), 20, 5.5, 0.6, 0.12)
 
 

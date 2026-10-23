@@ -31,7 +31,7 @@ run: press **Enter the crypt** after choosing.
 | | Look A ("bold heroes, real effects") | Look B ("grim world, cartoon effects") |
 |---|---|---|
 | **Characters** (heroes, enemies, summons) | Cel-shaded in three hard light bands, more saturated colour, a bright rim on the silhouette, a thick ink outline. | Worn, real materials: muted colour, fine relief and grime, grey steel turned metallic and glossy. |
-| **World** | As built. | Stone made heavy and real: large-scale relief, damp grimy hollows that catch the torchlight, muted colour. Walls keep the see-through hole around the hero. |
+| **World** | As built. | Real photographed stone (Poly Haven, CC0): flagstones on the floors and rock blocks on the walls, with their relief and roughness, and damp grimy hollows that catch the torchlight, in muted colour. Walls keep the see-through hole around the hero. (Until 2026-10-23 the tiled floors and walls were left out by mistake; only props and gates were dressed.) |
 | **Grade** | Warmer and more saturated, a little more glow. | Desaturated, more contrast, thicker fog, less bloom. |
 | **Hits** | White-hot spark streaks that fall and cool, a glare at the point of contact, a flash of light, smoke, bone chips (undead) or blood droplets (heroes). | A comic star that pops at the impact, and fat ink-outlined blobs (bone or blood) that bounce and squash. |
 | **Kills** | A dust cloud and debris, and a blood pool spreading on the floor for the living. | A ring of round, outlined puffs and a big star. |

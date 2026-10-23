@@ -52,6 +52,10 @@ func _physics_process(delta: float) -> void:
 			ticks_left = 0
 		else:
 			_health.apply_damage(damage)
+			# Fire licks up from the body on each tick of a burn.
+			if name == "Burning":
+				var body := _health.get_parent() as Node3D
+				Vfx.flames(body, body.global_position + Vector3.UP * 0.9, Color(1.0, 0.45, 0.12), 3, 0.7, 0.4)
 	if ticks_left <= 0 or _health.is_dead():
 		queue_free()
 

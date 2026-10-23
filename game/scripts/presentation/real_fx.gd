@@ -33,6 +33,7 @@ static func impact(parent: Node, at: Vector3, flesh: bool) -> void:
 ## blood spreading on the floor.
 static func death(parent: Node, at: Vector3, flesh: bool) -> void:
 	_smoke(parent, at, 16, 1.6, 1.1)
+	Vfx.debris(parent, at, BLOOD if flesh else BONE, 7, 4.5, 0.5)
 	_droplets(parent, at, BLOOD if flesh else BONE, 22, 3.5, 0.8, 0.09)
 	if flesh:
 		pool(parent, Vector3(at.x, 0.0, at.z), 1.1)
@@ -126,14 +127,19 @@ static func _smoke(parent: Node, at: Vector3, amount: int, size: float, lifetime
 	grow.add_point(Vector2(0.0, 0.4))
 	grow.add_point(Vector2(1.0, 1.0))
 	particles.scale_amount_curve = grow
+	particles.anim_offset_max = 1.0
+	particles.angle_min = -180.0
+	particles.angle_max = 180.0
 	var mesh := QuadMesh.new()
 	mesh.size = Vector2(size, size)
 	var material := StandardMaterial3D.new()
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	material.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+	material.particles_anim_h_frames = 4
+	material.particles_anim_v_frames = 2
 	material.vertex_color_use_as_albedo = true
-	material.albedo_texture = FlameFx.soft_dot()
+	material.albedo_texture = Vfx.SmokeTexture
 	mesh.material = material
 	particles.mesh = mesh
 	var fade := Gradient.new()
