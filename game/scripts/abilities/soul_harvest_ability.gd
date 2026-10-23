@@ -68,4 +68,5 @@ func _activate(_toward: Vector3) -> bool:
 	if hero.get_parent():
 		Vfx.ring(hero.get_parent(), hero.global_position, radius, COLOR, 0.5)
 		Vfx.burst(hero.get_parent(), hero.global_position + Vector3.UP, COLOR, 30, 4.0, 0.6, 0.12)
+		Vfx.smoke(hero.get_parent(), hero.global_position + Vector3.UP * 0.5, COLOR.darkened(0.5), 6, 1.8, 1.0)
 	return true

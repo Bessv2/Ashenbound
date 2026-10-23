@@ -33,6 +33,11 @@ const GrimShader := preload("res://resources/shaders/grim_surface.gdshader")
 const OutlineShader := preload("res://resources/shaders/outline.gdshader")
 const CutoutShader := preload("res://resources/shaders/occluder_cutout.gdshader")
 
+## Look B's photographed stone (Poly Haven, CC0; tools/art/fetch_polyhaven.py):
+## flagstones on floors, rock blocks on walls.
+const FLOOR_PHOTO := "res://assets/third_party/polyhaven/stone_tiles_02/stone_tiles_02_%s_1k.jpg"
+const WALL_PHOTO := "res://assets/third_party/polyhaven/rock_wall_08/rock_wall_08_%s_1k.jpg"
+
 ## Outline width given to every character in look A, in model units.
 const HEROIC_OUTLINE := 0.03
 
@@ -106,6 +111,13 @@ static func world_material(source: Material, look: Look) -> Material:
 	styled.set_shader_parameter(&"relief", 1.8)
 	styled.set_shader_parameter(&"noise_scale", 1.7)
 	styled.set_shader_parameter(&"desaturate", 0.55)
+	styled.set_shader_parameter(&"use_detail", true)
+	for part in ["albedo", "normal", "roughness"]:
+		var file: String = {"albedo": "diff", "normal": "nor_gl", "roughness": "rough"}[part]
+		styled.set_shader_parameter(StringName("detail_top_" + part), load(FLOOR_PHOTO % file))
+		styled.set_shader_parameter(StringName("detail_side_" + part), load(WALL_PHOTO % file))
+	styled.set_shader_parameter(&"detail_top_scale", 1.0 / 2.0)
+	styled.set_shader_parameter(&"detail_side_scale", 1.0 / 1.8)
 	if source is ShaderMaterial and (source as ShaderMaterial).shader == CutoutShader:
 		styled.set_shader_parameter(&"cutout", true)
 	_copy_colors(source, styled)
@@ -114,11 +126,20 @@ static func world_material(source: Material, look: Look) -> Material:
 
 
 ## Restyles every visible mesh under `root` for the world in the current
-## look (look B only). Glowing and transparent effects are left alone.
+## look (look B only), the tiled floors and walls (MultiMeshes) included.
+## Glowing and transparent effects are left alone.
 static func dress_world(root: Node) -> void:
 	var look := current()
 	if look != Look.GRIM:
 		return
+	for node in root.find_children("*", "MultiMeshInstance3D", true, false):
+		var tiles := node as MultiMeshInstance3D
+		if tiles.multimesh == null or tiles.multimesh.mesh == null or _is_effect(tiles):
+			continue
+		var source := tiles.material_override if tiles.material_override else tiles.multimesh.mesh.surface_get_material(0)
+		var styled := world_material(source, look)
+		if styled != source:
+			tiles.material_override = styled
 	for node in root.find_children("*", "MeshInstance3D", true, false):
 		var mesh_node := node as MeshInstance3D
 		if mesh_node.mesh == null or _is_effect(mesh_node):
@@ -153,7 +174,7 @@ static func environment_for(base: Environment) -> Environment:
 	return environment
 
 
-static func _is_effect(mesh_node: MeshInstance3D) -> bool:
+static func _is_effect(mesh_node: GeometryInstance3D) -> bool:
 	var material := mesh_node.material_override
 	if material is StandardMaterial3D:
 		var standard := material as StandardMaterial3D

@@ -76,5 +76,6 @@ func _activate(_toward: Vector3) -> bool:
 		minion.reset_physics_interpolation()
 		if hero.get_parent():
 			Vfx.burst(hero.get_parent(), minion.global_position + Vector3.UP * 0.4, Minion.COLOR, 12, 2.5, 0.5)
+			Vfx.debris(hero.get_parent(), minion.global_position + Vector3.UP * 0.2, Color(0.45, 0.4, 0.35), 5, 3.0, 0.5)
 		raised.append(minion)
 	return true

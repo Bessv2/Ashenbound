@@ -60,6 +60,7 @@ Status labels follow the charter:
 | Art style test: Look A against Look B | Validated, verified in runtime | [ART_STYLE_TEST.md](ART_STYLE_TEST.md): a title-screen switch (Classic, A, B) restyles characters, the world, the grade, hits, kills and swings; both looks add hit-stop and lunges. Classic stays the default until the owner chooses. |
 | Fifth and sixth classes: Reliquary and Gravecaller | Validated, verified in runtime | [characters/reliquary.md](characters/reliquary.md), [characters/gravecaller.md](characters/gravecaller.md). All six classes are playable, with playable trees. Reliquary: capped heals, a lantern, a health-cost smite with safeguards, zeal. Gravecaller: skeleton summons with defined lifetime and cleanup, marking wraiths, soul harvest. |
 | Sound and music | Validated, verified in runtime (mix measured; not listened to) | [AUDIO.md](AUDIO.md): 65 cues and 6 tracks, all CC0 (Kenney, OpenGameArt), rebuilt from source by `tools/audio/`. Combat, enemy telegraphs, abilities, loot, gates, interface, and music that follows the run; volume sliders in the pause menu. |
+| Effect sprites and photographed stone | Validated, verified in runtime | [ART_ASSET_PIPELINE.md](ART_ASSET_PIPELINE.md#effect-sprites-and-photographed-stone-2026-10-23): Kenney's particle sprites (CC0) for sparks, smoke, debris, fire, shockwaves and scorch marks in every look, and on the torches; Poly Haven stone (CC0) on look B's floors and walls, which also fixes look B leaving the tiled floors and walls undressed. |
 | Motion-captured animation (looks A and B) | Validated, verified in runtime | [ANIMATION.md](ANIMATION.md): 28 CC0 mocap clips (Quaternius) retargeted onto the KayKit rig: sword combos, shield bash, spellcasting, hits, deaths, zombie ghouls. Classic keeps its clips. |
 | Fourth class: Dreadhunter | Validated, verified in runtime | [characters/dreadhunter.md](characters/dreadhunter.md): crossbow, Deadfall, Charged Shot, Carrion Raven; playable tree. |
 | Champions and health potions | Validated, verified in runtime | [CHAMPIONS.md](CHAMPIONS.md): ordinary enemies may rise as champions with affixes (Hasted, Stoneskin, Vampiric, Ember-wreathed, Vengeful) and a guaranteed Rare drop; three potions per run, refilled by kills. |
@@ -93,8 +94,8 @@ merged into `main`, apart from #6.
 | #36 to #38 | `feature/second-dungeon`, `feature/full-roster` | Merged: the catacombs and the full roster. |
 | #39 | `feature/style-lab` | Merged: the art style test. |
 | #40 | `feature/audio` | Merged: sound and music. |
-| #41 | `feature/vfx-pack` | Effect sprites and photographed stone. |
-| (new) | `feature/mocap` | Motion-captured animation for looks A and B. |
+| #41 | `feature/vfx-pack` | Merged: effect sprites and photographed stone. |
+| #42 | `feature/mocap` | Motion-captured animation for looks A and B. |
 | #6 | `feature/loot` | Open draft, **obsolete**: the early loot work, superseded by Milestone 4's loot. Kept for reference; it can be closed. |
 
 ## Deviations from the charter

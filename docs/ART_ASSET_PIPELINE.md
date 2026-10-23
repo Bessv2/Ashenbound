@@ -83,6 +83,16 @@ The sound effects and music (CC0, from Kenney and OpenGameArt) follow the same
 rules. They are listed with their sources in [AUDIO.md](AUDIO.md#the-files-and-where-they-come-from)
 and in `game/assets/third_party/audio/packs.json`. They are rebuilt from the
 original downloads by `tools/audio/import_audio.py`.
+## Effect sprites and photographed stone (2026-10-23)
+
+| Pack | Source | Licence | Files | Used for |
+|---|---|---|---|---|
+| Kenney Particle Pack | kenney.nl/assets/particle-pack | CC0 1.0 (`LICENSE-kenney.txt`) | 6 atlases in `game/assets/third_party/kenney_particles/`, packed by `tools/art/make_particle_atlases.py` from the pack's transparent sprites | `Vfx`: sparks (glint), smoke (8 puffs), debris (3 sprays), fire tongues (6), shockwave ring, scorch decal; torches (`FlameFx`); look A's smoke (`RealFx`) |
+| Poly Haven: Stone Tiles 02 (Charlotte Baglioni), Rock Wall 08 (Amal Kumar) | polyhaven.com/a/stone_tiles_02, /rock_wall_08 | CC0 1.0 | 1k colour, normal and roughness in `game/assets/third_party/polyhaven/<id>/`, fetched by `tools/art/fetch_polyhaven.py`, with `info.json` | Look B's floors (upward faces) and walls (side faces), projected by world position in `grim_surface.gdshader` |
+
+The particle sprites are white on transparent and tinted in the game. The
+photographs shade the palette's colour rather than replace it: each is
+divided by its own average brightness, so stone keeps the level's hue.
 
 ## Motion capture (2026-10-23)
 

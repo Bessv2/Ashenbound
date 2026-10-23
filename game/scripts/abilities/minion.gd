@@ -83,6 +83,7 @@ func crumble() -> void:
 	attack.cancel()
 	if get_parent():
 		Vfx.burst(get_parent(), global_position + Vector3.UP, COLOR, 14, 3.0, 0.5)
+		Vfx.smoke(get_parent(), global_position + Vector3.UP * 0.6, COLOR.darkened(0.4), 4, 1.2, 0.9)
 		Audio.play(&"bones_collapse", global_position + Vector3.UP, 1.1)
 	queue_free()
 

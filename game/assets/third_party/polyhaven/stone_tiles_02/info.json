@@ -1,0 +1,13 @@
+{
+  "name": "Stone Tiles 02",
+  "authors": [
+    "Charlotte Baglioni"
+  ],
+  "page": "https://polyhaven.com/a/stone_tiles_02",
+  "license": "CC0 1.0 (https://polyhaven.com/license)",
+  "size_m": [
+    2.0,
+    2.0
+  ],
+  "used_for": "floors in look B (upward faces)"
+}
