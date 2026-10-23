@@ -7,8 +7,19 @@ extends Node
 
 signal dropped(pickup: LootPickup)
 signal collected(item: ItemInstance)
+## A kill gave crafting materials (Materials id → amount), at `at`. The run
+## keeps them and pays them with its other rewards.
+signal materials_found(found: Dictionary, at: Vector3)
+
+## Soul shards from a Champion (the chance of one), an elite and a boss.
+const CHAMPION_SHARD_CHANCE := 0.5
+const ELITE_SHARDS := 1
+const BOSS_SHARDS := 3
+const BOSS_CRYSTALS := 3
 
 @export_range(1, 100, 1) var item_level: int = 1
+## The dungeon played: which materials its enemies drop.
+var dungeon: String = Dungeons.CRYPT
 ## Set from the crypt tier: more drops, and rarer ones.
 var chance_scale: float = 1.0
 var rarity_scale: float = 1.0
@@ -41,6 +52,31 @@ func on_enemy_killed(enemy: Node3D) -> void:
 	for i in items.size():
 		var angle := TAU * i / maxf(items.size(), 1.0)
 		drop(items[i], enemy.global_position + Vector3(cos(angle), 0.0, sin(angle)) * (0.0 if items.size() == 1 else 1.0))
+	var found := roll_materials(enemy as EnemyController)
+	if not found.is_empty():
+		materials_found.emit(found, enemy.global_position)
+
+
+## The materials one kill gives: each of the dungeon's materials by its
+## chance (more often on higher tiers, two at a time from a Champion), and
+## soul shards from Champions, elites and bosses.
+func roll_materials(enemy: EnemyController) -> Dictionary:
+	var found := {}
+	var champion := Champion.of(enemy) != null
+	var boss := enemy.is_in_group(&"boss")
+	var elite := not enemy.champion_eligible and not boss
+	var chances := Dungeons.materials_of(dungeon)
+	for id: String in chances:
+		if _rng.randf() < minf(chances[id] * chance_scale, 1.0):
+			found[id] = 2 if champion else 1
+	if champion and _rng.randf() < CHAMPION_SHARD_CHANCE:
+		found[Materials.SOUL_SHARD] = 1
+	if elite:
+		found[Materials.SOUL_SHARD] = int(found.get(Materials.SOUL_SHARD, 0)) + ELITE_SHARDS
+	if boss:
+		found[Materials.SOUL_SHARD] = int(found.get(Materials.SOUL_SHARD, 0)) + BOSS_SHARDS
+		found[Materials.CRYSTAL] = int(found.get(Materials.CRYSTAL, 0)) + BOSS_CRYSTALS
+	return found
 
 
 ## Lays `item` on the floor at `at`.

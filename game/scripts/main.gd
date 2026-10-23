@@ -84,6 +84,7 @@ func _ready() -> void:
 	Profile.leveled_up.connect(_on_leveled_up)
 	_run.kill_counted.connect(_loot.on_enemy_killed)
 	_loot.collected.connect(_on_loot_collected)
+	_loot.materials_found.connect(_on_materials_found)
 	_death_screen.restart_requested.connect(_on_restart_chosen)
 	_death_screen.alternate_requested.connect(_on_alternate_chosen)
 	_sound.watch_run(_run)
@@ -252,6 +253,7 @@ func _load_level() -> void:
 			encounter.champion_spawned.connect(_on_champion_spawned)
 	_loot.item_level = difficulty.item_level(level.item_level)
 	_loot.chance_scale = difficulty.drop_chance_scale()
+	_loot.dungeon = Dungeons.id_of_scene(level_scene.resource_path)
 	_loot.rarity_scale = difficulty.rarity_scale()
 
 
@@ -281,6 +283,14 @@ func _on_kill_counted(enemy: Node3D) -> void:
 		_player.health.heal(stats.value(ItemStats.HEALTH_ON_KILL))
 	if enemy is EnemyController:
 		Profile.add_xp((enemy as EnemyController).xp_value)
+
+
+func _on_materials_found(found: Dictionary, _at: Vector3) -> void:
+	if _run.is_over():
+		return
+	_run.add_materials(found)
+	var first: String = found.keys()[0]
+	_hud.show_toast("+%s" % Materials.describe(found), Materials.color_of(first).lightened(0.2))
 
 
 func _on_leveled_up(new_level: int) -> void:
@@ -359,5 +369,8 @@ func _on_alternate_chosen() -> void:
 ## The run's summary, as shown on the end screen.
 func summary_text() -> String:
 	var seconds := int(_run.elapsed)
-	return "Tier %d    Time %d:%02d    Enemies slain %d    Damage taken %d\nAsh earned %d    Gold earned %d    Items found %d" % [
+	var text := "Tier %d    Time %d:%02d    Enemies slain %d    Damage taken %d\nAsh earned %d    Gold earned %d    Items found %d" % [
 			difficulty.tier, seconds / 60, seconds % 60, _run.kills, _run.damage_taken, _run.ash, _run.gold, _loot_found]
+	if not _run.materials.is_empty():
+		text += "\nMaterials: %s" % Materials.describe(_run.materials)
+	return text

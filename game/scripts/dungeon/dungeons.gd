@@ -19,6 +19,8 @@ const INFO := {
 		"icon": "region_crypt",
 		# The hero levels it is meant for, shown on its card.
 		"levels": Vector2i(1, 10),
+		# Material → chance per kill to drop one (docs/CRAFTING.md).
+		"materials": {"iron_ore": 0.35, "wood": 0.25, "crystal": 0.06},
 	},
 	CATACOMBS: {
 		"title": "The Forgotten Catacombs",
@@ -29,6 +31,7 @@ const INFO := {
 		"music": &"music_catacombs",
 		"icon": "region_catacombs",
 		"levels": Vector2i(5, 15),
+		"materials": {"leather": 0.3, "herbs": 0.3, "crystal": 0.08},
 	},
 }
 
@@ -45,6 +48,11 @@ static func lock_reason(id: String, profile: Node) -> String:
 	if is_open(id, profile):
 		return ""
 	return "Clear the crypt to open"
+
+
+## Material → chance per ordinary kill in dungeon `id`.
+static func materials_of(id: String) -> Dictionary:
+	return INFO.get(id, INFO[CRYPT]).materials
 
 
 ## "Lv 1-10".

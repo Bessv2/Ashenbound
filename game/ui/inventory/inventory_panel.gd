@@ -3,8 +3,9 @@ extends CanvasLayer
 ## The bag and the equipment: nine slots on the left, the bag grid in the
 ## middle, and the card of the selected item on the right with its stats
 ## compared, stat by stat, against what it would replace (docs/LOOT.md, UI).
-## Equip, unequip, upgrade and salvage go through Profile, which never loses
-## or duplicates an item. Salvage asks for a second tap.
+## Equip, unequip, upgrade, enchant, ascend and salvage go through Profile,
+## which never loses or duplicates an item. Salvage asks for a second tap.
+## Enchant rerolls the affix tapped on the card (docs/CRAFTING.md).
 ##
 ## Built in code from the theme's controls. Touch first: every target is at
 ## least 88 px. Processes while the game is paused (Main pauses it).
@@ -37,6 +38,10 @@ var _purse: HBoxContainer
 var _card_frame: StyleBoxFlat
 var _card_icon: TextureRect
 var _card_power: Label
+var _enchant_button: Button
+var _ascend_button: Button
+## The affix of the shown item that Enchant would reroll; -1 for none.
+var _selected_affix: int = -1
 
 
 func _ready() -> void:
@@ -80,6 +85,7 @@ func selected_item() -> ItemInstance:
 func select_bag_item(uid: String) -> void:
 	_selected_uid = uid
 	_selected_slot = -1
+	_selected_affix = -1
 	_refresh()
 
 
@@ -87,7 +93,31 @@ func select_bag_item(uid: String) -> void:
 func select_slot(slot: int) -> void:
 	_selected_uid = ""
 	_selected_slot = slot
+	_selected_affix = -1
 	_refresh()
+
+
+## Chooses affix `index` of the shown item for Enchant.
+func select_affix(index: int) -> void:
+	_selected_affix = index
+	_refresh()
+
+
+## Rerolls the chosen affix. Returns "" or why it could not.
+func press_enchant() -> String:
+	var problem: String = profile.enchant_item(selected_item(), _selected_affix)
+	Audio.play(&"anvil" if problem == "" else &"ui_error")
+	_refresh()
+	return problem
+
+
+## Raises the shown item one rarity. Returns "" or why it could not.
+func press_ascend() -> String:
+	var problem: String = profile.ascend_item(selected_item())
+	Audio.play(&"anvil" if problem == "" else &"ui_error")
+	_selected_affix = -1
+	_refresh()
+	return problem
 
 
 ## Upgrades the selected item one rank. Returns "" or why it could not.
@@ -279,6 +309,7 @@ func _build() -> void:
 	_action_button = Button.new()
 	_action_button.custom_minimum_size = Vector2(0, 80)
 	_action_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_action_button.add_theme_font_size_override(&"font_size", 18)
 	_action_button.pressed.connect(press_action)
 	buttons.add_child(_action_button)
 	_upgrade_button = Button.new()
@@ -295,6 +326,27 @@ func _build() -> void:
 	_salvage_button.add_theme_font_size_override(&"font_size", 18)
 	_salvage_button.pressed.connect(press_salvage)
 	buttons.add_child(_salvage_button)
+	var craft_buttons := HBoxContainer.new()
+	craft_buttons.add_theme_constant_override(&"separation", 10)
+	card_items.add_child(craft_buttons)
+	_enchant_button = Button.new()
+	_enchant_button.text = "Enchant"
+	_enchant_button.custom_minimum_size = Vector2(0, 72)
+	_enchant_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_enchant_button.add_theme_font_size_override(&"font_size", 18)
+	_enchant_button.pressed.connect(press_enchant)
+	craft_buttons.add_child(_enchant_button)
+	_ascend_button = Button.new()
+	_ascend_button.text = "Ascend"
+	_ascend_button.custom_minimum_size = Vector2(0, 72)
+	_ascend_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_ascend_button.add_theme_font_size_override(&"font_size", 18)
+	_ascend_button.pressed.connect(press_ascend)
+	craft_buttons.add_child(_ascend_button)
+	_card_stats.meta_clicked.connect(func(meta: Variant) -> void:
+		var text := str(meta)
+		if text.begins_with("affix:"):
+			select_affix(int(text.substr(6))))
 
 
 func _refresh() -> void:
@@ -333,6 +385,8 @@ func _refresh() -> void:
 		child.queue_free()
 	_purse.add_child(WindowFrame.purse("gold", profile.gold, Color("#D9A44C")))
 	_purse.add_child(WindowFrame.purse("ash", profile.ash, Color("#A77BD6")))
+	_purse.add_child(WindowFrame.purse("crystal", profile.material(Materials.CRYSTAL), Materials.color_of(Materials.CRYSTAL)))
+	_purse.add_child(WindowFrame.purse("soul_shard", profile.material(Materials.SOUL_SHARD), Materials.color_of(Materials.SOUL_SHARD)))
 	if _salvage_armed != _selected_uid:
 		_salvage_armed = ""
 	_show_card(selected_item())
@@ -350,6 +404,8 @@ func _show_card(item: ItemInstance) -> void:
 		_action_button.visible = false
 		_upgrade_button.visible = false
 		_salvage_button.visible = false
+		_enchant_button.visible = false
+		_ascend_button.visible = false
 		return
 	var base: ItemBase = profile.catalog.base(item.base_id)
 	var rarity_color := Rarity.color_of(item.rarity)
@@ -364,8 +420,14 @@ func _show_card(item: ItemInstance) -> void:
 	var text := ""
 	for stat in item.base_stats:
 		text += ItemStats.describe(stat, item.stat_value(item.base_stats[stat])) + "\n"
-	for affix in item.affixes:
-		text += "[color=#9fb6d9]%s[/color]\n" % ItemStats.describe(affix.stat, item.stat_value(int(affix.value)))
+	# Affixes are links: tapping one chooses it for Enchant.
+	for i in item.affixes.size():
+		var affix: Dictionary = item.affixes[i]
+		var line := ItemStats.describe(affix.stat, item.stat_value(int(affix.value)))
+		if i == _selected_affix:
+			text += "[url=affix:%d][bgcolor=#3a2a16][color=#F2C9A0]> %s[/color][/bgcolor][/url]\n" % [i, line]
+		else:
+			text += "[url=affix:%d][color=#9fb6d9]%s[/color][/url]\n" % [i, line]
 	if base and base.flavor != "":
 		text += "\n[i][color=#a49a90]\"%s\"[/color][/i]\n" % base.flavor
 	var equipped := _selected_slot >= 0
@@ -386,6 +448,10 @@ func _show_card(item: ItemInstance) -> void:
 	_upgrade_button.disabled = profile.upgrade_problem(item) != ""
 	_salvage_button.visible = not equipped
 	_salvage_button.text = "Confirm" if _salvage_armed == item.uid else "Salvage"
+	_enchant_button.visible = not item.affixes.is_empty()
+	_enchant_button.disabled = _selected_affix < 0 or profile.missing_for(Crafting.enchant_cost(item)) != ""
+	_ascend_button.visible = Crafting.can_ascend(item)
+	_ascend_button.disabled = profile.missing_for(Crafting.ascend_cost(item)) != ""
 
 
 ## The big number on the card, like the concept sheet's "142 DPS": a weapon's
@@ -405,8 +471,16 @@ func power_line(item: ItemInstance) -> String:
 func _forge_line(item: ItemInstance, equipped: bool) -> String:
 	var line := "Fully upgraded" if item.upgrade >= Forge.MAX_UPGRADE \
 			else "Upgrade to +%d: %d gold, %d Ash" % [item.upgrade + 1, Forge.upgrade_gold(item), Forge.upgrade_ash(item)]
+	if not item.affixes.is_empty():
+		line += "\nEnchant: %s%s" % [Materials.describe(Crafting.enchant_cost(item)),
+				"" if _selected_affix >= 0 else " (tap an affix first)"]
+	if Crafting.can_ascend(item):
+		line += "\nAscend to %s: %s" % [Rarity.name_of(item.rarity + 1), Materials.describe(Crafting.ascend_cost(item))]
 	if not equipped:
-		line += "\nSalvage: %d gold" % Forge.salvage_gold(item)
+		var base: ItemBase = profile.catalog.base(item.base_id)
+		var back := Crafting.salvage_materials(item, base)
+		back[Materials.GOLD] = Forge.salvage_gold(item)
+		line += "\nSalvage: %s" % Materials.describe(back)
 		if _salvage_armed == item.uid:
 			line += " (tap Confirm)"
 	return line

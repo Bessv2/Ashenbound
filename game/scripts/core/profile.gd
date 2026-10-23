@@ -20,7 +20,9 @@ signal offline_ready
 
 ## 2 added level, XP and skills; version 1 saves load with level 1.
 ## 3 added crypt tiers; older saves load with tier 1 open.
-const SAVE_VERSION := 3
+## 4 added materials and camps; older saves load with none, and their camps
+## start working on load when the crypt was cleared.
+const SAVE_VERSION := 4
 const MAX_LEVEL := 30
 ## The class a new profile plays.
 const HERO_CLASS := "warden"
@@ -59,6 +61,13 @@ var offline_seconds: int = 0
 ## The clock, replaceable in tests. Device time: provisional until the
 ## Milestone 5 server gives trusted time.
 var clock: Callable = func() -> int: return int(Time.get_unix_time_from_system())
+## Crafting materials held: Materials id → amount.
+var materials: Dictionary[String, int] = {}
+## The gathering camps once open: Camps id → {"level", "since"} (since = when
+## its store was last emptied, device clock).
+var camps: Dictionary[String, Dictionary] = {}
+## Crafting's dice, replaceable in tests.
+var rng := RandomNumberGenerator.new()
 
 ## Runs already paid, by run id, oldest first.
 var _claimed: Dictionary[String, int] = {}
@@ -66,6 +75,7 @@ var _save_pending: bool = false
 
 
 func _ready() -> void:
+	rng.randomize()
 	inventory.changed.connect(request_save)
 	equipment.changed.connect(request_save)
 	changed.connect(request_save)
@@ -108,6 +118,8 @@ func to_dict() -> Dictionary:
 		"dungeon": dungeon,
 		"last_seen": last_seen,
 		"offline_seconds": offline_seconds,
+		"materials": materials.duplicate(),
+		"camps": camps.duplicate(true),
 	}
 
 
@@ -189,6 +201,19 @@ func _apply(data: Dictionary) -> bool:
 	if not Dungeons.is_open(dungeon, self):
 		dungeon = Dungeons.CRYPT
 	offline_seconds = clampi(int(data.get("offline_seconds", 0)), 0, OfflineRewards.CAP_SECONDS)
+	materials.clear()
+	if data.get("materials") is Dictionary:
+		for id: Variant in data.materials:
+			if Materials.is_material(str(id)) and int(data.materials[id]) > 0:
+				materials[str(id)] = int(data.materials[id])
+	camps.clear()
+	if data.get("camps") is Dictionary:
+		for id: Variant in data.camps:
+			var camp: Variant = data.camps[id]
+			if Camps.INFO.has(str(id)) and camp is Dictionary:
+				camps[str(id)] = {"level": clampi(int(camp.get("level", 1)), 1, Camps.MAX_LEVEL),
+						"since": maxi(int(camp.get("since", 0)), 0)}
+	_open_camps()
 	skill_ranks.clear()
 	if data.get("skills") is Dictionary:
 		for class_id: Variant in data.skills:
@@ -217,35 +242,214 @@ func _apply_empty() -> void:
 	offline_seconds = 0
 	ash = 0
 	gold = 0
+	materials.clear()
+	camps.clear()
 	_claimed.clear()
 	inventory.load_list([])
 	equipment.load_dict({})
 	_save_pending = false
 
 
-## Adds `amount` Ash and `gold_amount` gold for run `run_id` and returns
-## true, unless that run was already paid (then nothing changes and it
-## returns false).
-func grant_run_reward(run_id: String, amount: int, gold_amount: int = 0) -> bool:
+## Adds `amount` Ash, `gold_amount` gold and the materials `found` for run
+## `run_id` and returns true, unless that run was already paid (then nothing
+## changes and it returns false).
+func grant_run_reward(run_id: String, amount: int, gold_amount: int = 0, found: Dictionary = {}) -> bool:
 	if run_id == "" or _claimed.has(run_id):
 		return false
 	_claimed[run_id] = maxi(amount, 0)
 	ash += maxi(amount, 0)
 	gold += maxi(gold_amount, 0)
+	_add_materials(found)
 	changed.emit()
 	return true
 
 
-## Breaks bag item `uid` down into gold. Returns the gold gained, or 0 when
-## the item is not in the bag (worn items must be taken off first).
+## Breaks bag item `uid` down into gold and some materials
+## (Crafting.salvage_materials). Returns the gold gained, or 0 when the item
+## is not in the bag (worn items must be taken off first).
 func salvage(uid: String) -> int:
 	var item := inventory.take(uid)
 	if item == null:
 		return 0
 	var value := Forge.salvage_gold(item)
 	gold += value
+	_add_materials(Crafting.salvage_materials(item, catalog.base(item.base_id)))
 	changed.emit()
 	return value
+
+
+func material(id: String) -> int:
+	return materials.get(id, 0)
+
+
+func _add_materials(found: Dictionary) -> void:
+	for id: Variant in found:
+		if Materials.is_material(str(id)) and int(found[id]) > 0:
+			materials[str(id)] = material(str(id)) + int(found[id])
+
+
+## What `cost` (materials, "gold", "ash") lacks, as "3 Iron Ore", or "" when
+## the profile can pay it.
+func missing_for(cost: Dictionary) -> String:
+	var short := {}
+	for id: String in cost:
+		var have := gold if id == Materials.GOLD else ash if id == Materials.ASH else material(id)
+		if have < int(cost[id]):
+			short[id] = int(cost[id]) - have
+	return Materials.describe(short)
+
+
+## Pays `cost` when it can all be paid; returns whether it was.
+func _pay(cost: Dictionary) -> bool:
+	if missing_for(cost) != "":
+		return false
+	for id: String in cost:
+		if id == Materials.GOLD:
+			gold -= int(cost[id])
+		elif id == Materials.ASH:
+			ash -= int(cost[id])
+		else:
+			materials[id] = material(id) - int(cost[id])
+			if materials[id] <= 0:
+				materials.erase(id)
+	return true
+
+
+## Why base `base_id` cannot be crafted now, or "".
+func craft_problem(base_id: String) -> String:
+	var base := catalog.base(base_id)
+	if base == null:
+		return "No such item."
+	if inventory.is_full():
+		return "The bag is full."
+	var short := missing_for(Crafting.craft_cost(base, Crafting.craft_level(level)))
+	return "Missing %s." % short if short != "" else ""
+
+
+## Crafts an item of base `base_id` into the bag, paying for it. Returns the
+## item, or null (nothing paid) when it cannot be crafted.
+func craft_item(base_id: String) -> ItemInstance:
+	if craft_problem(base_id) != "":
+		return null
+	var base := catalog.base(base_id)
+	var item_level := Crafting.craft_level(level)
+	_pay(Crafting.craft_cost(base, item_level))
+	var item := Crafting.craft(catalog, base, item_level, rng)
+	inventory.add(item)
+	changed.emit()
+	return item
+
+
+## Rerolls affix `index` of `item` (in the bag or worn). Returns "" or why not.
+func enchant_item(item: ItemInstance, index: int) -> String:
+	if item == null or not _owns(item):
+		return "Not yours."
+	if index < 0 or index >= item.affixes.size():
+		return "Choose an affix to enchant."
+	var short := missing_for(Crafting.enchant_cost(item))
+	if short != "":
+		return "Missing %s." % short
+	if not Crafting.enchant(catalog, item, index, rng):
+		return "No other stat fits this item."
+	_pay(Crafting.enchant_cost(item))
+	_item_changed(item)
+	return ""
+
+
+## Raises `item` one rarity (the concept sheet's Legendary step). Returns ""
+## or why not.
+func ascend_item(item: ItemInstance) -> String:
+	if item == null or not _owns(item):
+		return "Not yours."
+	if not Crafting.can_ascend(item):
+		return "Already Legendary."
+	var cost := Crafting.ascend_cost(item)
+	var short := missing_for(cost)
+	if short != "":
+		return "Missing %s." % short
+	_pay(cost)
+	Crafting.ascend(catalog, item, rng)
+	_item_changed(item)
+	return ""
+
+
+func _owns(item: ItemInstance) -> bool:
+	return inventory.has(item.uid) or equipment.all().has(item)
+
+
+## A worn item changed: the hero's stats follow.
+func _item_changed(item: ItemInstance) -> void:
+	if equipment.all().has(item):
+		equipment.changed.emit()
+	else:
+		inventory.changed.emit()
+	changed.emit()
+
+
+## Whether the camps work: once the crypt has been cleared.
+func camps_open() -> bool:
+	return tier_cleared >= 1
+
+
+## Starts any camp not yet working, once they are open. Time before that
+## earns nothing.
+func _open_camps() -> void:
+	if not camps_open():
+		return
+	for id in Camps.ORDER:
+		if not camps.has(id):
+			camps[id] = {"level": 1, "since": clock.call()}
+
+
+func camp_level(id: String) -> int:
+	return int(camps[id].level) if camps.has(id) else 0
+
+
+## What camp `id` holds now (Materials id → amount).
+func camp_stock(id: String) -> Dictionary:
+	if not camps.has(id):
+		return {}
+	# A clock that went backwards counts as no time.
+	return Camps.stock(id, camp_level(id), maxi(clock.call() - int(camps[id].since), 0))
+
+
+## Moves camp `id`'s store into the materials. Returns what was taken.
+func collect_camp(id: String) -> Dictionary:
+	var taken := camp_stock(id)
+	if not camps.has(id):
+		return taken
+	camps[id].since = clock.call()
+	_add_materials(taken)
+	changed.emit()
+	return taken
+
+
+## Collects every camp; returns the sum taken.
+func collect_all_camps() -> Dictionary:
+	var total := {}
+	for id in camps:
+		var taken := collect_camp(id)
+		for material_id: String in taken:
+			total[material_id] = int(total.get(material_id, 0)) + int(taken[material_id])
+	return total
+
+
+## Raises camp `id` one level, collecting its store first so nothing gathered
+## at the old rate is lost or recounted. Returns "" or why not.
+func upgrade_camp(id: String) -> String:
+	if not camps.has(id):
+		return "The camps open once the crypt is cleared."
+	if camp_level(id) >= Camps.MAX_LEVEL:
+		return "Fully built."
+	var cost := Camps.upgrade_cost(id, camp_level(id))
+	var short := missing_for(cost)
+	if short != "":
+		return "Missing %s." % short
+	collect_camp(id)
+	_pay(cost)
+	camps[id].level = camp_level(id) + 1
+	changed.emit()
+	return ""
 
 
 ## Why `item` cannot be upgraded now, or "" when it can.
@@ -294,6 +498,7 @@ func complete_tier(cleared: int) -> bool:
 	var newly_open := opened > tier_unlocked
 	if newly_open:
 		tier_unlocked = opened
+	_open_camps()
 	if newly_open or tier_cleared != was_cleared:
 		changed.emit()
 	return newly_open
@@ -456,6 +661,8 @@ func reset() -> void:
 	offline_seconds = 0
 	ash = 0
 	gold = 0
+	materials.clear()
+	camps.clear()
 	_claimed.clear()
 	inventory.load_list([])
 	equipment.load_dict({})

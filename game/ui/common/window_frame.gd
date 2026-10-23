@@ -82,3 +82,35 @@ static func format_amount(amount: int) -> String:
 		grouped = "," + digits.right(3) + grouped
 		digits = digits.left(digits.length() - 3)
 	return ("-" if amount < 0 else "") + digits + grouped
+
+
+## A price as icons and numbers: each entry of `cost` (materials, "gold",
+## "ash"), red when `profile` holds too little of it.
+static func cost_line(cost: Dictionary, profile: Node) -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override(&"separation", 14)
+	for id: String in cost:
+		var have: int = profile.gold if id == Materials.GOLD else profile.ash if id == Materials.ASH else profile.material(id)
+		var entry := purse(Materials.icon_of(id), int(cost[id]), Materials.color_of(id))
+		entry.tooltip_text = Materials.name_of(id)
+		var amount := entry.get_node("Amount") as Label
+		amount.add_theme_font_size_override(&"font_size", 20)
+		if have < int(cost[id]):
+			amount.add_theme_color_override(&"font_color", Color("#E0625A"))
+		row.add_child(entry)
+	return row
+
+
+## The six materials held, as icons and numbers (window headers).
+static func materials_line(profile: Node) -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.name = "Materials"
+	row.add_theme_constant_override(&"separation", 14)
+	for id in Materials.ORDER:
+		var entry := purse(id, profile.material(id), Materials.color_of(id))
+		entry.name = id
+		entry.tooltip_text = Materials.name_of(id)
+		(entry.get_node("Amount") as Label).add_theme_font_size_override(&"font_size", 20)
+		row.add_child(entry)
+	return row
+

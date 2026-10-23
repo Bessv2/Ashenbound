@@ -135,6 +135,8 @@ first-pass tuning, in `game/scripts/items/forge.gd`.
   the hero's numbers follow at once.
 - The item card shows the upgrade price and the salvage value; the bag shows
   Ash and gold. Items saved before upgrades load at +0.
+- Since 2026-10-23, salvage also gives crafting materials back, and items
+  can be enchanted, crafted and ascended: see [CRAFTING.md](CRAFTING.md).
 
 ## After the loot loop
 
