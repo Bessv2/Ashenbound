@@ -15,6 +15,8 @@ extends Node
 @export var spark_color: Color = Color(1.0, 0.62, 0.25)
 ## Ash and embers when the body dies (enemies).
 @export var death_burst: bool = true
+## Living flesh (heroes, ghouls, demons) bleeds in look B; the rest shed bone.
+@export var bleeds: bool = false
 
 var _flash_tween: Tween
 var _punch_tween: Tween
@@ -79,9 +81,9 @@ func _punch(look: ArtStyle.Look = ArtStyle.Look.CLASSIC) -> void:
 			_punch_tween.tween_property(visual, "scale", _visual_scale, 0.22).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 
 
-## Heroes bleed; the undead shed bone.
+## Heroes and living flesh bleed; the undead shed bone.
 func _is_flesh() -> bool:
-	return get_parent() is PlayerController
+	return bleeds or get_parent() is PlayerController
 
 func _on_died() -> void:
 	var body := get_parent() as Node3D
@@ -92,7 +94,17 @@ func _on_died() -> void:
 		ArtStyle.Look.HEROIC:
 			RealFx.death(body.get_parent(), at, _is_flesh())
 		ArtStyle.Look.GRIM:
-			ToonFx.death(body.get_parent(), at, _is_flesh())
+			# The common dead are knocked clean off their feet (a star now,
+			# the puffs where they land); bosses fall with their own weight.
+			if visual and not body.is_in_group(&"boss") and not body is PlayerController:
+				var hero := body.get_tree().get_first_node_in_group(PlayerController.GROUP) as Node3D
+				var away := body.global_position - hero.global_position if hero else Vector3.FORWARD
+				if _punch_tween:
+					_punch_tween.kill()
+				ToonFx.star(body.get_parent(), at + Vector3.UP * 0.4, 1.6)
+				ToonFx.launch(visual, away, _visual_scale)
+			else:
+				ToonFx.death(body.get_parent(), at, _is_flesh())
 		_:
 			Vfx.smoke(body.get_parent(), at, Color(0.5, 0.47, 0.44), 10, 2.0, 1.3)
 			Vfx.debris(body.get_parent(), at, Color(0.85, 0.8, 0.72), 8, 4.5, 0.65)

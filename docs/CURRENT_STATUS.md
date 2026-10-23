@@ -40,6 +40,7 @@ Status labels follow the charter:
 | 2026-10-23 | **Look B chosen**: "Look B is really nice but it's extremely poor performance. I like the effects better. Look A is just a cooler toned classic." Look B is now the default; its cost was cut (see [ART_STYLE_TEST.md](ART_STYLE_TEST.md#performance)). Classic and look A stay selectable until look B is confirmed on the owner's phone. |
 | 2026-10-23 | **The web preview always reflects `main`**: every merge publishes it ([WEB_PREVIEW.md](WEB_PREVIEW.md#publishing)). |
 | 2026-10-23 | **Build the concept sheet's game**: its HUD, menus, crafting, more regions and Demons ("2 3 4 5 should be achieved easily"), as "something of a full game like idle miner. Or Diablo 4 style mechanics", with Idle Pocket Crafter 2 as the baseline for active play against idle time. Plan and mapping: [GAME_LOOP.md](GAME_LOOP.md). Realistic characters (gap 1) are not in this order. |
+| 2026-10-23 | **Look B's tone**: "too sharp and grainy … keep the edgy darkness with funny animations … ominous and serious but also goofy and over the top or pace changing." Surfaces softened, and cartoon knock-outs, wind-ups and slow-motion beats added ([ART_STYLE_TEST.md](ART_STYLE_TEST.md#look-bs-tone-2026-10-23)). |
 | 2026-10-21 | **A browser build is a playtest preview** ([WEB_PREVIEW.md](WEB_PREVIEW.md)), not a platform change: Android stays the target. |
 
 ## Milestones

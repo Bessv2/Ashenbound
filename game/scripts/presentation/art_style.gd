@@ -85,8 +85,9 @@ static func character_material(source: Material, look: Look, outline: bool = tru
 	else:
 		styled.shader = GrimShader
 		styled.set_shader_parameter(&"grime_noise", GrimeNoise)
-		styled.set_shader_parameter(&"noise_scale", 7.0)
-		styled.set_shader_parameter(&"relief", 0.5)
+		styled.set_shader_parameter(&"noise_scale", 4.0)
+		styled.set_shader_parameter(&"relief", 0.25)
+		styled.set_shader_parameter(&"grain", 0.4)
 		styled.set_shader_parameter(&"desaturate", 0.3)
 		styled.set_shader_parameter(&"darken", 1.15)
 		styled.set_shader_parameter(&"grime_amount", 0.35)
@@ -112,10 +113,17 @@ static func world_material(source: Material, look: Look) -> Material:
 	styled.set_shader_parameter(&"albedo_texture", texture)
 	styled.set_shader_parameter(&"grime_noise", GrimeNoise)
 	styled.set_shader_parameter(&"metal_bias", 0.25)
-	styled.set_shader_parameter(&"relief", 1.8)
-	styled.set_shader_parameter(&"noise_scale", 1.7)
+	# Softened on the owner's word ("too sharp and grainy", 2026-10-23): gentle
+	# relief, faint grain, the photographs at half strength and depth, damp
+	# rather than glittering hollows. The darkness stays.
+	styled.set_shader_parameter(&"relief", 0.45)
+	styled.set_shader_parameter(&"noise_scale", 1.0)
+	styled.set_shader_parameter(&"grain", 0.45)
+	styled.set_shader_parameter(&"wet_shine", 0.6)
 	styled.set_shader_parameter(&"desaturate", 0.55)
 	styled.set_shader_parameter(&"use_detail", true)
+	styled.set_shader_parameter(&"detail_strength", 0.55)
+	styled.set_shader_parameter(&"detail_relief", 0.45)
 	for part in ["albedo", "normal", "roughness"]:
 		var file: String = {"albedo": "diff", "normal": "nor_gl", "roughness": "rough"}[part]
 		styled.set_shader_parameter(StringName("detail_top_" + part), load(FLOOR_PHOTO % file))
@@ -170,10 +178,12 @@ static func environment_for(base: Environment) -> Environment:
 		environment.adjustment_contrast = base.adjustment_contrast * 1.05
 		environment.glow_intensity = base.glow_intensity * 1.1
 	else:
-		environment.adjustment_saturation = base.adjustment_saturation * 0.72
-		environment.adjustment_contrast = base.adjustment_contrast * 1.12
-		environment.glow_bloom = base.glow_bloom * 0.5
-		environment.tonemap_exposure = base.tonemap_exposure * 1.05
+		# Dark and muted, but not harsh: a softer contrast than before and a
+		# little more glow, so lights bloom instead of cutting.
+		environment.adjustment_saturation = base.adjustment_saturation * 0.78
+		environment.adjustment_contrast = base.adjustment_contrast * 1.03
+		environment.glow_bloom = base.glow_bloom * 0.9
+		environment.tonemap_exposure = base.tonemap_exposure * 1.02
 	return environment
 
 
