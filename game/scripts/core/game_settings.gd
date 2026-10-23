@@ -7,6 +7,7 @@ extends Resource
 
 const CONTROLS := "controls"
 const GRAPHICS := "graphics"
+const AUDIO := "audio"
 
 @export_group("Controls")
 ## Fraction of the joystick radius around the center that is ignored.
@@ -25,6 +26,12 @@ const GRAPHICS := "graphics"
 ## next run.
 @export_range(0, 2, 1) var art_style: int = 0
 
+@export_group("Audio")
+## Music loudness, 0 (off) to 1.
+@export_range(0.0, 1.0, 0.05) var music_volume: float = 0.7
+## Effects loudness (combat, the world and the interface), 0 (off) to 1.
+@export_range(0.0, 1.0, 0.05) var effects_volume: float = 1.0
+
 
 func write_to(config: ConfigFile) -> void:
 	config.set_value(CONTROLS, "joystick_dead_zone", joystick_dead_zone)
@@ -33,6 +40,8 @@ func write_to(config: ConfigFile) -> void:
 	config.set_value(GRAPHICS, "max_fps", max_fps)
 	config.set_value(GRAPHICS, "screen_shake", screen_shake)
 	config.set_value(GRAPHICS, "art_style", art_style)
+	config.set_value(AUDIO, "music_volume", music_volume)
+	config.set_value(AUDIO, "effects_volume", effects_volume)
 
 
 ## Reads known keys from config. Missing or malformed values keep their
@@ -45,6 +54,8 @@ func read_from(config: ConfigFile) -> void:
 	var shake: Variant = config.get_value(GRAPHICS, "screen_shake", screen_shake)
 	screen_shake = shake if shake is bool else screen_shake
 	art_style = int(_read_number(config, GRAPHICS, "art_style", art_style, 0, 2))
+	music_volume = _read_number(config, AUDIO, "music_volume", music_volume, 0.0, 1.0)
+	effects_volume = _read_number(config, AUDIO, "effects_volume", effects_volume, 0.0, 1.0)
 
 
 static func _read_number(

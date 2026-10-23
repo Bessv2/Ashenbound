@@ -21,6 +21,7 @@
 [ext_resource type="Script" path="res://scripts/player/character_stats.gd" id="26_stats"]
 [ext_resource type="Resource" path="res://resources/skills/reliquary_tree.tres" id="27_tree"]
 [ext_resource type="Script" path="res://scripts/presentation/attack_swoosh.gd" id="28_swoosh"]
+[ext_resource type="Script" path="res://scripts/audio/character_sounds.gd" id="sounds_script"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.38
@@ -78,6 +79,7 @@ health = NodePath("../Health")
 
 [node name="Benediction" type="Node" parent="." node_paths=PackedStringArray("health")]
 script = ExtResource("14_benediction")
+sound = &"holy_heal"
 display_name = "BLESS"
 action = &"ability_1"
 cooldown = 10.0
@@ -86,6 +88,7 @@ health = NodePath("../Health")
 
 [node name="Lantern" type="Node" parent="." node_paths=PackedStringArray("health")]
 script = ExtResource("15_lantern")
+sound = &"bell"
 display_name = "LANTERN"
 action = &"ability_2"
 cooldown = 12.0
@@ -94,6 +97,7 @@ health = NodePath("../Health")
 
 [node name="Judgment" type="Node" parent="." node_paths=PackedStringArray("health")]
 script = ExtResource("16_judgment")
+sound = &"stone_break"
 display_name = "JUDGE"
 action = &"ability_3"
 cooldown = 6.0
@@ -138,3 +142,12 @@ skill_tree = ExtResource("27_tree")
 script = ExtResource("28_swoosh")
 attacks = [NodePath("../MeleeAttack")]
 color = Color(0.6, 0.82, 1, 1)
+
+[node name="Sounds" type="Node" parent="."]
+script = ExtResource("sounds_script")
+pitch = 0.95
+footsteps = &"footstep"
+death = &"hero_death"
+hurt_chance = 0.6
+hurt = &"hero_hurt"
+impact = &"hit_flesh"

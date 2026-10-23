@@ -20,6 +20,7 @@
 [ext_resource type="Script" path="res://scripts/presentation/model_dressing.gd" id="17_dressing"]
 [ext_resource type="Script" path="res://scripts/presentation/character_animator.gd" id="18_animator"]
 [ext_resource type="Resource" path="res://resources/loot/ashen_lord_drops.tres" id="25_drops"]
+[ext_resource type="Script" path="res://scripts/audio/character_sounds.gd" id="sounds_script"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.7
@@ -124,3 +125,10 @@ run_animation = &"Walking_A"
 death_animation = &"Death_A"
 rise_animation = &"Sit_Chair_StandUp"
 run_reference_speed = 2.0
+
+[node name="Sounds" type="Node" parent="."]
+script = ExtResource("sounds_script")
+pitch = 0.7
+death_layer = &"stone_break"
+death = &"giant_roar"
+impact = &"hit_metal"

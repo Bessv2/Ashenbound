@@ -4,6 +4,8 @@
 
 [resource]
 script = ExtResource("1_data")
+sound_pitch = 0.78
+swing_sound = &"swing_heavy"
 damage = 25
 reach = 2.6
 arc_degrees = 220.0

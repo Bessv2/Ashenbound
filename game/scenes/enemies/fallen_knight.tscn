@@ -21,6 +21,7 @@
 [ext_resource type="PackedScene" path="res://assets/third_party/kaykit/weapons/Skeleton_Shield_Large_A.gltf" id="22_shield"]
 [ext_resource type="Material" path="res://resources/materials/fallen_knight_model.tres" id="23_model_material"]
 [ext_resource type="Resource" path="res://resources/loot/fallen_knight_drops.tres" id="24_drops"]
+[ext_resource type="Script" path="res://scripts/audio/character_sounds.gd" id="sounds_script"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.5
@@ -131,3 +132,12 @@ idle_animation = &"Blocking"
 run_animation = &"Running_B"
 death_animation = &"Death_C_Skeletons"
 run_reference_speed = 2.6
+
+[node name="Sounds" type="Node" parent="."]
+script = ExtResource("sounds_script")
+pitch = 0.78
+growl_chance = 0.5
+growl = &"undead_growl"
+death_layer = &"armor_fall"
+death = &"undead_death"
+impact = &"hit_metal"

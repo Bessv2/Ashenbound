@@ -45,6 +45,7 @@ var difficulty: Difficulty
 @onready var _offline: OfflinePanel = $Offline
 @onready var _screen_fx: ScreenFx = $ScreenFx
 @onready var _potions: PotionBelt = $Potions
+@onready var _sound: SoundDirector = $Sound
 
 ## Items picked up this run.
 var _loot_found: int = 0
@@ -82,6 +83,10 @@ func _ready() -> void:
 	_loot.collected.connect(_on_loot_collected)
 	_death_screen.restart_requested.connect(_on_restart_chosen)
 	_death_screen.alternate_requested.connect(_on_alternate_chosen)
+	_sound.watch_run(_run)
+	_sound.watch_loot(_loot)
+	_sound.watch_potions(_potions)
+	_sound.watch_pause(_pause_controller)
 	open_offline_rewards()
 	if difficulty.tier > 1:
 		_hud.show_toast("Tier %d: the dead grow stronger" % difficulty.tier, Color("#D9A44C"))
@@ -219,6 +224,7 @@ func _load_level() -> void:
 		_player.reset_physics_interpolation()
 		_camera_rig.snap_to_target()
 	_run.watch(level.encounters)
+	_sound.watch_level(level, Dungeons.id_of_scene(level_scene.resource_path))
 	for node in level.find_children("*", "Node3D", true, false):
 		if node is EncounterController:
 			var encounter := node as EncounterController

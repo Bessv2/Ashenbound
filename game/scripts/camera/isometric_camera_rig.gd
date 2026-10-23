@@ -41,6 +41,9 @@ func _ready() -> void:
 	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	rotation = Vector3(deg_to_rad(pitch_degrees), deg_to_rad(yaw_degrees), 0.0)
 	camera.position = Vector3(0.0, 0.0, distance)
+	# Sounds are heard from the hero, not from the camera 30 m away, and
+	# pan with the screen.
+	($Listener as AudioListener3D).make_current()
 	snap_to_target()
 
 

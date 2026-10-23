@@ -11,3 +11,5 @@ current = true
 size = 16.0
 near = 0.1
 far = 100.0
+
+[node name="Listener" type="AudioListener3D" parent="."]

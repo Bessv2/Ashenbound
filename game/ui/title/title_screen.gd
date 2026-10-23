@@ -47,6 +47,8 @@ func _ready() -> void:
 	enter_requested.connect(_go_to_crypt)
 	_refresh()
 	_animate_in()
+	Audio.play_music(&"music_title")
+	Audio.play_ambience(&"")
 	# Enter (or a gamepad's accept) starts the run straight away.
 	_enter_button.grab_focus()
 
@@ -94,6 +96,7 @@ func enter() -> void:
 
 
 func _go_to_crypt() -> void:
+	Audio.play(&"gate_slam", Vector3.INF, 0.6)
 	get_tree().paused = false
 	get_tree().change_scene_to_file(MAIN_SCENE)
 

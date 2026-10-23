@@ -19,6 +19,7 @@ rings = 2
 
 [node name="HexBolt" type="Node3D"]
 script = ExtResource("1_projectile")
+impact_sound = &"frost"
 
 [node name="Core" type="MeshInstance3D" parent="."]
 cast_shadow = 0

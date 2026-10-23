@@ -20,6 +20,7 @@
 [ext_resource type="Script" path="res://scripts/presentation/occlusion_focus.gd" id="25_occlusion"]
 [ext_resource type="Script" path="res://scripts/player/character_stats.gd" id="26_stats"]
 [ext_resource type="Resource" path="res://resources/skills/hexbinder_tree.tres" id="27_tree"]
+[ext_resource type="Script" path="res://scripts/audio/character_sounds.gd" id="sounds_script"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.38
@@ -78,6 +79,7 @@ health = NodePath("../Health")
 
 [node name="BlackTestament" type="Node" parent="."]
 script = ExtResource("14_testament")
+sound = &"dark_magic"
 display_name = "CURSE"
 action = &"ability_1"
 cooldown = 5.0
@@ -85,6 +87,7 @@ hud_color = Color(0.7, 0.35, 1, 1)
 
 [node name="Grasp" type="Node" parent="."]
 script = ExtResource("15_grasp")
+sound = &"earth_rise"
 display_name = "GRASP"
 action = &"ability_2"
 cooldown = 8.0
@@ -92,6 +95,7 @@ hud_color = Color(0.35, 0.95, 0.7, 1)
 
 [node name="Unmake" type="Node" parent="."]
 script = ExtResource("16_unmake")
+sound = &"drain"
 display_name = "UNMAKE"
 action = &"ability_3"
 cooldown = 6.0
@@ -124,3 +128,11 @@ script = ExtResource("25_occlusion")
 script = ExtResource("26_stats")
 player = NodePath("..")
 skill_tree = ExtResource("27_tree")
+
+[node name="Sounds" type="Node" parent="."]
+script = ExtResource("sounds_script")
+footsteps = &"footstep"
+death = &"hero_death"
+hurt_chance = 0.6
+hurt = &"hero_hurt"
+impact = &"hit_flesh"

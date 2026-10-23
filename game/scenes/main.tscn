@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://ui/offline/offline_panel.gd" id="17_offline"]
 [ext_resource type="Script" path="res://ui/effects/screen_fx.gd" id="18_screen_fx"]
 [ext_resource type="Script" path="res://scripts/player/potion_belt.gd" id="19_potions"]
+[ext_resource type="Script" path="res://scripts/audio/sound_director.gd" id="sound_director"]
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
@@ -62,3 +63,6 @@ script = ExtResource("17_offline")
 
 [node name="ScreenFx" type="CanvasLayer" parent="."]
 script = ExtResource("18_screen_fx")
+
+[node name="Sound" type="Node" parent="."]
+script = ExtResource("sound_director")

@@ -24,6 +24,7 @@
 [ext_resource type="Material" path="res://resources/materials/hollow_king_model.tres" id="23_model_material"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/ghoul.tscn" id="24_add"]
 [ext_resource type="Resource" path="res://resources/loot/ashen_lord_drops.tres" id="25_drops"]
+[ext_resource type="Script" path="res://scripts/audio/character_sounds.gd" id="sounds_script"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.7
@@ -147,3 +148,10 @@ run_animation = &"Walking_D_Skeletons"
 death_animation = &"Death_C_Skeletons"
 rise_animation = &"Skeletons_Awaken_Standing"
 run_reference_speed = 1.6
+
+[node name="Sounds" type="Node" parent="."]
+script = ExtResource("sounds_script")
+pitch = 0.6
+death_layer = &"stone_break"
+death = &"ghost_moan"
+impact = &"hit_bone"

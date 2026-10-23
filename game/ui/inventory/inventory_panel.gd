@@ -52,9 +52,12 @@ func open() -> void:
 	_refresh()
 	show()
 	UiFx.pop_layer(self)
+	Audio.play(&"ui_open")
 
 
 func close() -> void:
+	if visible:
+		Audio.play(&"ui_close")
 	hide()
 
 
@@ -86,6 +89,7 @@ func select_slot(slot: int) -> void:
 ## Upgrades the selected item one rank. Returns "" or why it could not.
 func press_upgrade() -> String:
 	var problem: String = profile.upgrade_item(selected_item())
+	Audio.play(&"anvil" if problem == "" else &"ui_error")
 	_refresh()
 	return problem
 
@@ -100,6 +104,9 @@ func press_salvage() -> int:
 		_refresh()
 		return 0
 	var gained: int = profile.salvage(_selected_uid)
+	if gained > 0:
+		Audio.play(&"salvage")
+		Audio.play(&"pickup_gold")
 	_salvage_armed = ""
 	_selected_uid = ""
 	_refresh()
@@ -111,6 +118,7 @@ func press_action() -> void:
 	if _selected_uid != "":
 		var item := selected_item()
 		if profile.equip_from_bag(_selected_uid) and item:
+			Audio.play(&"pickup_gear")
 			_selected_slot = _slot_holding(item)
 			_selected_uid = ""
 	elif _selected_slot >= 0:

@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://scripts/combat/hit_feedback.gd" id="6_feedback"]
 [ext_resource type="PackedScene" path="res://assets/third_party/kaykit/characters/Skeleton_Warrior.glb" id="7_model"]
 [ext_resource type="Script" path="res://scripts/presentation/model_dressing.gd" id="8_dressing"]
+[ext_resource type="Script" path="res://scripts/audio/character_sounds.gd" id="sounds_script"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_dummy"]
 height = 1.9
@@ -64,3 +65,8 @@ modulate = Color(0.86, 0.8, 0.72, 0.9)
 text = "50 / 50"
 font_size = 36
 outline_size = 10
+
+[node name="Sounds" type="Node" parent="."]
+script = ExtResource("sounds_script")
+death = &"stone_break"
+impact = &"hit_stone"
