@@ -71,6 +71,7 @@ edit by hand.
 | `chest.svg` | [open-treasure-chest](https://game-icons.net/1x1/skoll/open-treasure-chest.html) | skoll |
 | `time.svg` | [sands-of-time](https://game-icons.net/1x1/lorc/sands-of-time.html) | lorc |
 | `daily.svg` | [calendar](https://game-icons.net/1x1/delapouite/calendar.html) | delapouite |
+| `check.svg` | [check-mark](https://game-icons.net/1x1/delapouite/check-mark.html) | delapouite |
 | `stat_health.svg` | [hearts](https://game-icons.net/1x1/skoll/hearts.html) | skoll |
 | `stat_damage.svg` | [sword-wound](https://game-icons.net/1x1/lorc/sword-wound.html) | lorc |
 | `stat_armor.svg` | [checked-shield](https://game-icons.net/1x1/lorc/checked-shield.html) | lorc |

@@ -78,6 +78,7 @@ func _ready() -> void:
 	_potions.health = _player.health
 	_hud.track_potions(_potions)
 	_run.kill_counted.connect(_potions.on_kill)
+	_potions.drunk.connect(func(_amount: int) -> void: Profile.count(Quests.POTIONS))
 	_run.ended.connect(_on_run_ended)
 	_connect_shake()
 	_run.kill_counted.connect(_on_kill_counted)
@@ -251,6 +252,7 @@ func _load_level() -> void:
 			if encounter.title != "":
 				encounter.started.connect(_on_encounter_started.bind(encounter))
 			encounter.champion_spawned.connect(_on_champion_spawned)
+			encounter.cleared.connect(_on_encounter_cleared.bind(encounter))
 	_loot.item_level = difficulty.item_level(level.item_level)
 	_loot.chance_scale = difficulty.drop_chance_scale()
 	_loot.dungeon = Dungeons.id_of_scene(level_scene.resource_path)
@@ -284,6 +286,24 @@ func _on_kill_counted(enemy: Node3D) -> void:
 		_player.health.heal(stats.value(ItemStats.HEALTH_ON_KILL))
 	if enemy is EnemyController:
 		Profile.add_xp((enemy as EnemyController).xp_value)
+		Profile.count(Quests.KILLS)
+		if Champion.of(enemy):
+			Profile.count(Quests.CHAMPIONS)
+		if enemy.is_in_group(&"boss"):
+			Profile.count(Quests.BOSSES)
+
+
+## A cleared fight that is a story objective: noted in the Profile, with a
+## message the first time.
+func _on_encounter_cleared(encounter: EncounterController) -> void:
+	var dungeon_id := Dungeons.id_of_scene(level_scene.resource_path)
+	if not Profile.record_encounter(dungeon_id, encounter.title):
+		return
+	var quest: Dictionary = Quests.STORY[dungeon_id]
+	var text: String = quest.texts[quest.objectives.find(encounter.title)]
+	_hud.show_toast("Quest: %s - done" % text, Color("#D9A44C"))
+	if Profile.quest_complete(dungeon_id):
+		_hud.show_toast("%s complete: claim the reward in Quests" % quest.title, Color("#F2C9A0"))
 
 
 func _on_materials_found(found: Dictionary, _at: Vector3) -> void:
@@ -334,6 +354,9 @@ func _on_run_ended(victory: bool) -> void:
 		return
 	Profile.complete_tier(difficulty.tier)
 	Profile.complete_dungeon(Dungeons.id_of_scene(level_scene.resource_path))
+	Profile.count(Quests.RUNS_WON)
+	if difficulty.tier >= 2:
+		Profile.count(Quests.DEEP_RUNS)
 	# The run is won: nothing can hurt or move the Warden any more, so what
 	# still lies on the floor is gathered for him.
 	_loot.collect_all()

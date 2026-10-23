@@ -1894,3 +1894,38 @@ Checks:
 - Captures under Xvfb (look B) of a fight in each region, and of the
   Cinder Tyrant's and Rotwood Witch's halls. The boss bars show their
   names.
+
+## 46. Quests, achievements and daily challenges (branch `feature/quests`)
+
+Step 5 of [GAME_LOOP.md](GAME_LOOP.md); the design is in
+[QUESTS.md](QUESTS.md).
+
+What changed:
+- **`Quests`** holds the data: a story quest per dungeon (objectives named
+  after its fights), 15 achievements, a pool of 10 daily challenges drawn
+  three a day by the date, and `describe`.
+- **`Profile`** (save version 6):
+  - New state: `stats` counters, `quest_progress`, the claimed lists, and
+    the day's base counters.
+  - New calls: `count`, `record_encounter`, `claim_quest` (pays its item,
+    refused when the bag is full), `claim_achievement`, `dailies`,
+    `claim_daily` and `claimable_count`.
+  - Crafting, enchanting, ascending, camps and salvage count themselves.
+- **Main** counts kills, Champions, bosses, wins, deep wins and potions. It
+  records each fight cleared as a story objective, with toasts.
+- **`QuestsPanel`:**
+  - Story, Daily and Achievements pages, with check-mark objectives,
+    rewards as icons, progress bars, and Claim buttons.
+  - It is opened from a new title button whose badge counts the rewards
+    waiting.
+- **Title screen:** the bottom row was tightened so five menu buttons fit
+  at 1280 × 720.
+- **Icons:** a check mark (95 icons).
+
+Checks:
+- `tests/test_quests.gd`: 9 tests; coverage is listed in
+  [QUESTS.md](QUESTS.md#tests).
+- Captures under Xvfb of the three pages and the title screen.
+  - The first capture showed the theme's checkbox drawn over the objective
+    text, and the badge squeezing the button icon. Both were fixed: a
+    check-mark icon, and a corner badge.
