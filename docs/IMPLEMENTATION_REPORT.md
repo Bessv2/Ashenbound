@@ -1698,3 +1698,18 @@ Commands and tests:
 Not tested:
 - On the owner's phone, where it was too slow.
 ```
+
+## 41. Fog and phone shadows cut (branch `feature/perf-cuts`)
+
+The owner still found look B laggy on their phone and asked to cut the
+shadows and the fog.
+- Fog is off in every environment resource, and look B no longer thickens it.
+- On phones, `RendererLighting` turns off the moonlight's shadows. It was the
+  only shadow-casting light; the torches never cast shadows.
+- Torch lights and flames stay.
+
+Checks:
+- `tools/test.sh`: 335 passed, 0 failed.
+- Web export, then Chromium emulating a phone (800 × 360 at 3× density, software
+  WebGL), two runs each: main 1.2 frames a second, this branch 1.3–1.4.
+  Software rendering only; not measured on a real phone.

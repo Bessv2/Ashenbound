@@ -124,11 +124,21 @@ merged into `main`, apart from #6.
 
 ## Next task
 
-The owner plays look B, now the default, in the web preview on their phone
-and says whether it runs well enough. If it does, look B becomes the art
-direction in the charter (§9), and the Classic and look A switch goes. If it
-does not, the next cuts are shadows from the torches and the fog, and a lower
-3D resolution on phones ([ART_STYLE_TEST.md](ART_STYLE_TEST.md#performance)).
+Two open questions for the owner (2026-10-23):
+- **Performance.** Fog and phone shadows are now cut
+  ([ART_STYLE_TEST.md](ART_STYLE_TEST.md#performance)). If look B still lags,
+  the next cuts are a lower 3D resolution on phones, then fewer torch lights
+  and less glow.
+- **Direction.** The owner is not sure the build matches their intent. The
+  concept sheet ([ART_DIRECTION.md](ART_DIRECTION.md)) shows things the game
+  does not have yet:
+  - realistic, painterly heroes rather than the chibi KayKit models;
+  - its HUD: a portrait, a mana bar, a minimap and icon skill buttons;
+  - its screens: character stats, an inventory grid with item icons, quests,
+    and dungeon cards;
+  - crafting resources and the upgrade → enchant → craft chain;
+  - more regions and Demons.
+  The owner picks which gap comes first; that is the next task.
 
 Device checks for Milestones 1 to 4 are still open: they need the Android app
 on a phone ([DEVICE_TESTING.md](DEVICE_TESTING.md)). The owner's playtests so
