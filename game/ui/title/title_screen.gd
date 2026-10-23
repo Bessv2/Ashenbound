@@ -42,6 +42,8 @@ var _character: CharacterPanel
 var _inventory: InventoryPanel
 var _forge: ForgePanel
 var _camps: CampsPanel
+var _quests: QuestsPanel
+var _quests_button: Button
 
 
 func _ready() -> void:
@@ -67,6 +69,10 @@ func _ready() -> void:
 	_camps.name = "Camps"
 	add_child(_camps)
 	_camps.close_requested.connect(_camps.close)
+	_quests = QuestsPanel.new()
+	_quests.name = "Quests"
+	add_child(_quests)
+	_quests.close_requested.connect(_quests.close)
 	profile.changed.connect(_refresh)
 	_refresh()
 	_animate_in()
@@ -140,6 +146,15 @@ func open_forge() -> void:
 ## Opens the gathering camps.
 func open_camps() -> void:
 	_camps.open()
+
+
+## Opens the quests, achievements and daily challenges.
+func open_quests() -> void:
+	_quests.open()
+
+
+func quests_panel() -> QuestsPanel:
+	return _quests
 
 
 func forge_panel() -> ForgePanel:
@@ -285,18 +300,35 @@ func _build() -> void:
 	bottom.add_theme_constant_override(&"separation", 18)
 	page.add_child(bottom)
 	for entry in [["CharacterButton", "character", "Character", open_character], ["BagButton", "bag", "Inventory", open_inventory],
-			["ForgeButton", "craft", "Forge", open_forge], ["CampsButton", "mine", "Camps", open_camps]]:
+			["ForgeButton", "craft", "Forge", open_forge], ["CampsButton", "mine", "Camps", open_camps],
+			["QuestsButton", "quests", "Quests", open_quests]]:
 		var menu_button := Button.new()
 		menu_button.name = entry[0]
 		menu_button.icon = Icons.of(entry[1])
 		menu_button.tooltip_text = entry[2]
 		menu_button.expand_icon = true
-		menu_button.custom_minimum_size = Vector2(80, 80)
+		menu_button.custom_minimum_size = Vector2(72, 76)
 		menu_button.pressed.connect(entry[3])
 		bottom.add_child(menu_button)
+		if entry[0] == "QuestsButton":
+			_quests_button = menu_button
+			# A badge in the corner: rewards waiting to be claimed.
+			var badge := Label.new()
+			badge.name = "Badge"
+			badge.add_theme_font_size_override(&"font_size", 18)
+			badge.add_theme_color_override(&"font_color", Color("#E2CBB4"))
+			badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			badge.add_theme_stylebox_override(&"normal", UiFx.box(Color("#3E7A3A"), 12, Color("#7FC97A"), 2))
+			badge.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+			badge.offset_left = -20
+			badge.offset_top = -8
+			badge.offset_right = 8
+			badge.offset_bottom = 18
+			badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			menu_button.add_child(badge)
 	_summary = Label.new()
 	_summary.theme_type_variation = &"DimLabel"
-	_summary.custom_minimum_size.x = 120
+	_summary.custom_minimum_size.x = 90
 	bottom.add_child(_summary)
 	var down := Button.new()
 	down.text = "<"
@@ -315,7 +347,7 @@ func _build() -> void:
 	_enter_button = Button.new()
 	_enter_button.name = "Enter"
 	_enter_button.text = "Enter the crypt"
-	_enter_button.custom_minimum_size = Vector2(330, 88)
+	_enter_button.custom_minimum_size = Vector2(290, 88)
 	_enter_button.add_theme_font_size_override(&"font_size", 32)
 	_enter_button.pressed.connect(enter)
 	bottom.add_child(_enter_button)
@@ -415,6 +447,11 @@ func _refresh() -> void:
 		_strip.ensure_control_visible.call_deferred(_dungeon_buttons[profile.dungeon])
 	_tier_label.text = "Tier %d" % profile.tier
 	_summary.text = "Level %d" % profile.level
+	# The number of rewards waiting, on the Quests button.
+	var waiting: int = profile.claimable_count()
+	var badge := _quests_button.get_node("Badge") as Label
+	badge.text = str(waiting)
+	badge.visible = waiting > 0
 	for child in _purse.get_children():
 		_purse.remove_child(child)
 		child.queue_free()

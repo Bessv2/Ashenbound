@@ -24,7 +24,9 @@ signal offline_ready
 ## start working on load when the crypt was cleared.
 ## 5 added the dungeons cleared; older saves count the crypt as cleared when
 ## a tier was.
-const SAVE_VERSION := 5
+## 6 added quests, achievements, daily challenges and the counters behind
+## them; older saves start them from nothing.
+const SAVE_VERSION := 6
 const MAX_LEVEL := 30
 ## The class a new profile plays.
 const HERO_CLASS := "warden"
@@ -65,6 +67,17 @@ var offline_seconds: int = 0
 var clock: Callable = func() -> int: return int(Time.get_unix_time_from_system())
 ## The dungeons cleared at least once (Dungeons ids): each opens the next.
 var cleared_dungeons: Array[String] = []
+## Lifetime counters behind achievements and dailies (Quests keys).
+var stats: Dictionary[String, int] = {}
+## Dungeon id → the titles of its story objectives done.
+var quest_progress: Dictionary[String, Array] = {}
+## Story quests, achievements and today's dailies already paid.
+var quests_claimed: Array[String] = []
+var achievements_claimed: Array[String] = []
+var daily_claimed: Array[String] = []
+## The day the dailies belong to, and the counters at its start.
+var daily_day: int = -1
+var daily_base: Dictionary[String, int] = {}
 ## Crafting materials held: Materials id → amount.
 var materials: Dictionary[String, int] = {}
 ## The gathering camps once open: Camps id → {"level", "since"} (since = when
@@ -123,6 +136,11 @@ func to_dict() -> Dictionary:
 		"last_seen": last_seen,
 		"offline_seconds": offline_seconds,
 		"cleared_dungeons": cleared_dungeons.duplicate(),
+		"stats": stats.duplicate(),
+		"quest_progress": quest_progress.duplicate(true),
+		"quests_claimed": quests_claimed.duplicate(),
+		"achievements_claimed": achievements_claimed.duplicate(),
+		"daily": {"day": daily_day, "base": daily_base.duplicate(), "claimed": daily_claimed.duplicate()},
 		"materials": materials.duplicate(),
 		"camps": camps.duplicate(true),
 	}
@@ -206,6 +224,7 @@ func _apply(data: Dictionary) -> bool:
 		for id: Variant in data.cleared_dungeons:
 			if Dungeons.INFO.has(str(id)) and not cleared_dungeons.has(str(id)):
 				cleared_dungeons.append(str(id))
+	_load_quests(data)
 	# Saves from before version 5: a cleared tier means the crypt was cleared.
 	if tier_cleared >= 1 and not cleared_dungeons.has(Dungeons.CRYPT):
 		cleared_dungeons.append(Dungeons.CRYPT)
@@ -258,6 +277,7 @@ func _apply_empty() -> void:
 	materials.clear()
 	camps.clear()
 	cleared_dungeons.clear()
+	_clear_quests()
 	_claimed.clear()
 	inventory.load_list([])
 	equipment.load_dict({})
@@ -288,7 +308,7 @@ func salvage(uid: String) -> int:
 	var value := Forge.salvage_gold(item)
 	gold += value
 	_add_materials(Crafting.salvage_materials(item, catalog.base(item.base_id)))
-	changed.emit()
+	count(Quests.SALVAGED)
 	return value
 
 
@@ -350,7 +370,7 @@ func craft_item(base_id: String) -> ItemInstance:
 	_pay(Crafting.craft_cost(base, item_level))
 	var item := Crafting.craft(catalog, base, item_level, rng)
 	inventory.add(item)
-	changed.emit()
+	count(Quests.CRAFTED)
 	return item
 
 
@@ -367,6 +387,7 @@ func enchant_item(item: ItemInstance, index: int) -> String:
 		return "No other stat fits this item."
 	_pay(Crafting.enchant_cost(item))
 	_item_changed(item)
+	count(Quests.ENCHANTED)
 	return ""
 
 
@@ -384,6 +405,7 @@ func ascend_item(item: ItemInstance) -> String:
 	_pay(cost)
 	Crafting.ascend(catalog, item, rng)
 	_item_changed(item)
+	count(Quests.ASCENDED)
 	return ""
 
 
@@ -398,6 +420,184 @@ func _item_changed(item: ItemInstance) -> void:
 	else:
 		inventory.changed.emit()
 	changed.emit()
+
+
+func _clear_quests() -> void:
+	stats.clear()
+	quest_progress.clear()
+	quests_claimed.clear()
+	achievements_claimed.clear()
+	daily_claimed.clear()
+	daily_day = -1
+	daily_base.clear()
+
+
+func _load_quests(data: Dictionary) -> void:
+	_clear_quests()
+	if data.get("stats") is Dictionary:
+		for key: Variant in data.stats:
+			stats[str(key)] = maxi(int(data.stats[key]), 0)
+	if data.get("quest_progress") is Dictionary:
+		for id: Variant in data.quest_progress:
+			if Quests.STORY.has(str(id)) and data.quest_progress[id] is Array:
+				var done: Array = []
+				for title: Variant in data.quest_progress[id]:
+					if Quests.STORY[str(id)].objectives.has(str(title)) and not done.has(str(title)):
+						done.append(str(title))
+				quest_progress[str(id)] = done
+	for list_name in ["quests_claimed", "achievements_claimed"]:
+		if data.get(list_name) is Array:
+			var target: Array[String] = get(list_name)
+			for id: Variant in data[list_name]:
+				if not target.has(str(id)):
+					target.append(str(id))
+	if data.get("daily") is Dictionary:
+		daily_day = int(data.daily.get("day", -1))
+		if data.daily.get("base") is Dictionary:
+			for key: Variant in data.daily.base:
+				daily_base[str(key)] = int(data.daily.base[key])
+		if data.daily.get("claimed") is Array:
+			for id: Variant in data.daily.claimed:
+				daily_claimed.append(str(id))
+
+
+## Adds `amount` to counter `stat` (Quests keys).
+func count(stat: String, amount: int = 1) -> void:
+	if amount <= 0:
+		return
+	_roll_daily()
+	stats[stat] = stat_count(stat) + amount
+	changed.emit()
+
+
+func stat_count(stat: String) -> int:
+	return stats.get(stat, 0)
+
+
+## Marks the story objective of `dungeon_id` named after the fight `title`
+## (EncounterController.title) as done. Returns true the first time.
+func record_encounter(dungeon_id: String, title: String) -> bool:
+	if not Quests.STORY.has(dungeon_id) or not Quests.STORY[dungeon_id].objectives.has(title):
+		return false
+	var done: Array = quest_progress.get(dungeon_id, [])
+	if done.has(title):
+		return false
+	done = done.duplicate()
+	done.append(title)
+	quest_progress[dungeon_id] = done
+	changed.emit()
+	return true
+
+
+## Whether story objective `index` of `dungeon_id` is done.
+func objective_done(dungeon_id: String, index: int) -> bool:
+	var objectives: Array = Quests.STORY[dungeon_id].objectives
+	return index < objectives.size() and quest_progress.get(dungeon_id, []).has(objectives[index])
+
+
+func quest_complete(dungeon_id: String) -> bool:
+	return quest_progress.get(dungeon_id, []).size() >= Quests.STORY[dungeon_id].objectives.size()
+
+
+## Pays the story quest of `dungeon_id`: its reward and an item of at least
+## its rarity, at the hero's level. Returns "" or why not.
+func claim_quest(dungeon_id: String) -> String:
+	if not Quests.STORY.has(dungeon_id):
+		return "No such quest."
+	if quests_claimed.has(dungeon_id):
+		return "Already claimed."
+	if not quest_complete(dungeon_id):
+		return "Not finished yet."
+	if inventory.is_full():
+		return "Make room in the bag first."
+	var quest: Dictionary = Quests.STORY[dungeon_id]
+	quests_claimed.append(dungeon_id)
+	_grant(quest.reward)
+	var bases := catalog.bases
+	var base: ItemBase = bases[rng.randi_range(0, bases.size() - 1)]
+	inventory.add(catalog.roll(base, Crafting.craft_level(level), Rarity.roll(rng, quest.item_rarity, 1.0), rng))
+	changed.emit()
+	return ""
+
+
+## Achievement `id`'s progress: Vector2i(now, goal).
+func achievement_progress(id: String) -> Vector2i:
+	var entry := Quests.achievement(id)
+	return Vector2i(mini(stat_count(entry[2]), entry[3]), entry[3]) if not entry.is_empty() else Vector2i.ZERO
+
+
+func claim_achievement(id: String) -> String:
+	var entry := Quests.achievement(id)
+	if entry.is_empty():
+		return "No such achievement."
+	if achievements_claimed.has(id):
+		return "Already claimed."
+	if stat_count(entry[2]) < entry[3]:
+		return "Not yet."
+	achievements_claimed.append(id)
+	_grant(entry[4])
+	changed.emit()
+	return ""
+
+
+## Starts a new day's dailies when the date has changed: today's three,
+## counted from now. Yesterday's unfinished ones simply go.
+func _roll_daily() -> void:
+	var today := Quests.day_of(clock.call())
+	if today == daily_day:
+		return
+	daily_day = today
+	daily_base = stats.duplicate()
+	daily_claimed.clear()
+
+
+## Today's challenges: [{"id", "text", "progress", "goal", "reward", "claimed"}].
+func dailies() -> Array[Dictionary]:
+	_roll_daily()
+	var list: Array[Dictionary] = []
+	for entry: Array in Quests.dailies_of(daily_day):
+		var progress := mini(stat_count(entry[2]) - daily_base.get(entry[2], 0), entry[3])
+		list.append({"id": entry[0], "text": entry[1], "progress": maxi(progress, 0), "goal": entry[3],
+				"reward": entry[4], "claimed": daily_claimed.has(entry[0])})
+	return list
+
+
+func claim_daily(id: String) -> String:
+	for challenge in dailies():
+		if challenge.id != id:
+			continue
+		if challenge.claimed:
+			return "Already claimed."
+		if challenge.progress < challenge.goal:
+			return "Not yet."
+		daily_claimed.append(id)
+		_grant(challenge.reward)
+		changed.emit()
+		return ""
+	return "Not one of today's."
+
+
+## Adds a reward's gold, Ash and materials.
+func _grant(reward: Dictionary) -> void:
+	gold += int(reward.get(Materials.GOLD, 0))
+	ash += int(reward.get(Materials.ASH, 0))
+	_add_materials(reward)
+
+
+## Rewards that can be claimed now (story, achievements, dailies), for a
+## badge on the Quests button.
+func claimable_count() -> int:
+	var total := 0
+	for id: String in Quests.STORY:
+		if quest_complete(id) and not quests_claimed.has(id):
+			total += 1
+	for entry: Array in Quests.ACHIEVEMENTS:
+		if not achievements_claimed.has(entry[0]) and stat_count(entry[2]) >= entry[3]:
+			total += 1
+	for challenge in dailies():
+		if not challenge.claimed and challenge.progress >= challenge.goal:
+			total += 1
+	return total
 
 
 func has_cleared(dungeon_id: String) -> bool:
@@ -448,6 +648,8 @@ func collect_camp(id: String) -> Dictionary:
 		return taken
 	camps[id].since = clock.call()
 	_add_materials(taken)
+	if taken.values().any(func(amount: int) -> bool: return amount > 0):
+		count(Quests.CAMP_COLLECTS)
 	changed.emit()
 	return taken
 
@@ -476,7 +678,7 @@ func upgrade_camp(id: String) -> String:
 	collect_camp(id)
 	_pay(cost)
 	camps[id].level = camp_level(id) + 1
-	changed.emit()
+	count(Quests.CAMP_UPGRADES)
 	return ""
 
 
@@ -695,6 +897,7 @@ func reset() -> void:
 	materials.clear()
 	camps.clear()
 	cleared_dungeons.clear()
+	_clear_quests()
 	_claimed.clear()
 	inventory.load_list([])
 	equipment.load_dict({})

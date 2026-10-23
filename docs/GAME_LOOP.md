@@ -33,9 +33,9 @@ From its store listing:
 | Craft gear | The sheet's chain: upgrade → enchant → craft → legendary | Built, [CRAFTING.md](CRAFTING.md) |
 | Automate gathering | Gathering camps (mine, lumber, hunt, forage) that work while the player is away, once the crypt is cleared; upgraded with gold and another camp's material | Built, [CRAFTING.md](CRAFTING.md#gathering-camps) |
 | Offline income | Offline rewards: the highest tier cleared, half a run an hour, 8-hour cap, device clock (provisional) | Built |
-| Achievements and awards | Achievements that grant a lasting bonus | Planned |
-| Daily and weekly challenges | Daily challenges: optional, never punishing a missed day (charter §2.6) | Planned |
-| Quests | The sheet's Quest/Mission panel: a region's story quest with objectives and rewards | Planned |
+| Achievements and awards | Achievements with one-time rewards; awards (permanent bonuses) need the owner's call | Achievements built, [QUESTS.md](QUESTS.md) |
+| Daily and weekly challenges | Daily challenges: optional, never punishing a missed day (charter §2.6) | Dailies built, [QUESTS.md](QUESTS.md) |
+| Quests | The sheet's Quest/Mission panel: a region's story quest with objectives and rewards | Built, [QUESTS.md](QUESTS.md) |
 | Pets, artifacts, spells, events, retire | Not planned yet. Retire (prestige) would be a large design change; it needs the owner's call | Not planned |
 
 ## Order of work
@@ -51,4 +51,5 @@ From its store listing:
    [CRAFTING.md](CRAFTING.md).
 4. **New regions and Demons.** Built, see
    [dungeons/regions.md](dungeons/regions.md).
-5. **Quests, achievements and daily challenges.**
+5. **Quests, achievements and daily challenges.** Built, see
+   [QUESTS.md](QUESTS.md).

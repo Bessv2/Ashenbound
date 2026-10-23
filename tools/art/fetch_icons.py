@@ -97,6 +97,7 @@ ICONS = {
     "chest": "open-treasure-chest",
     "time": "sands-of-time",
     "daily": "calendar",
+    "check": "check-mark",
     # Stats.
     "stat_health": "hearts",
     "stat_damage": "sword-wound",
