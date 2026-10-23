@@ -699,6 +699,13 @@ To run only some suites, name them in `TEST_SUITES`, comma-separated
 
 ## Presentation: models and animation
 
+Art style test ([ART_STYLE_TEST.md](ART_STYLE_TEST.md)): `ArtStyle` reads
+the look from `GameSettings.art_style`. `ModelDressing` restyles every
+character part, `Main._apply_look()` dresses the level and its grade, and
+`HitFeedback` and `AttackSwoosh` pick `RealFx`, `ToonFx` or the classic
+`Vfx`. `HitStop` and `CharacterAnimator._lunge()` add attack weight in
+looks A and B only. All of it is presentation.
+
 Art arrives as imported glTF models from the KayKit packs
 ([ART_ASSET_PIPELINE.md](ART_ASSET_PIPELINE.md)). Gameplay never reads them.
 

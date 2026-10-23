@@ -129,7 +129,8 @@ func _connect_shake() -> void:
 					_camera_rig.add_trauma(0.25))
 	_run.kill_counted.connect(func(enemy: Node3D) -> void:
 		if enemy is EnemyController and (Champion.of(enemy) or not (enemy as EnemyController).champion_eligible):
-			_camera_rig.add_trauma(0.6))
+			_camera_rig.add_trauma(0.6)
+			HitStop.trigger(get_tree(), 0.14))
 
 
 func _on_settings_changed(settings: GameSettings) -> void:
@@ -212,6 +213,7 @@ func _load_level() -> void:
 				node.auto_start = false
 	add_child(level)
 	move_child(level, 0)
+	_apply_look()
 	if level.player_start:
 		_player.global_transform = level.player_start.global_transform
 		_player.reset_physics_interpolation()
@@ -226,6 +228,19 @@ func _load_level() -> void:
 	_loot.item_level = difficulty.item_level(level.item_level)
 	_loot.chance_scale = difficulty.drop_chance_scale()
 	_loot.rarity_scale = difficulty.rarity_scale()
+
+
+## Looks A and B (ArtStyle) restyle the level's surfaces and its grade.
+func _apply_look() -> void:
+	ArtStyle.dress_world(level)
+	for node in level.find_children("*", "WorldEnvironment", true, false):
+		var world := node as WorldEnvironment
+		world.environment = ArtStyle.environment_for(world.environment)
+
+
+func _exit_tree() -> void:
+	# A freeze must never outlive the run.
+	HitStop.reset()
 
 
 func _on_loot_collected(item: ItemInstance) -> void:
@@ -272,6 +287,7 @@ const VICTORY_SUMMARY_DELAY := 2.0
 
 func _on_run_ended(victory: bool) -> void:
 	GameplayActions.release_all()
+	HitStop.reset()
 	_potions.input_enabled = false
 	# The reward is paid once, at the end of the run; claim_reward() refuses
 	# any second attempt for the same run.

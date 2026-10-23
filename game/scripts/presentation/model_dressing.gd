@@ -22,13 +22,22 @@ extends Node
 func _ready() -> void:
 	if model == null:
 		return
-	if outline_width > 0.0 and material:
+	var look := ArtStyle.current()
+	if look == ArtStyle.Look.CLASSIC and outline_width > 0.0 and material:
 		material = _with_outline(material)
 	for part: GeometryInstance3D in model.find_children("*", "GeometryInstance3D", true, false):
 		if part.name in hidden_parts:
 			part.visible = false
 		elif part_materials.has(String(part.name)):
 			part.material_override = part_materials[String(part.name)]
+		elif look != ArtStyle.Look.CLASSIC:
+			# Looks A and B restyle every part, imported materials included.
+			var source := material
+			if source == null and part is MeshInstance3D and (part as MeshInstance3D).mesh:
+				source = (part as MeshInstance3D).get_active_material(0)
+			var styled := ArtStyle.character_material(source, look)
+			if styled:
+				part.material_override = styled
 		elif material:
 			part.material_override = material
 	if pose_animation != &"":

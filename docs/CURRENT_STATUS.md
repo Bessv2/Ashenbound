@@ -35,6 +35,7 @@ Status labels follow the charter:
 | 2026-10-22 | "Go ahead and keep building more of the gameplay." Next: champions and potions, then the Dreadhunter. |
 | 2026-10-22 | "Merge them and keep going with a second dungeon. You don't have to check in with me to merge them. I want a fully playable test version of the game with mechanics we talked about by today." |
 | 2026-10-22 | The charter was updated to v2.0 (`CLAUDE.md`) and reconciled with the repository. |
+| 2026-10-23 | "The graphics are still too basic. Too cartoony." Two directions named: (A) cartoony characters with realistic attack animations and effects, or (B) hyper-realistic characters and atmosphere with Castle Crashers-style effects. The owner chose to **see both first**: [ART_STYLE_TEST.md](ART_STYLE_TEST.md). **Pending: the owner's pick.** |
 | 2026-10-21 | **A browser build is a playtest preview** ([WEB_PREVIEW.md](WEB_PREVIEW.md)), not a platform change: Android stays the target. |
 
 ## Milestones
@@ -55,6 +56,7 @@ Status labels follow the charter:
 | Third class: Hexbinder | Validated, verified in runtime | [characters/hexbinder.md](characters/hexbinder.md): Hex Bolt, Black Testament, Grasp of the Grave, Unmake; playable tree. |
 | Visuals and living UI | Validated, verified in runtime | [UI.md](UI.md): fire, dust, grade, vignette, outlines, hit punch; health trail, banners, coloured buttons; title screen with class select. |
 | Second dungeon: the Forgotten Catacombs | Validated, verified in runtime | [dungeons/forgotten_catacombs.md](dungeons/forgotten_catacombs.md): opens after a crypt clear. Ghouls, three combat rooms, and the Hollow King (volley, spikes, nova, Ghoul adds); dungeon choice on the title screen. |
+| Art style test: Look A against Look B | Validated, verified in runtime | [ART_STYLE_TEST.md](ART_STYLE_TEST.md): a title-screen switch (Classic, A, B) restyles characters, the world, the grade, hits, kills and swings; both looks add hit-stop and lunges. Classic stays the default until the owner chooses. |
 | Fifth and sixth classes: Reliquary and Gravecaller | Validated, verified in runtime | [characters/reliquary.md](characters/reliquary.md), [characters/gravecaller.md](characters/gravecaller.md). All six classes are playable, with playable trees. Reliquary: capped heals, a lantern, a health-cost smite with safeguards, zeal. Gravecaller: skeleton summons with defined lifetime and cleanup, marking wraiths, soul harvest. |
 | Fourth class: Dreadhunter | Validated, verified in runtime | [characters/dreadhunter.md](characters/dreadhunter.md): crossbow, Deadfall, Charged Shot, Carrion Raven; playable tree. |
 | Champions and health potions | Validated, verified in runtime | [CHAMPIONS.md](CHAMPIONS.md): ordinary enemies may rise as champions with affixes (Hasted, Stoneskin, Vampiric, Ember-wreathed, Vengeful) and a guaranteed Rare drop; three potions per run, refilled by kills. |
@@ -85,8 +87,8 @@ merged into `main`, apart from #6.
 |---|---|---|
 | #34 | `feature/champions` | Merged: champions and health potions. |
 | #35 | `feature/dreadhunter` | The Dreadhunter; merged once its checks pass. |
-| #36 | `feature/second-dungeon` | The Forgotten Catacombs, stacked on #35. |
-| (new) | `feature/full-roster` | The Reliquary and the Gravecaller, stacked on #36. |
+| #36 to #38 | `feature/second-dungeon`, `feature/full-roster` | Merged: the catacombs and the full roster. |
+| (new) | `feature/style-lab` | The art style test. |
 | #6 | `feature/loot` | Open draft, **obsolete**: the early loot work, superseded by Milestone 4's loot. Kept for reference; it can be closed. |
 
 ## Deviations from the charter
@@ -112,16 +114,12 @@ merged into `main`, apart from #6.
 
 ## Next task
 
-The owner's playtest of the full test version: all six classes, two
-dungeons, champions, potions, tiers, loot and offline rewards. After it,
-the options are:
-
-- balance passes from that playtest;
-- a third dungeon;
-- Milestone 5 (the backend), to make progression durable and the offline
-  rewards trusted.
-
-The owner's playtests in the [web preview](WEB_PREVIEW.md) steer the order.
+The owner plays **Look A** and **Look B** ([ART_STYLE_TEST.md](ART_STYLE_TEST.md))
+and picks a direction. Then the chosen look becomes the default and is
+pushed through every class, enemy, boss and dungeon, and the charter's art
+direction (§9) is updated. Look B needs realistic rigged character models,
+which must be bought, licensed or provided. Real attack animations need
+animation assets either way.
 
 Device checks for Milestones 1 to 4 are still open: they need the Android app
 on a phone ([DEVICE_TESTING.md](DEVICE_TESTING.md)). The owner's playtests so

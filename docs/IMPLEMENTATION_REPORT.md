@@ -1487,3 +1487,50 @@ Not tested:
   rate with summons out.
 - Balance across the six classes in full runs.
 ```
+
+## 36. Art style test: Look A against Look B (branch `feature/style-lab`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone / feature: art direction (owner, 2026-10-23: "too basic... too
+cartoony", two directions; the owner chose "show me both first")
+Status: Validated, verified in runtime (desktop software Vulkan; web build in Chromium); not verified on device
+
+What changed:
+- ArtStyle: Classic (the default), Look A and Look B, saved as
+  GameSettings.art_style and chosen on the title screen.
+- Look A: cel-shaded characters (toon_character.gdshader) with an ink
+  outline. RealFx: spark streaks, glare, impact light, smoke, bone or blood,
+  blood pools, white-hot swings. A flinch on being hit.
+- Look B: worn, real surfaces for characters and the dungeon
+  (grim_surface.gdshader, which also keeps the wall cutout), and a grimmer
+  grade. ToonFx: comic stars, inked blobs, puffs, solid inked swings. A big
+  squash on being hit.
+- Both: HitStop on landed blows and big kills; CharacterAnimator lunges the
+  model through each attack. All of it is presentation; numbers are
+  unchanged.
+- docs/ART_STYLE_TEST.md with side-by-side images; CURRENT_STATUS, UI,
+  ART_DIRECTION.
+
+Commands and tests:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 314 passed, 0 failed (6 new in test_art_style.gd; the dungeon-row
+  test now finds the dungeons by name)
+- Command: the same blow and kill rendered in all three looks, plus both
+  effect sets close up, under Xvfb
+  Result: the images in docs/images/style_test_*.jpg
+- Command: web exports with each look as the default, played into the crypt
+  in Chromium
+  Result: both render, with no shader errors in the console
+
+Not tested:
+- On a phone: frame rate and readability of either look.
+
+Known limits:
+- No new animation clips: realistic attack animations need mocap or an
+  animator.
+- Look B cannot make the cartoon-proportioned models realistic: it needs
+  realistic rigged character assets.
+```

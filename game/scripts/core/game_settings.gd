@@ -21,6 +21,9 @@ const GRAPHICS := "graphics"
 @export_range(0, 240, 1) var max_fps: int = 60
 ## Camera shake on heavy hits. Off for players it bothers.
 @export var screen_shake: bool = true
+## The look (ArtStyle.Look): 0 classic, 1 look A, 2 look B. Applies to the
+## next run.
+@export_range(0, 2, 1) var art_style: int = 0
 
 
 func write_to(config: ConfigFile) -> void:
@@ -29,6 +32,7 @@ func write_to(config: ConfigFile) -> void:
 	config.set_value(GRAPHICS, "render_scale", render_scale)
 	config.set_value(GRAPHICS, "max_fps", max_fps)
 	config.set_value(GRAPHICS, "screen_shake", screen_shake)
+	config.set_value(GRAPHICS, "art_style", art_style)
 
 
 ## Reads known keys from config. Missing or malformed values keep their
@@ -40,6 +44,7 @@ func read_from(config: ConfigFile) -> void:
 	max_fps = int(_read_number(config, GRAPHICS, "max_fps", max_fps, 0, 240))
 	var shake: Variant = config.get_value(GRAPHICS, "screen_shake", screen_shake)
 	screen_shake = shake if shake is bool else screen_shake
+	art_style = int(_read_number(config, GRAPHICS, "art_style", art_style, 0, 2))
 
 
 static func _read_number(

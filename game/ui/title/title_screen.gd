@@ -34,6 +34,7 @@ var _tier_label: Label
 var _summary: Label
 var _enter_button: Button
 var _dungeon_buttons: Dictionary = {}
+var _look_buttons: Dictionary = {}
 var _time: float = 0.0
 
 
@@ -69,6 +70,17 @@ func choose_dungeon(id: String) -> bool:
 	var chosen: bool = profile.select_dungeon(id)
 	_refresh()
 	return chosen
+
+
+## Chooses look `look` (ArtStyle.Look) for the next run and saves it.
+func choose_look(look: int) -> void:
+	var settings := get_node_or_null(^"/root/Settings")
+	if settings == null:
+		return
+	settings.current.art_style = clampi(look, 0, ArtStyle.Look.size() - 1)
+	settings.save_to(settings.SETTINGS_PATH)
+	settings.apply()
+	_refresh()
 
 
 ## Moves the chosen crypt tier by `step` within the open tiers.
@@ -158,11 +170,25 @@ func _build() -> void:
 	for id in Dungeons.ORDER:
 		var button := Button.new()
 		button.name = id
-		button.custom_minimum_size = Vector2(420, 64)
-		button.add_theme_font_size_override(&"font_size", 22)
+		button.custom_minimum_size = Vector2(330, 64)
+		button.add_theme_font_size_override(&"font_size", 20)
 		button.pressed.connect(choose_dungeon.bind(id))
 		_dungeon_buttons[id] = button
 		dungeons.add_child(button)
+	# The look to compare (docs/ART_STYLE_TEST.md): classic, A or B.
+	var gap := Control.new()
+	gap.custom_minimum_size.x = 24
+	dungeons.add_child(gap)
+	for look in ArtStyle.Look.values():
+		var look_button := Button.new()
+		look_button.name = "Look%d" % look
+		look_button.text = ArtStyle.NAMES[look]
+		look_button.tooltip_text = ArtStyle.LINES[look]
+		look_button.custom_minimum_size = Vector2(118, 64)
+		look_button.add_theme_font_size_override(&"font_size", 19)
+		look_button.pressed.connect(choose_look.bind(look))
+		_look_buttons[look] = look_button
+		dungeons.add_child(look_button)
 
 	var bottom := HBoxContainer.new()
 	bottom.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -271,6 +297,14 @@ func _refresh() -> void:
 			button.add_theme_stylebox_override(state, UiFx.box(Color(0.07, 0.05, 0.07, 0.92), 10,
 					info.color if here else Color(info.color, 0.3), 3 if here else 1))
 		button.add_theme_color_override(&"font_color", info.color.lightened(0.25) if here else Color(0.75, 0.7, 0.65))
+	var current_look := ArtStyle.current()
+	for look: int in _look_buttons:
+		var look_button: Button = _look_buttons[look]
+		var accent := Color(0.95, 0.75, 0.4)
+		for state in [&"normal", &"hover", &"pressed", &"focus"]:
+			look_button.add_theme_stylebox_override(state, UiFx.box(Color(0.07, 0.05, 0.07, 0.92), 10,
+					accent if look == current_look else Color(accent, 0.25), 3 if look == current_look else 1))
+		look_button.add_theme_color_override(&"font_color", accent.lightened(0.3) if look == current_look else Color(0.7, 0.66, 0.6))
 	_enter_button.text = Dungeons.INFO[profile.dungeon].enter
 	_tier_label.text = "Tier %d" % profile.tier
 	_summary.text = "Level %d    Ash %d    Gold %d" % [profile.level, profile.ash, profile.gold]

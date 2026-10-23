@@ -107,3 +107,10 @@ Further elements of the sheet:
   Keep and Forgotten Catacombs.
 
 Accounts and any backend stay out of scope until asked for.
+
+## 2026-10-23: two directions under test
+
+The owner asked for a less basic, less cartoony look and named two
+directions. Both are playable behind a title-screen switch, and the owner
+will choose: see [ART_STYLE_TEST.md](ART_STYLE_TEST.md). Until then, this
+document's direction stands.
