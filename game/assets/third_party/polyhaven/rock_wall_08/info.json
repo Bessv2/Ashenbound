@@ -1,0 +1,13 @@
+{
+  "name": "Rock Wall 08",
+  "authors": [
+    "Amal Kumar"
+  ],
+  "page": "https://polyhaven.com/a/rock_wall_08",
+  "license": "CC0 1.0 (https://polyhaven.com/license)",
+  "size_m": [
+    1.8,
+    1.8
+  ],
+  "used_for": "walls, pillars and gates in look B (side faces)"
+}

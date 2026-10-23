@@ -1582,3 +1582,46 @@ Known limits:
 - Web: sound starts after the first tap, and the reverb does not apply.
 - Library music, not scored; no voice lines.
 ```
+
+## 38. Effect sprites and photographed stone (branch `feature/vfx-pack`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone / feature: free resource packs, effects and surfaces (owner,
+2026-10-23: "Go wild")
+Status: Validated, verified in runtime (desktop software Vulkan); not
+verified on device
+
+What changed:
+- Kenney Particle Pack (CC0) packed into six atlases by
+  tools/art/make_particle_atlases.py.
+- Vfx: sparks are now soft glints; new smoke, debris, flames and scorch
+  decals; rings are a real shockwave texture. The calls are unchanged, so
+  every ability and hit uses them.
+- Classic deaths raise dust and bone chips; Vengeful blasts burn, smoke
+  and scorch the floor; Judgment, Deadfall, Grasp, raised and crumbling
+  skeletons, curses and soul spells add smoke or debris; burns lick fire
+  on each tick; torches have real fire tongues and a smoke wisp; look A's
+  smoke uses the real puffs.
+- Look B: photographed stone (Poly Haven, CC0; tools/art/fetch_polyhaven.py)
+  on floors and walls by world position, keeping the palette's colour.
+- Fix: look B now dresses the tiled floors and walls (MultiMeshes), which
+  it had been skipping.
+
+Commands and tests:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 317 passed, 0 failed (3 new: sprites and their cleanup, torches,
+  and look B's tiles)
+- Command: probe (tile dressing switched off)
+  Result: the new test failed, then passed once restored
+- Command: close-up and wide renders under Xvfb (torch, death, blast,
+  look B's crypt)
+  Result: as intended after two passes of tuning (denser death smoke,
+  larger blast flames, each photograph normalised by its own brightness)
+
+Not tested:
+- On a phone: the cost of the extra particles and of look B's triplanar
+  stone (nine texture reads per pixel).
+```

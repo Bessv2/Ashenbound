@@ -60,3 +60,46 @@ func test_the_camera_shakes_when_the_hero_is_hurt_unless_turned_off() -> void:
 	Settings.apply()
 	hero.health.apply_damage(10)
 	check(rig.trauma == 0.0, "no shake when the setting is off")
+
+
+func test_smoke_debris_flames_rings_and_scorch_use_real_sprites_and_go() -> void:
+	var holder := Node3D.new()
+	add_child(holder)
+	var made: Array[Node] = [
+		Vfx.smoke(holder, Vector3.ZERO, Color.GRAY, 4, 1.0, 0.2),
+		Vfx.debris(holder, Vector3.ZERO, Color.WHITE, 3),
+		Vfx.flames(holder, Vector3.ZERO, Color.ORANGE, 4, 1.0, 0.2),
+		Vfx.ring(holder, Vector3.ZERO, 2.0, Color.CYAN, 0.1),
+		Vfx.scorch(holder, Vector3.ZERO, 1.5, 0.1),
+	]
+	var textures := {
+		0: Vfx.SmokeTexture, 1: Vfx.DebrisTexture, 2: Vfx.FlameTexture,
+	}
+	for i: int in textures:
+		var particles := made[i] as CPUParticles3D
+		var material := (particles.mesh as QuadMesh).material as StandardMaterial3D
+		check(material.albedo_texture == textures[i], "%s is drawn from its sprite sheet" % particles.mesh)
+		check(particles.anim_offset_max > 0.0, "each puff or tongue picks its own frame")
+	check(((made[3] as MeshInstance3D).material_override as StandardMaterial3D).albedo_texture == Vfx.RingTexture, "the ring is a real shockwave")
+	check((made[4] as Decal).texture_albedo == Vfx.ScorchTexture, "the scorch is a decal on the floor")
+	var ids := made.map(func(n: Node) -> int: return n.get_instance_id())
+	check(await wait_until(func() -> bool: return ids.all(func(id: int) -> bool: return not is_instance_id_valid(id)), 600),
+			"every one frees itself")
+	holder.queue_free()
+
+
+func test_torches_burn_with_real_fire_and_smoke() -> void:
+	var fire := FlameFx.new()
+	add_child(fire)
+	check(fire.get_node_or_null(^"Flame") != null, "the shader flame stays as the core")
+	var tongues := fire.get_node_or_null(^"Tongues") as CPUParticles3D
+	check(tongues != null and ((tongues.mesh as QuadMesh).material as StandardMaterial3D).albedo_texture == Vfx.FlameTexture,
+			"fire tongues from the sprite sheet lick through it")
+	check(fire.get_node_or_null(^"Smoke") != null, "smoke wisps rise from it")
+	fire.queue_free()
+	var bare := FlameFx.new()
+	bare.tongue_count = 0
+	bare.smoke_count = 0
+	add_child(bare)
+	check(bare.get_node_or_null(^"Tongues") == null and bare.get_node_or_null(^"Smoke") == null, "both can be turned off")
+	bare.queue_free()

@@ -55,4 +55,5 @@ func _activate(_toward: Vector3) -> bool:
 	if caster.get_parent():
 		Vfx.ring(caster.get_parent(), center, radius, CURSE_COLOR)
 		Vfx.burst(caster.get_parent(), center + Vector3.UP, CURSE_COLOR, 24, 3.0, 0.6, 0.12)
+		Vfx.smoke(caster.get_parent(), center + Vector3.UP * 0.4, CURSE_COLOR.darkened(0.5), 6, 1.8, 1.1)
 	return true

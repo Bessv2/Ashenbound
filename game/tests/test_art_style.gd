@@ -126,3 +126,30 @@ func test_the_title_screen_chooses_and_saves_the_look() -> void:
 			"and it is saved")
 	title.choose_look(ArtStyle.Look.CLASSIC)
 	title.free()
+
+
+func test_look_b_lays_photographed_stone_on_the_tiled_floors_and_walls() -> void:
+	ArtStyle.override_look = ArtStyle.Look.GRIM
+	var main := instantiate_main(false, CryptScene)
+	add_child(main)
+	await wait_physics_frames(2)
+	var tiles: Array[Node] = main.level.find_children("*", "MultiMeshInstance3D", true, false)
+	check(tiles.size() > 10, "the crypt's floors and walls are tiled: %d chunks" % tiles.size())
+	var dressed: Array[Node] = tiles.filter(func(t: MultiMeshInstance3D) -> bool:
+		var material := t.material_override as ShaderMaterial
+		return material != null and material.shader == ArtStyle.GrimShader and material.get_shader_parameter(&"use_detail") == true)
+	check(dressed.size() == tiles.size(), "every chunk is dressed: %d of %d" % [dressed.size(), tiles.size()])
+	var material := (dressed[0] as MultiMeshInstance3D).material_override as ShaderMaterial
+	check(material.get_shader_parameter(&"detail_top_albedo") is Texture2D and material.get_shader_parameter(&"detail_side_normal") is Texture2D,
+			"with real flagstones on top and rock on the sides")
+	main.free()
+	await wait_physics_frames(2)
+	ArtStyle.override_look = ArtStyle.Look.HEROIC
+	main = instantiate_main(false, CryptScene)
+	add_child(main)
+	await wait_physics_frames(2)
+	check(main.level.find_children("*", "MultiMeshInstance3D", true, false).all(func(t: MultiMeshInstance3D) -> bool:
+		return not (t.material_override is ShaderMaterial and (t.material_override as ShaderMaterial).shader == ArtStyle.GrimShader)),
+			"look A keeps the dungeon as built")
+	main.free()
+	await wait_physics_frames(2)

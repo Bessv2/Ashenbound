@@ -30,4 +30,5 @@ func _activate(_toward: Vector3) -> bool:
 	if caster.get_parent():
 		Vfx.ring(caster.get_parent(), caster.global_position, radius, COLOR, 0.55)
 		Vfx.burst(caster.get_parent(), caster.global_position + Vector3.UP * 0.3, COLOR, 20, 2.5, 0.6, 0.1)
+		Vfx.debris(caster.get_parent(), caster.global_position + Vector3.UP * 0.2, Color(0.45, 0.4, 0.35), 8, 3.0, 0.55)
 	return true

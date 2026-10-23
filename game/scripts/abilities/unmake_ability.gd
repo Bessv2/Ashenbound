@@ -57,6 +57,7 @@ func _activate(_toward: Vector3) -> bool:
 		last_damage += health.apply_damage(amount, caster.global_position)
 		if caster.get_parent():
 			Vfx.burst(caster.get_parent(), body.global_position + Vector3.UP, COLOR, 26, 5.0, 0.5, 0.14)
+			Vfx.smoke(caster.get_parent(), body.global_position + Vector3.UP, COLOR.darkened(0.5), 5, 1.6, 0.9)
 			Vfx.ring(caster.get_parent(), body.global_position, 1.8, COLOR, 0.35)
 	var own := Health.of(caster)
 	last_healed = own.heal(roundi(last_damage * _siphon)) if own and _siphon > 0.0 else 0
