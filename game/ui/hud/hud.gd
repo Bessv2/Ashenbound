@@ -13,6 +13,7 @@ extends CanvasLayer
 signal pause_requested
 signal inventory_requested
 signal skills_requested
+signal character_requested
 
 @onready var _root: Control = $Root
 @onready var _pause_button: Button = %PauseButton
@@ -56,6 +57,8 @@ func _ready() -> void:
 	(%BagButton as Button).pressed.connect(inventory_requested.emit)
 	(%SkillsButton as Button).pressed.connect(skills_requested.emit)
 	(%BagButton as Button).icon = Icons.of("bag")
+	(%CharacterButton as Button).icon = Icons.of("character")
+	(%CharacterButton as Button).pressed.connect(character_requested.emit)
 	(%SkillsButton as Button).icon = Icons.of("skills")
 	(%DodgeButton as TouchActionButton).icon = Icons.of("dodge")
 	(%PotionButton as TouchActionButton).icon = Icons.of("potion")

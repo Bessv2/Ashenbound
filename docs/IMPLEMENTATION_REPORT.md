@@ -1753,3 +1753,54 @@ Checks:
 - Captures under Xvfb of the Warden, Reaver and Gravecaller in the crypt
   (verified in runtime). This is where the minimap's first size overlapped
   the top ability button; it was made smaller.
+
+## 43. The concept sheet's menus (branch `feature/concept-menus`)
+
+Step 2 of [GAME_LOOP.md](GAME_LOOP.md).
+
+What changed:
+- **`WindowFrame`:** the sheet's window, with a title, an X, and a header
+  slot for the purse.
+  - `WindowFrame.purse` shows an icon and an amount with grouped thousands.
+- **`CharacterPanel`:** portrait, level, XP, worn slots and the stat rows.
+  It opens from a new HUD button and from the title screen.
+- **`CharacterStats` refactor** (the numbers are unchanged):
+  - `combine` holds the stat totals logic that `recalculate` now calls.
+  - `damage_scale_of` is shared with `_apply`.
+  - `sheet` builds the rows; `preview` builds the sheet without a hero in
+    the world.
+- **`InventoryPanel`:**
+  - It sits in a window with the purse.
+  - Slots and bag cells are item icons in rarity colours; the bag grid has
+    five columns, so the window fits 1280 × 720.
+  - The card has the item's icon, a big power line, its kind, and a flavor
+    line.
+  - The card's Close button went: the window's X closes.
+- **Items:** `ItemBase.icon` and `ItemBase.flavor`. The nine bases have
+  flavor, and five have their own icon.
+- **Dungeons:** `Dungeons.INFO` gains `icon` and `levels`, plus
+  `level_range` and `lock_reason`.
+- **Title screen:**
+  - The purse and the look switch are at the top right, as a `Looks`
+    group.
+  - The dungeon cards have icons and level ranges.
+  - There are Character and Bag buttons; both panels are instanced on the
+    title.
+- **Icons:** 19 more, for item kinds and menus (94 in all).
+  - `fetch_icons.py` now writes each new icon's import settings (256 px,
+    mipmaps).
+
+Checks:
+- `tests/test_concept_menus.gd` (6 tests):
+  - the sheet's numbers;
+  - the title preview equals the hero's own sheet in a run;
+  - the Character window opens from the HUD, pauses and closes;
+  - the bag shows icons, the purse shows "12,480" and a weapon's card leads
+    with its damage;
+  - the dungeon cards show icons and ranges, and the menu buttons open
+    their panels;
+  - amounts are grouped.
+- `test_art_style` now finds the look buttons in `Looks`.
+- Captures under Xvfb of the title, Character and Inventory screens. They
+  caught two problems, both fixed: the inventory was wider than the screen,
+  and the upgrade and salvage labels were cut off.

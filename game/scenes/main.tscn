@@ -14,6 +14,7 @@
 [ext_resource type="Script" path="res://ui/inventory/inventory_panel.gd" id="15_inventory"]
 [ext_resource type="Script" path="res://ui/skills/skill_tree_panel.gd" id="16_skills"]
 [ext_resource type="Script" path="res://ui/offline/offline_panel.gd" id="17_offline"]
+[ext_resource type="Script" path="res://ui/character/character_panel.gd" id="20_character"]
 [ext_resource type="Script" path="res://ui/effects/screen_fx.gd" id="18_screen_fx"]
 [ext_resource type="Script" path="res://scripts/player/potion_belt.gd" id="19_potions"]
 [ext_resource type="Script" path="res://scripts/audio/sound_director.gd" id="sound_director"]
@@ -57,6 +58,9 @@ script = ExtResource("15_inventory")
 
 [node name="Skills" type="CanvasLayer" parent="."]
 script = ExtResource("16_skills")
+
+[node name="Character" type="CanvasLayer" parent="."]
+script = ExtResource("20_character")
 
 [node name="Offline" type="CanvasLayer" parent="."]
 script = ExtResource("17_offline")

@@ -16,6 +16,9 @@ const INFO := {
 		"scene": "res://scenes/dungeon/crypt.tscn",
 		"color": Color(1.0, 0.55, 0.25),
 		"music": &"music_crypt",
+		"icon": "region_crypt",
+		# The hero levels it is meant for, shown on its card.
+		"levels": Vector2i(1, 10),
 	},
 	CATACOMBS: {
 		"title": "The Forgotten Catacombs",
@@ -24,6 +27,8 @@ const INFO := {
 		"scene": "res://scenes/dungeon/catacombs.tscn",
 		"color": Color(0.4, 0.85, 1.0),
 		"music": &"music_catacombs",
+		"icon": "region_catacombs",
+		"levels": Vector2i(5, 15),
 	},
 }
 
@@ -33,6 +38,19 @@ static func is_open(id: String, profile: Node) -> bool:
 	if not INFO.has(id):
 		return false
 	return id == CRYPT or int(profile.tier_cleared) >= 1
+
+
+## Why dungeon `id` is shut to `profile`, or "" when it is open.
+static func lock_reason(id: String, profile: Node) -> String:
+	if is_open(id, profile):
+		return ""
+	return "Clear the crypt to open"
+
+
+## "Lv 1-10".
+static func level_range(id: String) -> String:
+	var levels: Vector2i = INFO.get(id, INFO[CRYPT]).levels
+	return "Lv %d-%d" % [levels.x, levels.y]
 
 
 ## The level scene of dungeon `id` (the crypt's for an unknown id).

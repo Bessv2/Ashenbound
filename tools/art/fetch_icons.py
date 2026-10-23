@@ -76,6 +76,27 @@ ICONS = {
     "slot_ring": "diamond-ring",
     "slot_amulet": "gem-pendant",
     "slot_relic": "holy-grail",
+    # Item kinds (ItemBase.icon); a base without one shows its slot's.
+    "item_cleaver": "meat-cleaver",
+    "item_axe": "battle-axe",
+    "item_dagger": "plain-dagger",
+    "item_staff": "wizard-staff",
+    "item_bow": "pocket-bow",
+    "item_flail": "flail",
+    "item_scythe": "scythe",
+    "item_wand": "crystal-wand",
+    "item_leather": "leather-armor",
+    "item_robe": "robe",
+    "item_breastplate": "breastplate",
+    "item_barbute": "closed-barbute",
+    "item_skull_ring": "skull-ring",
+    "item_necklace": "emerald-necklace",
+    "item_tome": "spell-book",
+    # Menus.
+    "locked": "padlock",
+    "chest": "open-treasure-chest",
+    "time": "sands-of-time",
+    "daily": "calendar",
     # Stats.
     "stat_health": "hearts",
     "stat_damage": "sword-wound",
@@ -157,6 +178,12 @@ def main() -> None:
         svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" '
                f'viewBox="0 0 {size} {size}">{body}</svg>\n')
         (OUT / f"{key}.svg").write_text(svg)
+        # Imported at twice the size with mipmaps, sharp on a phone's dense
+        # screen; Godot fills in the rest of the file on import.
+        settings = OUT / f"{key}.svg.import"
+        if not settings.exists():
+            settings.write_text('[remap]\n\nimporter="texture"\ntype="CompressedTexture2D"\n\n'
+                                '[params]\n\nmipmaps/generate=true\nsvg/scale=2.0\n')
         if name not in authors:
             raise SystemExit(f"no author found for {name}")
         author = authors[name]

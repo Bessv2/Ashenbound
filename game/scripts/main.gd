@@ -42,6 +42,7 @@ var difficulty: Difficulty
 @onready var _loot: LootDropper = $Loot
 @onready var _inventory: InventoryPanel = $Inventory
 @onready var _skills: SkillTreePanel = $Skills
+@onready var _character: CharacterPanel = $Character
 @onready var _offline: OfflinePanel = $Offline
 @onready var _screen_fx: ScreenFx = $ScreenFx
 @onready var _potions: PotionBelt = $Potions
@@ -64,6 +65,8 @@ func _ready() -> void:
 	_hud.skills_requested.connect(open_skills)
 	_skills.close_requested.connect(_pause_controller.set_paused.bind(false))
 	_skills.class_chosen.connect(play_class)
+	_hud.character_requested.connect(open_character)
+	_character.close_requested.connect(_pause_controller.set_paused.bind(false))
 	_offline.close_requested.connect(_pause_controller.set_paused.bind(false))
 	# A method, not a lambda: the connection to the autoload goes when Main goes.
 	Profile.offline_ready.connect(open_offline_rewards)
@@ -167,6 +170,19 @@ func play_class(class_id: String) -> void:
 	restart()
 
 
+## Opens the character sheet; the game waits while it is open.
+func open_character() -> void:
+	if _run.is_over():
+		return
+	var stats := _player.get_node_or_null(^"Stats") as CharacterStats
+	if stats == null:
+		return
+	var color := _player.abilities[0].hud_color if not _player.abilities.is_empty() else Color.WHITE
+	_character.open(stats.rows(), hero_class_of(Profile), stats.skill_tree.class_title if stats.skill_tree else "",
+			color.lerp(Color.WHITE, 0.25))
+	_pause_controller.set_paused(true)
+
+
 ## Opens the skill trees; the game waits while they are open.
 func open_skills() -> void:
 	if _run.is_over():
@@ -178,10 +194,12 @@ func open_skills() -> void:
 func _on_paused_changed(paused: bool) -> void:
 	# The bag and the skills pause the game too; the pause menu only shows
 	# without them.
-	_pause_menu.set_open(paused and not _inventory.visible and not _skills.visible and not _offline.visible)
+	_pause_menu.set_open(paused and not _inventory.visible and not _skills.visible and not _offline.visible
+			and not _character.visible)
 	if not paused:
 		_inventory.close()
 		_skills.close()
+		_character.close()
 		# Unpaused without collecting: the time stays banked for later.
 		_offline.hide()
 

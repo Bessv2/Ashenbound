@@ -62,6 +62,40 @@ Laid out like the concept sheet's in-game panel (2026-10-23):
   its head and a ring at its feet, in its first affix's colour. A toast
   announces it when it rises.
 
+## Menus (2026-10-23)
+
+Like the concept sheet's UI panels. Each is a `WindowFrame`: a dark panel
+with an ember border, the title on the left and an X on the right.
+- **Character** (`CharacterPanel`):
+  - On the left, the class portrait, name, level and XP bar, and the nine
+    worn slots as icons in their rarity colour.
+  - On the right, the numbers that matter in a fight, each with an icon:
+    health, attack, armour, crit chance, crit damage, attack and move
+    speed, cooldown reduction, and health on kill.
+  - **Attack** is the basic attack's damage after the weapon and damage
+    bonuses.
+  - The rows come from `CharacterStats.sheet`. In a run they use the hero's
+    own stats; on the title screen, `CharacterStats.preview` builds them
+    from the chosen class, the gear worn and the learned skills. The same
+    numbers either way (tested).
+  - It opens from the HUD (the helm button) and the title screen.
+- **Inventory** (`InventoryPanel`):
+  - Gold and Ash are in the header.
+  - The nine equipped slots are icon buttons; the bag is a grid of item
+    icons, framed and tinted in their rarity colour, with "+N" for upgrades.
+  - The item card leads with a big number, like the sheet's "142 DPS": a
+    weapon's damage, else its armour or health.
+  - Then come the rarity and kind, the stats, the comparison, and a line of
+    flavor in italics.
+  - Each item kind has an icon (`ItemBase.icon`, else its slot's) and a
+    flavor line (`ItemBase.flavor`).
+- **Dungeon cards** (title screen): an icon, the name, and the hero levels
+  the dungeon is meant for ("Lv 1-10"). A shut dungeon shows a padlock and
+  how to open it.
+- **Title header:** gold and Ash at the top right, beside the look switch.
+  Character and bag buttons sit at the bottom left.
+- **Quests** come with the quest system ([GAME_LOOP.md](GAME_LOOP.md)).
+
 ## The title screen
 
 The game opens on it (`scenes/title.tscn`): the name and tagline over

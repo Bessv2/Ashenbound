@@ -14,6 +14,15 @@ const SLOT_NAMES := ["Weapon", "Helmet", "Chest", "Gloves", "Boots", "Ring", "Am
 ## Stat key → Vector2i(min, max) at item level 1.
 @export var base_stats: Dictionary[String, Vector2i] = {}
 @export_range(1, 100, 1) var min_item_level: int = 1
+## Icon key (Icons.of); empty shows the slot's icon.
+@export var icon: String = ""
+## A line of lore under the stats on the item card.
+@export_multiline var flavor: String = ""
+
+
+func icon_texture() -> Texture2D:
+	var texture := Icons.of(icon) if icon != "" else null
+	return texture if texture else Icons.for_slot(slot)
 
 
 ## Problems with this data, for tests and the catalog check.
