@@ -1,0 +1,143 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/enemy_controller.gd" id="1_controller"]
+[ext_resource type="Resource" path="res://resources/enemies/imp_movement.tres" id="2_movement"]
+[ext_resource type="Resource" path="res://resources/enemies/imp_behavior.tres" id="3_behavior"]
+[ext_resource type="Script" path="res://scripts/combat/health.gd" id="4_health"]
+[ext_resource type="Script" path="res://scripts/combat/hit_feedback.gd" id="5_feedback"]
+[ext_resource type="Material" path="res://resources/materials/hit_flash.tres" id="6_flash"]
+[ext_resource type="Script" path="res://scripts/combat/ranged_attack.gd" id="7_attack"]
+[ext_resource type="Resource" path="res://resources/enemies/imp_bolt.tres" id="8_attack_data"]
+[ext_resource type="Script" path="res://scripts/combat/attack_telegraph.gd" id="10_telegraph"]
+[ext_resource type="Material" path="res://resources/materials/ember_eyes.tres" id="12_eyes"]
+[ext_resource type="Material" path="res://resources/materials/telegraph.tres" id="14_telegraph"]
+[ext_resource type="PackedScene" path="res://assets/third_party/kaykit/characters/Rogue_Hooded.glb" id="15_model"]
+[ext_resource type="Script" path="res://scripts/presentation/model_dressing.gd" id="17_dressing"]
+[ext_resource type="Script" path="res://scripts/presentation/character_animator.gd" id="18_animator"]
+[ext_resource type="PackedScene" path="res://scenes/combat/fire_bolt.tscn" id="19_bolt"]
+[ext_resource type="Material" path="res://resources/materials/imp_model.tres" id="20_model_material"]
+[ext_resource type="Resource" path="res://resources/loot/imp_drops.tres" id="21_drops"]
+[ext_resource type="Script" path="res://scripts/audio/character_sounds.gd" id="sounds_script"]
+[ext_resource type="Material" path="res://resources/materials/demon_horn.tres" id="30_horn"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.35
+height = 1.4
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_horn"]
+material = ExtResource("30_horn")
+top_radius = 0.0
+bottom_radius = 0.06
+height = 0.3
+radial_segments = 8
+rings = 1
+
+[sub_resource type="SphereMesh" id="SphereMesh_eye"]
+material = ExtResource("12_eyes")
+radius = 0.04
+height = 0.08
+radial_segments = 8
+rings = 4
+
+[node name="Imp" type="CharacterBody3D" node_paths=PackedStringArray("attack", "health", "visual", "navigation")]
+collision_layer = 4
+collision_mask = 7
+script = ExtResource("1_controller")
+movement = ExtResource("2_movement")
+behavior = ExtResource("3_behavior")
+attack = NodePath("FireBolt")
+health = NodePath("Health")
+visual = NodePath("Visual")
+navigation = NodePath("NavigationAgent")
+ash_value = 2
+drop_table = ExtResource("21_drops")
+xp_value = 24
+gold_value = 5
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("4_health")
+max_health = 30
+
+[node name="HitFeedback" type="Node" parent="." node_paths=PackedStringArray("health", "visual")]
+script = ExtResource("5_feedback")
+health = NodePath("../Health")
+visual = NodePath("../Visual")
+flash_material = ExtResource("6_flash")
+number_height = 2.0
+
+[node name="FireBolt" type="Node" parent="."]
+script = ExtResource("7_attack")
+data = ExtResource("8_attack_data")
+target_mask = 2
+projectile_scene = ExtResource("19_bolt")
+
+[node name="NavigationAgent" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.5
+path_height_offset = 0.5
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Model" parent="Visual" instance=ExtResource("15_model")]
+transform = Transform3D(-0.75, 0, 0, 0, 0.75, 0, 0, 0, -0.75, 0, 0, 0)
+
+[node name="Head" type="BoneAttachment3D" parent="Visual/Model/Rig/Skeleton3D"]
+bone_name = "head"
+
+[node name="HornLeft" type="MeshInstance3D" parent="Visual/Model/Rig/Skeleton3D/Head"]
+transform = Transform3D(0.94, -0.34, 0, 0.34, 0.94, 0, 0, 0, 1, -0.34, 0.95, -0.02)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_horn")
+
+[node name="HornRight" type="MeshInstance3D" parent="Visual/Model/Rig/Skeleton3D/Head"]
+transform = Transform3D(0.94, 0.34, 0, -0.34, 0.94, 0, 0, 0, 1, 0.34, 0.95, -0.02)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_horn")
+
+[node name="EyeLeft" type="MeshInstance3D" parent="Visual/Model/Rig/Skeleton3D/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.16, 0.5, 0.52)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_eye")
+
+[node name="EyeRight" type="MeshInstance3D" parent="Visual/Model/Rig/Skeleton3D/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16, 0.5, 0.52)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_eye")
+
+[node name="Telegraph" type="MeshInstance3D" parent="Visual" node_paths=PackedStringArray("attack")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
+material_override = ExtResource("14_telegraph")
+script = ExtResource("10_telegraph")
+attack = NodePath("../../FireBolt")
+
+[node name="ModelDressing" type="Node" parent="." node_paths=PackedStringArray("model")]
+script = ExtResource("17_dressing")
+model = NodePath("../Visual/Model")
+material = ExtResource("20_model_material")
+hidden_parts = PackedStringArray("1H_Crossbow", "2H_Crossbow", "Throwable", "Knife", "Knife_Offhand")
+
+[node name="Animator" type="Node" parent="." node_paths=PackedStringArray("body", "enemy", "animation_player", "health", "attacks")]
+script = ExtResource("18_animator")
+mocap_hit = "Hit_Chest|Hit_Head"
+mocap_attacks = Array[String](["Spell_Simple_Shoot"])
+body = NodePath("..")
+enemy = NodePath("..")
+animation_player = NodePath("../Visual/Model/AnimationPlayer")
+health = NodePath("../Health")
+attacks = [NodePath("../FireBolt")]
+attack_animations = Array[StringName]([&"Spellcast_Shoot"])
+idle_animation = &"Idle"
+run_animation = &"Running_A"
+death_animation = &"Death_B"
+run_reference_speed = 3.7
+
+[node name="Sounds" type="Node" parent="."]
+script = ExtResource("sounds_script")
+pitch = 1.45
+growl_chance = 0.3
+growl = &"ghoul_snarl"
+death = &"ghoul_death"
+impact = &"hit_flesh"

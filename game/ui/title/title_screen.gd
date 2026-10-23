@@ -37,6 +37,7 @@ var _dungeon_buttons: Dictionary = {}
 var _look_buttons: Dictionary = {}
 var _time: float = 0.0
 var _purse: HBoxContainer
+var _strip: ScrollContainer
 var _character: CharacterPanel
 var _inventory: InventoryPanel
 var _forge: ForgePanel
@@ -250,17 +251,26 @@ func _build() -> void:
 		_cards[tree.class_id] = card
 		row.add_child(card)
 
+	# Seven dungeons do not fit across a phone: the row scrolls sideways.
+	var strip := ScrollContainer.new()
+	_strip = strip
+	strip.name = "DungeonStrip"
+	strip.custom_minimum_size.y = 104
+	strip.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	strip.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
+	page.add_child(strip)
 	var dungeons := HBoxContainer.new()
 	dungeons.name = "Dungeons"
+	dungeons.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	dungeons.alignment = BoxContainer.ALIGNMENT_CENTER
 	dungeons.add_theme_constant_override(&"separation", 12)
-	page.add_child(dungeons)
+	strip.add_child(dungeons)
 	# The concept sheet's Dungeon Selection: a card per dungeon with its
 	# icon, name and level range.
 	for id in Dungeons.ORDER:
 		var button := Button.new()
 		button.name = id
-		button.custom_minimum_size = Vector2(340, 96)
+		button.custom_minimum_size = Vector2(300, 96)
 		button.add_theme_font_size_override(&"font_size", 19)
 		button.icon = Icons.of(Dungeons.INFO[id].icon)
 		button.expand_icon = true
@@ -400,6 +410,9 @@ func _refresh() -> void:
 					accent if look == current_look else Color(accent, 0.25), 3 if look == current_look else 1))
 		look_button.add_theme_color_override(&"font_color", accent.lightened(0.3) if look == current_look else Color(0.7, 0.66, 0.6))
 	_enter_button.text = Dungeons.INFO[profile.dungeon].enter
+	# Keeps the chosen dungeon's card in view.
+	if _dungeon_buttons.has(profile.dungeon):
+		_strip.ensure_control_visible.call_deferred(_dungeon_buttons[profile.dungeon])
 	_tier_label.text = "Tier %d" % profile.tier
 	_summary.text = "Level %d" % profile.level
 	for child in _purse.get_children():

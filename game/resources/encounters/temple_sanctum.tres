@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="EncounterData" format=3]
+
+[ext_resource type="Script" path="res://scripts/encounters/encounter_data.gd" id="1_encounter"]
+[ext_resource type="Script" path="res://scripts/encounters/wave_data.gd" id="2_wave"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/dark_cultist.tscn" id="3_cultist"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/imp.tscn" id="4_imp"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/fallen_knight.tscn" id="5_knight"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/skeleton_warrior.tscn" id="6_skeleton"]
+
+[sub_resource type="Resource" id="Resource_wave1"]
+script = ExtResource("2_wave")
+enemies = Array[PackedScene]([ExtResource("6_skeleton"), ExtResource("4_imp"), ExtResource("6_skeleton"), ExtResource("4_imp"), ExtResource("6_skeleton")])
+markers = PackedStringArray("North", "NorthEast", "NorthWest", "East", "West")
+
+[sub_resource type="Resource" id="Resource_wave2"]
+script = ExtResource("2_wave")
+enemies = Array[PackedScene]([ExtResource("5_knight"), ExtResource("6_skeleton"), ExtResource("4_imp"), ExtResource("6_skeleton")])
+markers = PackedStringArray("NorthEast", "NorthWest", "SouthEast", "SouthWest")
+
+[sub_resource type="Resource" id="Resource_wave3"]
+script = ExtResource("2_wave")
+enemies = Array[PackedScene]([ExtResource("5_knight"), ExtResource("3_cultist"), ExtResource("3_cultist"), ExtResource("6_skeleton")])
+markers = PackedStringArray("North", "East", "West", "NorthEast")
+
+[resource]
+script = ExtResource("1_encounter")
+waves = Array[ExtResource("2_wave")]([SubResource("Resource_wave1"), SubResource("Resource_wave2"), SubResource("Resource_wave3")])

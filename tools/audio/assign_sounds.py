@@ -39,6 +39,9 @@ ATTACKS = {
     "enemies/hollow_king_soul_volley": ("ghost_moan", "spell_cast", 0.6),
     "enemies/hollow_king_grave_spikes": ("earth_rise", "stone_break", 0.9),
     "enemies/hollow_king_soul_nova": ("ghost_breath", "explosion", 0.7),
+    "enemies/demon_claw": ("", "claw", 0.8),
+    "enemies/demon_slam": ("fire_cast", "stone_break", 0.8),
+    "enemies/imp_bolt": ("fire_cast", "spell_cast", 1.3),
 }
 
 # Scene -> node name -> sound (abilities).
@@ -56,6 +59,7 @@ PROJECTILES = {
     "combat/hex_bolt": "frost",
     "combat/shadow_bolt": "dark_magic",
     "combat/soul_bolt": "frost",
+    "combat/fire_bolt": "fire_cast",
 }
 
 HERO = {"impact": "hit_flesh", "hurt": "hero_hurt", "hurt_chance": 0.6, "death": "hero_death", "footsteps": "footstep"}
@@ -78,6 +82,10 @@ CHARACTERS = {
     "enemies/ashen_lord": {"impact": "hit_metal", "death": "giant_roar", "death_layer": "stone_break", "pitch": 0.7},
     "enemies/hollow_king": {"impact": "hit_bone", "death": "ghost_moan", "death_layer": "stone_break", "pitch": 0.6},
     "enemies/training_dummy": {"impact": "hit_stone", "death": "stone_break"},
+    "enemies/demon": {"impact": "hit_flesh", "death": "giant_roar", "growl": "ghoul_snarl", "growl_chance": 0.4,
+                      "pitch": 0.6},
+    "enemies/imp": {"impact": "hit_flesh", "death": "ghoul_death", "growl": "ghoul_snarl", "growl_chance": 0.3,
+                    "pitch": 1.45},
 }
 
 SCRIPT_PATH = "res://scripts/audio/character_sounds.gd"

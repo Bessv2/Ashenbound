@@ -44,6 +44,8 @@ CHARACTERS = {
     "enemies/fallen_knight": {"attacks": ["Sword_Attack", "Shield_OneShot"], "idle": "Idle_Shield_Loop", "hit": HIT},
     "enemies/ashen_lord": {"attacks": ["Sword_Attack", "Sword_Regular_C", ""]},
     "enemies/hollow_king": {"attacks": [CAST, "", ""]},
+    "enemies/demon": {"attacks": ["Zombie_Scratch|Punch_Cross", "Sword_Attack"], "hit": HIT},
+    "enemies/imp": {"attacks": [CAST], "hit": HIT},
 }
 
 

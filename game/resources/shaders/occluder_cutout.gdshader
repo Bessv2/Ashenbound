@@ -6,6 +6,8 @@ shader_type spatial;
 
 uniform sampler2D albedo_texture : source_color, filter_linear_mipmap;
 uniform float roughness = 0.45;
+// A region's colour cast (Level.world_tint), multiplied in.
+uniform vec4 tint : source_color = vec4(1.0);
 // Radius of the hole, in metres across the screen (the camera is orthographic).
 uniform float cutout_radius = 2.2;
 
@@ -21,7 +23,7 @@ float bayer4(vec2 frag) {
 }
 
 void fragment() {
-	ALBEDO = texture(albedo_texture, UV).rgb;
+	ALBEDO = texture(albedo_texture, UV).rgb * tint.rgb;
 	ROUGHNESS = roughness;
 	METALLIC = 0.0;
 	if (!IN_SHADOW_PASS) {

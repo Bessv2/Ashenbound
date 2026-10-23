@@ -12,3 +12,6 @@ extends Node3D
 @export var victory_title: String = "The hall is cleared"
 ## Item level of the loot found here.
 @export_range(1, 100, 1) var item_level: int = 1
+## A colour cast over the level's stone and props (ArtStyle.tint_world): each
+## region its own, from the same KayKit pieces.
+@export var world_tint: Color = Color.WHITE

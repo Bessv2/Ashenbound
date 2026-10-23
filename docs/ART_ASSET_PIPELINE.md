@@ -113,3 +113,19 @@ divided by its own average brightness, so stone keeps the level's hue.
   in the repository; an in-game credits screen should list it before
   release (open).
 
+## Region props and the Demons (2026-10-23)
+
+| Pack | Source | Commit | Licence | Files | Used for |
+|---|---|---|---|---|---|
+| KayKit Halloween Bits 1.0 (Kay Lousberg) | github.com/KayKit-Game-Assets/KayKit-Halloween-Bits-1.0 | `6dc69bf` | CC0 1.0 (`LICENSE.txt`) | 19 models (.gltf + .bin) and `halloweenbits_texture.png` in `game/assets/third_party/kaykit/halloween/`, copied by `tools/art/fetch_kaykit_props.py` | Trees, graves, fences, lanterns, shrines, candles and bones in the new regions |
+| KayKit Medieval Hexagon Pack 1.0 (Kay Lousberg) | github.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0 | `84fa4e9` | CC0 1.0 | 5 models and `hexagons_medieval.png` in `.../kaykit/hexagon/` | Rocks (scaled up 8 to 9×), a weapon rack, crates |
+
+- **Demons:** the Demon and the Imp reuse the KayKit Knight and hooded
+  Rogue already in the game. They get new materials
+  (`demon_model.tres`, `imp_model.tres`) and horns and eyes made of
+  primitive meshes; there are no new models.
+- **Rejected:** Quaternius's *Bestiary: Dungeon Monsters Kit* (an Imp model).
+  It was downloaded but not used: its licence is now the Quaternius Asset
+  License, not CC0. That licence forbids redistributing the files, which
+  this public repository would do.
+
