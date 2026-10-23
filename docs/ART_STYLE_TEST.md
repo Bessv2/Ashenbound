@@ -134,6 +134,38 @@ same day:
   are software-rendering numbers, useful only for comparison; the real test is
   the owner's phone.
 
+## Look B's tone (2026-10-23)
+
+The owner: "I like style B but it's too sharp and grainy. We can tone down
+the visuals and keep the edgy darkness with funny animations. So it's kinda
+ominous and serious but also goofy and meant to be over the top or pace
+changing."
+
+**Softer surfaces, same darkness:**
+- **Relief:** world 1.8 to 0.45; characters 0.5 to 0.25.
+- **Noise:** larger features in the world (scale 1.7 to 1.0).
+- **Colour speckle** (`grain`): 45% in the world, 40% on characters.
+- **Photographed stone:** 85% to 55%, with its normals at 45% depth
+  (`detail_relief`).
+- **Damp hollows:** their shine dropped from 0.9 to 0.6. That sparkle was
+  the grain on a phone's dense screen.
+- **Grade:** contrast ×1.12 to ×1.03, saturation ×0.72 to ×0.78, glow
+  bloom ×0.5 to ×0.9. Still dark and muted; lights bloom instead of cutting.
+
+**Over-the-top beats** (look B; visual only, no rule changes):
+- **Knock-outs:** a killed enemy (not a boss, not a hero) is flung up and
+  away from the hero, tumbling 1.5 turns, lands with a squash and pops away
+  in a ring of puffs (`ToonFx.launch`). Its body stays where it fell. A
+  comic star marks the blow; living flesh (ghouls, demons, imps) bleeds red
+  blobs (`HitFeedback.bleeds`).
+- **Cartoon wind-ups:** an attack stretches its model tall and thin as the
+  blow gathers, squashes it flat as it lands, and wobbles back
+  (`CharacterAnimator._stretch`).
+- **Pace changes** (`HitStop.slow_motion`, looks A and B):
+  - a boss's death drops the game to 20% speed and eases back over 1.4 s;
+  - clearing a room is a 0.7 s beat at 35%.
+  - A win keeps its beat; a fall cancels it.
+
 ## Checks
 
 - `tests/test_art_style.gd`:

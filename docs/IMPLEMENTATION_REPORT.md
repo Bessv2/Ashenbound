@@ -1929,3 +1929,35 @@ Checks:
   - The first capture showed the theme's checkbox drawn over the objective
     text, and the badge squeezing the button icon. Both were fixed: a
     check-mark icon, and a corner badge.
+
+## 47. Look B: softer, with cartoon beats (branch `feature/softer-look-b`)
+
+The owner found look B too sharp and grainy. They wanted it darker but
+goofier, with over-the-top, pace-changing moments. The details are in
+[ART_STYLE_TEST.md](ART_STYLE_TEST.md#look-bs-tone-2026-10-23).
+
+What changed:
+- **`grim_surface.gdshader`:** new `grain`, `wet_shine` and
+  `detail_relief` uniforms. Look B's world and character materials use
+  softer values, and its grade is gentler.
+- **`ToonFx.launch`:** the knock-out flight and puff landing.
+  - `HitFeedback` uses it for the common dead in look B.
+  - It kills the hit squash first.
+  - A new `bleeds` export, set on ghouls, demons and imps, makes them bleed.
+- **`CharacterAnimator._stretch`:** the wind-up stretch. The animator now
+  stops its lunge and stretch on death.
+- **`HitStop.slow_motion`:** a beat that eases back.
+  - Main plays it on a boss kill and on a room clear.
+  - A won run no longer resets the time scale.
+
+Checks:
+- `tests/test_cartoon_beats.gd` (5 tests):
+  - look B's soft parameters;
+  - a slow-motion beat eases back to full speed;
+  - the classic look never slows;
+  - the dead are flung up and away, and pop, while the body stays;
+  - a wind-up stretches the model and returns it to shape.
+- Captures under Xvfb of look B's crypt, before and after, and of demons
+  being knocked flying.
+  - The first launch capture had the death puffs hiding the flight. The
+    puffs now come at the landing, with a star at the blow.

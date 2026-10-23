@@ -291,11 +291,16 @@ func _on_kill_counted(enemy: Node3D) -> void:
 			Profile.count(Quests.CHAMPIONS)
 		if enemy.is_in_group(&"boss"):
 			Profile.count(Quests.BOSSES)
+			# The pace breaks: the boss falls in slow motion.
+			HitStop.slow_motion(get_tree(), 1.4, 0.2)
 
 
 ## A cleared fight that is a story objective: noted in the Profile, with a
 ## message the first time.
 func _on_encounter_cleared(encounter: EncounterController) -> void:
+	# The last of a room falls in a beat of slow motion (the boss has its own).
+	if not _run.is_over():
+		HitStop.slow_motion(get_tree(), 0.7, 0.35)
 	var dungeon_id := Dungeons.id_of_scene(level_scene.resource_path)
 	if not Profile.record_encounter(dungeon_id, encounter.title):
 		return
@@ -343,7 +348,9 @@ const VICTORY_SUMMARY_DELAY := 2.0
 
 func _on_run_ended(victory: bool) -> void:
 	GameplayActions.release_all()
-	HitStop.reset()
+	# A win keeps its slow-motion beat (it ends by itself); a fall stops any.
+	if not victory:
+		HitStop.reset()
 	_potions.input_enabled = false
 	# The reward is paid once, at the end of the run; claim_reward() refuses
 	# any second attempt for the same run.

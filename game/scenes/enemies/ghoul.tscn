@@ -50,6 +50,7 @@ health = NodePath("../Health")
 visual = NodePath("../Visual")
 flash_material = ExtResource("6_flash")
 number_height = 1.9
+bleeds = true
 
 [node name="MeleeAttack" type="Node" parent="."]
 script = ExtResource("7_attack")

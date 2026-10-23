@@ -24,6 +24,10 @@ uniform float relief = 1.0;
 uniform float noise_scale = 2.2;
 uniform float metal_bias = 1.0;
 uniform float grime_amount = 1.0;
+// How much the fine noise speckles the colour (0 none, 1 full): grain.
+uniform float grain = 1.0;
+// How glossy the damp hollows are; high values sparkle on a phone.
+uniform float wet_shine = 0.9;
 uniform bool cutout = false;
 uniform float cutout_radius = 2.2;
 // RG: fine relief normal; B: fine noise; A: coarse noise (where grime gathers).
@@ -39,6 +43,8 @@ uniform sampler2D detail_side_roughness : filter_linear_mipmap, repeat_enable;
 uniform float detail_top_scale = 0.5;
 uniform float detail_side_scale = 0.55;
 uniform float detail_strength = 0.85;
+// How deep the photographs' relief is (their normal maps, 0 flat to 1 full).
+uniform float detail_relief = 1.0;
 // The photographs' average brightness (linear), so they shade the palette
 // colour instead of replacing it.
 uniform float detail_top_mean = 0.195;
@@ -87,7 +93,7 @@ void fragment() {
 	float n = fine.b;
 	float grime = smoothstep(0.35, 0.75, coarse) * grime_amount;
 	vec3 muted = mix(base, vec3(grey), desaturate) * darken;
-	vec3 albedo = muted * mix(0.78, 1.08, n) * mix(1.0, 0.62, grime);
+	vec3 albedo = muted * mix(1.0 - 0.22 * grain, 1.0 + 0.08 * grain, n) * mix(1.0, 0.62, grime);
 	vec3 bump = vec3((fine.rg * 2.0 - 1.0) * 0.6 * relief, 1.0);
 	vec3 bent = axis_normal(bump, wn, axis);
 	float metal = smoothstep(0.55, 0.8, grey) * (1.0 - smoothstep(0.05, 0.18, saturation)) * metal_bias;
@@ -102,6 +108,7 @@ void fragment() {
 				/ (top ? detail_top_mean : detail_side_mean);
 		float photo_rough = top ? texture(detail_top_roughness, uv).r : texture(detail_side_roughness, uv).r;
 		vec3 t = (top ? texture(detail_top_normal, uv).rgb : texture(detail_side_normal, uv).rgb) * 2.0 - 1.0;
+		t.xy *= detail_relief;
 		vec3 photo_normal = axis_normal(t, wn, axis);
 		float photo_grey = dot(photo, vec3(0.299, 0.587, 0.114));
 		vec3 shaded = muted * mix(vec3(photo_grey), photo, 0.35) * mix(1.0, 0.75, grime);
@@ -113,7 +120,7 @@ void fragment() {
 	NORMAL = normalize((VIEW_MATRIX * vec4(bent, 0.0)).xyz);
 	METALLIC = metal * 0.45;
 	ROUGHNESS = roughness;
-	SPECULAR = mix(0.5, 0.9, wet);
+	SPECULAR = mix(0.5, wet_shine, wet);
 	EMISSION = emission_color.rgb * emission_energy;
 	if (cutout && !IN_SHADOW_PASS) {
 		vec3 focus = (VIEW_MATRIX * vec4(occlusion_focus, 1.0)).xyz;

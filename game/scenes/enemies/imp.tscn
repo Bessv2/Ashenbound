@@ -68,6 +68,7 @@ health = NodePath("../Health")
 visual = NodePath("../Visual")
 flash_material = ExtResource("6_flash")
 number_height = 2.0
+bleeds = true
 
 [node name="FireBolt" type="Node" parent="."]
 script = ExtResource("7_attack")

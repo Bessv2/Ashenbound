@@ -60,6 +60,9 @@ var action: StringName = &""
 var uses_mocap: bool = false
 var _dead := false
 var _lunge_tween: Tween
+var _stretch_tween: Tween
+## The model's own scale, before any stretch (found on the first one).
+var _model_scale := Vector3.ZERO
 ## How far each "A|B" entry has got through its clips.
 var _combo_step: Dictionary[String, int] = {}
 
@@ -149,6 +152,27 @@ func _lunge(attack: MeleeAttack) -> void:
 			.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
 	_lunge_tween.tween_method(_set_visual_offset.bind(visual), forward * reach, Vector2.ZERO, 0.28) \
 			.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	if look == ArtStyle.Look.GRIM:
+		_stretch(visual.get_node_or_null(^"Model") as Node3D, windup)
+
+
+## Look B's cartoon wind-up: the model stretches tall and thin as the blow
+## gathers, squashes flat and wide as it lands, and wobbles back. On the model
+## inside the visual, so the hit squash (HitFeedback) on the visual stays its own.
+func _stretch(model: Node3D, windup: float) -> void:
+	if model == null:
+		return
+	if _model_scale == Vector3.ZERO:
+		_model_scale = model.scale
+	if _stretch_tween:
+		_stretch_tween.kill()
+	model.scale = _model_scale
+	_stretch_tween = create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
+	_stretch_tween.tween_property(model, "scale", _model_scale * Vector3(0.84, 1.2, 0.84), windup * 0.85) \
+			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_stretch_tween.tween_property(model, "scale", _model_scale * Vector3(1.28, 0.78, 1.28), maxf(windup * 0.15, 0.04)) \
+			.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
+	_stretch_tween.tween_property(model, "scale", _model_scale, 0.4).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 
 
 func _set_visual_offset(offset: Vector2, visual: Node3D) -> void:
@@ -184,6 +208,12 @@ func _on_hit() -> void:
 
 func _on_died() -> void:
 	_dead = true
+	# A death mid-swing: the lunge and stretch stop where they are, so they
+	# never fight the death throw.
+	if _lunge_tween:
+		_lunge_tween.kill()
+	if _stretch_tween:
+		_stretch_tween.kill()
 	action = death_animation
 	if animation_player.has_animation(death_animation):
 		animation_player.play(death_animation, blend_time)

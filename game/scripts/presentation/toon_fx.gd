@@ -101,6 +101,34 @@ static func _smear(owner: Node3D, direction: Vector3, reach: float, arc_degrees:
 	tween.tween_callback(arc.queue_free)
 
 
+## A cartoon knock-out (look B): `visual` (a body's model holder, at
+## `base_scale`) is flung up and away along `away`, tumbling end over end,
+## lands with a squash and shrinks to nothing in a puff. Visual only: the body
+## itself stays where it fell until it is removed.
+static func launch(visual: Node3D, away: Vector3, base_scale: Vector3 = Vector3.ONE) -> void:
+	var flat := Vector2(away.x, away.z)
+	var dir := flat.normalized() if flat.length() > 0.01 else Vector2(0, 1)
+	var start := visual.position
+	var land := start + Vector3(dir.x, 0.0, dir.y) * 2.6
+	var spin := Vector3(dir.y, 0.0, -dir.x) * TAU * 1.5
+	var tween := visual.create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
+	tween.set_parallel()
+	# The arc: across in one smooth move, up and down as a hop.
+	tween.tween_property(visual, "position:x", land.x, 0.62).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(visual, "position:z", land.z, 0.62).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(visual, "position:y", start.y + 2.0, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(visual, "position:y", start.y, 0.32).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN).set_delay(0.3)
+	tween.tween_property(visual, "rotation", visual.rotation + spin, 0.62).set_trans(Tween.TRANS_SINE)
+	tween.chain().tween_property(visual, "scale", base_scale * Vector3(1.5, 0.45, 1.5), 0.06)
+	tween.chain().tween_property(visual, "scale", base_scale * 0.01, 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+	tween.chain().tween_callback(func() -> void:
+		if visual.is_inside_tree():
+			var at := visual.global_position + Vector3.UP * 0.3
+			for i in 6:
+				var angle := TAU * i / 6.0
+				_puff(visual.get_parent().get_parent(), at + Vector3(cos(angle), 0.1 * (i % 2), sin(angle)) * 0.45, 0.4 + 0.08 * (i % 3)))
+
+
 ## A comic star of `size` at `at`, billboarded, that pops in and fades.
 static func star(parent: Node, at: Vector3, size: float) -> MeshInstance3D:
 	var node := MeshInstance3D.new()
