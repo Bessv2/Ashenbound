@@ -11,9 +11,9 @@ extends CanvasLayer
 
 signal close_requested
 
-const SLOT_SIZE := Vector2(140, 88)
-const CELL_SIZE := Vector2(84, 88)
-const BAG_COLUMNS := 6
+const SLOT_SIZE := Vector2(150, 72)
+const CELL_SIZE := Vector2(80, 80)
+const BAG_COLUMNS := 5
 const BETTER := Color("#7FC97A")
 const WORSE := Color("#E0625A")
 
@@ -33,6 +33,10 @@ var _salvage_button: Button
 var _salvage_armed: String = ""
 var _summary: Label
 var _bag_title: Label
+var _purse: HBoxContainer
+var _card_frame: StyleBoxFlat
+var _card_icon: TextureRect
+var _card_power: Label
 
 
 func _ready() -> void:
@@ -171,18 +175,25 @@ func _build() -> void:
 	root.theme = load("res://ui/theme/ashen_theme.tres")
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	for side in ["left", "right", "top", "bottom"]:
-		root.add_theme_constant_override("margin_" + side, 32)
+		root.add_theme_constant_override("margin_" + side, 20)
 	add_child(root)
+	var window := WindowFrame.new("Inventory")
+	window.close_pressed.connect(close_requested.emit)
+	root.add_child(window)
+	_purse = HBoxContainer.new()
+	_purse.add_theme_constant_override(&"separation", 22)
+	window.add_to_header(_purse)
 	var columns := HBoxContainer.new()
-	columns.add_theme_constant_override(&"separation", 24)
-	root.add_child(columns)
+	columns.add_theme_constant_override(&"separation", 20)
+	columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	window.content.add_child(columns)
 
 	var gear := VBoxContainer.new()
 	gear.add_theme_constant_override(&"separation", 6)
 	columns.add_child(gear)
 	var gear_title := Label.new()
 	gear_title.text = "Equipped"
-	gear_title.theme_type_variation = &"HeaderLabel"
+	gear_title.theme_type_variation = &"DimLabel"
 	gear.add_child(gear_title)
 	var slot_grid := GridContainer.new()
 	slot_grid.columns = 2
@@ -192,9 +203,12 @@ func _build() -> void:
 	for slot in Equipment.Slot.values():
 		var button := Button.new()
 		button.custom_minimum_size = SLOT_SIZE
-		button.add_theme_font_size_override(&"font_size", 15)
+		button.add_theme_font_size_override(&"font_size", 14)
 		button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		button.clip_text = true
+		button.expand_icon = true
+		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		button.add_theme_constant_override(&"icon_max_width", 46)
 		button.pressed.connect(select_slot.bind(slot))
 		slot_grid.add_child(button)
 		_slot_buttons[slot] = button
@@ -206,10 +220,11 @@ func _build() -> void:
 	bag.add_theme_constant_override(&"separation", 6)
 	columns.add_child(bag)
 	_bag_title = Label.new()
-	_bag_title.theme_type_variation = &"HeaderLabel"
+	_bag_title.theme_type_variation = &"DimLabel"
 	bag.add_child(_bag_title)
 	var scroll := ScrollContainer.new()
-	scroll.custom_minimum_size = Vector2((CELL_SIZE.x + 6) * BAG_COLUMNS + 12, 470)
+	scroll.custom_minimum_size = Vector2((CELL_SIZE.x + 6) * BAG_COLUMNS + 12, 0)
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	bag.add_child(scroll)
 	_bag_grid = GridContainer.new()
@@ -221,55 +236,65 @@ func _build() -> void:
 	var card := PanelContainer.new()
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	card.custom_minimum_size = Vector2(300, 0)
+	_card_frame = UiFx.box(Color(0.05, 0.045, 0.055, 0.95), 8, Color(0.4, 0.3, 0.2), 2)
+	_card_frame.set_content_margin_all(14)
+	card.add_theme_stylebox_override(&"panel", _card_frame)
 	columns.add_child(card)
 	var card_items := VBoxContainer.new()
-	card_items.add_theme_constant_override(&"separation", 10)
+	card_items.add_theme_constant_override(&"separation", 8)
 	card.add_child(card_items)
+	var heading := HBoxContainer.new()
+	heading.add_theme_constant_override(&"separation", 12)
+	card_items.add_child(heading)
+	_card_icon = TextureRect.new()
+	_card_icon.custom_minimum_size = Vector2(72, 72)
+	_card_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_card_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	heading.add_child(_card_icon)
+	var names := VBoxContainer.new()
+	names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	heading.add_child(names)
 	_card_title = Label.new()
-	_card_title.theme_type_variation = &"HeaderLabel"
+	_card_title.add_theme_font_size_override(&"font_size", 26)
 	_card_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	card_items.add_child(_card_title)
+	names.add_child(_card_title)
 	_card_info = Label.new()
 	_card_info.theme_type_variation = &"DimLabel"
-	card_items.add_child(_card_info)
+	names.add_child(_card_info)
+	_card_power = Label.new()
+	_card_power.add_theme_font_size_override(&"font_size", 40)
+	_card_power.add_theme_color_override(&"font_color", Color("#E2CBB4"))
+	card_items.add_child(_card_power)
 	# The stats scroll; the buttons below always stay on screen.
 	_card_stats = RichTextLabel.new()
 	_card_stats.bbcode_enabled = true
 	_card_stats.scroll_active = true
 	_card_stats.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_card_stats.add_theme_font_size_override(&"normal_font_size", 20)
+	_card_stats.add_theme_font_size_override(&"normal_font_size", 19)
+	_card_stats.add_theme_font_size_override(&"italics_font_size", 18)
 	card_items.add_child(_card_stats)
 	var buttons := HBoxContainer.new()
 	buttons.add_theme_constant_override(&"separation", 10)
 	card_items.add_child(buttons)
 	_action_button = Button.new()
-	_action_button.custom_minimum_size = Vector2(0, 88)
+	_action_button.custom_minimum_size = Vector2(0, 80)
 	_action_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_action_button.pressed.connect(press_action)
 	buttons.add_child(_action_button)
-	var close_button := Button.new()
-	close_button.text = "Close"
-	close_button.custom_minimum_size = Vector2(0, 88)
-	close_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	close_button.pressed.connect(close_requested.emit)
-	buttons.add_child(close_button)
-	var forge_buttons := HBoxContainer.new()
-	forge_buttons.add_theme_constant_override(&"separation", 10)
-	card_items.add_child(forge_buttons)
 	_upgrade_button = Button.new()
-	_upgrade_button.custom_minimum_size = Vector2(0, 88)
+	_upgrade_button.custom_minimum_size = Vector2(0, 80)
 	_upgrade_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_upgrade_button.clip_text = true
 	_upgrade_button.add_theme_font_size_override(&"font_size", 18)
 	_upgrade_button.pressed.connect(press_upgrade)
-	forge_buttons.add_child(_upgrade_button)
+	buttons.add_child(_upgrade_button)
 	_salvage_button = Button.new()
-	_salvage_button.custom_minimum_size = Vector2(0, 88)
+	_salvage_button.custom_minimum_size = Vector2(0, 80)
 	_salvage_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_salvage_button.clip_text = true
 	_salvage_button.add_theme_font_size_override(&"font_size", 18)
 	_salvage_button.pressed.connect(press_salvage)
-	forge_buttons.add_child(_salvage_button)
+	buttons.add_child(_salvage_button)
 
 
 func _refresh() -> void:
@@ -279,24 +304,35 @@ func _refresh() -> void:
 	for slot in _slot_buttons:
 		var item: ItemInstance = profile.equipment.item_in(slot)
 		var button := _slot_buttons[slot]
-		button.text = Equipment.SLOT_NAMES[slot] + "\n" + (_name_of(item) if item else "-")
+		button.text = _name_of(item) if item else Equipment.SLOT_NAMES[slot]
+		var base: ItemBase = catalog.base(item.base_id) if item else null
+		button.icon = base.icon_texture() if base else Icons.for_slot(Equipment.item_slot_of(slot))
 		_frame(button, item)
 	for child in _bag_grid.get_children():
 		child.queue_free()
 	for item in profile.inventory.items:
 		var cell := Button.new()
 		cell.custom_minimum_size = CELL_SIZE
-		cell.add_theme_font_size_override(&"font_size", 15)
+		cell.add_theme_font_size_override(&"font_size", 14)
 		cell.clip_text = true
 		var base := catalog.base(item.base_id)
-		cell.text = ItemBase.SLOT_NAMES[base.slot] if base else "?"
+		cell.icon = base.icon_texture() if base else null
+		cell.expand_icon = true
+		cell.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		cell.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
+		cell.text = "+%d" % item.upgrade if item.upgrade > 0 else ""
+		cell.tooltip_text = _name_of(item)
 		_frame(cell, item)
 		if item.uid == _selected_uid:
 			cell.add_theme_color_override(&"font_color", Color.WHITE)
 		cell.pressed.connect(select_bag_item.bind(item.uid))
 		_bag_grid.add_child(cell)
 	_bag_title.text = "Bag %d / %d" % [profile.inventory.items.size(), profile.inventory.capacity]
-	_summary.text = "Ash %d    Gold %d" % [profile.ash, profile.gold]
+	_summary.text = ""
+	for child in _purse.get_children():
+		child.queue_free()
+	_purse.add_child(WindowFrame.purse("gold", profile.gold, Color("#D9A44C")))
+	_purse.add_child(WindowFrame.purse("ash", profile.ash, Color("#A77BD6")))
 	if _salvage_armed != _selected_uid:
 		_salvage_armed = ""
 	_show_card(selected_item())
@@ -308,20 +344,30 @@ func _show_card(item: ItemInstance) -> void:
 		_card_title.modulate = Color.WHITE
 		_card_info.text = ""
 		_card_stats.text = ""
+		_card_power.text = ""
+		_card_icon.texture = null
+		_card_frame.border_color = Color(0.4, 0.3, 0.2)
 		_action_button.visible = false
 		_upgrade_button.visible = false
 		_salvage_button.visible = false
 		return
+	var base: ItemBase = profile.catalog.base(item.base_id)
+	var rarity_color := Rarity.color_of(item.rarity)
 	_card_title.text = _name_of(item)
-	_card_title.modulate = Rarity.color_of(item.rarity).lightened(0.25)
-	_card_info.text = "%s · item level %d" % [Rarity.name_of(item.rarity), item.item_level]
-	if item.upgrade > 0:
-		_card_info.text += " · upgraded +%d" % item.upgrade
+	_card_title.modulate = rarity_color.lightened(0.25)
+	_card_frame.border_color = rarity_color
+	_card_icon.texture = base.icon_texture() if base else null
+	_card_icon.modulate = rarity_color.lightened(0.35)
+	_card_power.text = power_line(item)
+	_card_info.text = "%s %s · item level %d" % [Rarity.name_of(item.rarity),
+			ItemBase.SLOT_NAMES[base.slot] if base else "", item.item_level]
 	var text := ""
 	for stat in item.base_stats:
 		text += ItemStats.describe(stat, item.stat_value(item.base_stats[stat])) + "\n"
 	for affix in item.affixes:
 		text += "[color=#9fb6d9]%s[/color]\n" % ItemStats.describe(affix.stat, item.stat_value(int(affix.value)))
+	if base and base.flavor != "":
+		text += "\n[i][color=#a49a90]\"%s\"[/color][/i]\n" % base.flavor
 	var equipped := _selected_slot >= 0
 	text += "\n[color=#D9A44C]%s[/color]\n" % _forge_line(item, equipped)
 	if not equipped:
@@ -340,6 +386,19 @@ func _show_card(item: ItemInstance) -> void:
 	_upgrade_button.disabled = profile.upgrade_problem(item) != ""
 	_salvage_button.visible = not equipped
 	_salvage_button.text = "Confirm" if _salvage_armed == item.uid else "Salvage"
+
+
+## The big number on the card, like the concept sheet's "142 DPS": a weapon's
+## damage, else the armour or health it gives, else its first stat.
+func power_line(item: ItemInstance) -> String:
+	var stats := item.total_stats()
+	for stat in [ItemStats.WEAPON_DAMAGE, ItemStats.ARMOR, ItemStats.MAX_HEALTH]:
+		if stats.get(stat, 0) > 0:
+			return "%d %s" % [stats[stat], {ItemStats.WEAPON_DAMAGE: "Damage", ItemStats.ARMOR: "Armour",
+					ItemStats.MAX_HEALTH: "Health"}[stat]]
+	for stat in item.base_stats:
+		return ItemStats.describe(stat, item.stat_value(item.base_stats[stat]))
+	return ""
 
 
 ## The prices on the card: the next upgrade, and what salvage gives.
@@ -365,6 +424,8 @@ func _frame(button: Button, item: ItemInstance) -> void:
 		box.set_content_margin_all(4)
 		button.add_theme_stylebox_override(state, box)
 	button.add_theme_color_override(&"font_color", color.lightened(0.45) if item else Color(0.6, 0.56, 0.52))
+	for state in [&"icon_normal_color", &"icon_hover_color", &"icon_pressed_color", &"icon_focus_color"]:
+		button.add_theme_color_override(state, color.lightened(0.35) if item else Color(0.45, 0.42, 0.4, 0.7))
 
 
 func _name_of(item: ItemInstance) -> String:

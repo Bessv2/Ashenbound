@@ -117,7 +117,7 @@ func test_the_title_screen_chooses_and_saves_the_look() -> void:
 	var title: TitleScreen = TitleScene.instantiate()
 	add_child(title)
 	title.enter_requested.disconnect(title._go_to_crypt)
-	var row := title.find_child("Dungeons", true, false)
+	var row := title.find_child("Looks", true, false)
 	check(row.has_node("Look0") and row.has_node("Look1") and row.has_node("Look2"), "Classic, Look A and Look B")
 	title.choose_look(ArtStyle.Look.GRIM)
 	check(Settings.current.art_style == ArtStyle.Look.GRIM, "the choice is the setting")

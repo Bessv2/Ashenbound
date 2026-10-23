@@ -27,6 +27,14 @@ static func slots_for(item_slot: ItemBase.Slot) -> Array[int]:
 		_: return [Slot.RELIC]
 
 
+## The kind of item (ItemBase.Slot) that equipment slot `slot` holds.
+static func item_slot_of(slot: int) -> ItemBase.Slot:
+	for kind in ItemBase.Slot.values():
+		if slot in slots_for(kind):
+			return kind
+	return ItemBase.Slot.RELIC
+
+
 func item_in(slot: int) -> ItemInstance:
 	return _items.get(slot)
 

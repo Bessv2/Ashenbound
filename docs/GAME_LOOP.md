@@ -44,8 +44,9 @@ From its store listing:
    buttons, red damage numbers, crescent slashes. Built, see
    [UI.md](UI.md#the-hud).
 2. **Menus** like the sheet: character stats, an inventory grid with item
-   icons, gold and Ash in the header, quests, dungeon cards with level
-   ranges.
+   icons, gold and Ash in the header, dungeon cards with level ranges.
+   Built, see [UI.md](UI.md#menus-2026-10-23). The Quest window comes with
+   step 5.
 3. **Materials, crafting and gathering camps**: the idle loop.
 4. **New regions and Demons.**
 5. **Quests, achievements and daily challenges.**

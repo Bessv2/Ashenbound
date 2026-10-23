@@ -36,6 +36,9 @@ var _enter_button: Button
 var _dungeon_buttons: Dictionary = {}
 var _look_buttons: Dictionary = {}
 var _time: float = 0.0
+var _purse: HBoxContainer
+var _character: CharacterPanel
+var _inventory: InventoryPanel
 
 
 func _ready() -> void:
@@ -45,6 +48,15 @@ func _ready() -> void:
 	theme = load("res://ui/theme/ashen_theme.tres")
 	_build()
 	enter_requested.connect(_go_to_crypt)
+	_character = CharacterPanel.new()
+	_character.name = "Character"
+	add_child(_character)
+	_character.close_requested.connect(_character.close)
+	_inventory = InventoryPanel.new()
+	_inventory.name = "Inventory"
+	add_child(_inventory)
+	_inventory.close_requested.connect(_inventory.close)
+	profile.changed.connect(_refresh)
 	_refresh()
 	_animate_in()
 	Audio.play_music(&"music_title")
@@ -95,6 +107,28 @@ func enter() -> void:
 	enter_requested.emit()
 
 
+## Opens the Character window for the chosen class, with the gear worn.
+func open_character() -> void:
+	var class_id: String = profile.hero_class if HERO_SCENES.has(profile.hero_class) else "warden"
+	var tree_index := SkillTreePanel.TREE_PATHS.find_custom(func(path: String) -> bool: return (load(path) as SkillTree).class_id == class_id)
+	var title: String = (load(SkillTreePanel.TREE_PATHS[tree_index]) as SkillTree).class_title if tree_index >= 0 else class_id
+	_character.open(CharacterStats.preview(HERO_SCENES[class_id], class_id, profile), class_id, title,
+			ACCENTS.get(class_id, Color.WHITE))
+
+
+## Opens the bag and the gear.
+func open_inventory() -> void:
+	_inventory.open()
+
+
+func character_panel() -> CharacterPanel:
+	return _character
+
+
+func inventory_panel() -> InventoryPanel:
+	return _inventory
+
+
 func _go_to_crypt() -> void:
 	Audio.play(&"gate_slam", Vector3.INF, 0.6)
 	get_tree().paused = false
@@ -125,7 +159,7 @@ func _build() -> void:
 	page.set_anchors_preset(Control.PRESET_FULL_RECT)
 	page.offset_left = 40
 	page.offset_right = -40
-	page.offset_top = 30
+	page.offset_top = 56
 	page.offset_bottom = -26
 	page.add_theme_constant_override(&"separation", 14)
 	add_child(page)
@@ -134,7 +168,7 @@ func _build() -> void:
 	logo.name = "Logo"
 	logo.text = "ASHENBOUND"
 	logo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	logo.add_theme_font_size_override(&"font_size", 96)
+	logo.add_theme_font_size_override(&"font_size", 76)
 	logo.add_theme_color_override(&"font_color", Color("#E8B060"))
 	logo.add_theme_constant_override(&"outline_size", 22)
 	logo.add_theme_color_override(&"font_outline_color", Color(0.12, 0.03, 0.02, 0.95))
@@ -149,9 +183,32 @@ func _build() -> void:
 	tagline.add_theme_font_size_override(&"font_size", 22)
 	page.add_child(tagline)
 
-	var spacer := Control.new()
-	spacer.custom_minimum_size.y = 6
-	page.add_child(spacer)
+	# Top right: the purse, then the look switch (docs/ART_STYLE_TEST.md).
+	var corner := HBoxContainer.new()
+	corner.name = "Header"
+	corner.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	corner.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	corner.offset_right = -20
+	corner.offset_top = 12
+	corner.add_theme_constant_override(&"separation", 18)
+	add_child(corner)
+	_purse = HBoxContainer.new()
+	_purse.add_theme_constant_override(&"separation", 18)
+	corner.add_child(_purse)
+	var looks := HBoxContainer.new()
+	looks.name = "Looks"
+	looks.add_theme_constant_override(&"separation", 6)
+	corner.add_child(looks)
+	for look in ArtStyle.Look.values():
+		var look_button := Button.new()
+		look_button.name = "Look%d" % look
+		look_button.text = ArtStyle.NAMES[look]
+		look_button.tooltip_text = ArtStyle.LINES[look]
+		look_button.custom_minimum_size = Vector2(96, 52)
+		look_button.add_theme_font_size_override(&"font_size", 16)
+		look_button.pressed.connect(choose_look.bind(look))
+		_look_buttons[look] = look_button
+		looks.add_child(look_button)
 
 	var row := HBoxContainer.new()
 	row.name = "Cards"
@@ -170,36 +227,37 @@ func _build() -> void:
 	dungeons.alignment = BoxContainer.ALIGNMENT_CENTER
 	dungeons.add_theme_constant_override(&"separation", 12)
 	page.add_child(dungeons)
+	# The concept sheet's Dungeon Selection: a card per dungeon with its
+	# icon, name and level range.
 	for id in Dungeons.ORDER:
 		var button := Button.new()
 		button.name = id
-		button.custom_minimum_size = Vector2(330, 64)
-		button.add_theme_font_size_override(&"font_size", 20)
+		button.custom_minimum_size = Vector2(340, 96)
+		button.add_theme_font_size_override(&"font_size", 19)
+		button.icon = Icons.of(Dungeons.INFO[id].icon)
+		button.expand_icon = true
+		button.add_theme_constant_override(&"icon_max_width", 64)
+		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		button.pressed.connect(choose_dungeon.bind(id))
 		_dungeon_buttons[id] = button
 		dungeons.add_child(button)
-	# The look to compare (docs/ART_STYLE_TEST.md): classic, A or B.
-	var gap := Control.new()
-	gap.custom_minimum_size.x = 24
-	dungeons.add_child(gap)
-	for look in ArtStyle.Look.values():
-		var look_button := Button.new()
-		look_button.name = "Look%d" % look
-		look_button.text = ArtStyle.NAMES[look]
-		look_button.tooltip_text = ArtStyle.LINES[look]
-		look_button.custom_minimum_size = Vector2(118, 64)
-		look_button.add_theme_font_size_override(&"font_size", 19)
-		look_button.pressed.connect(choose_look.bind(look))
-		_look_buttons[look] = look_button
-		dungeons.add_child(look_button)
 
 	var bottom := HBoxContainer.new()
 	bottom.alignment = BoxContainer.ALIGNMENT_CENTER
 	bottom.add_theme_constant_override(&"separation", 18)
 	page.add_child(bottom)
+	for entry in [["CharacterButton", "character", "Character", open_character], ["BagButton", "bag", "Inventory", open_inventory]]:
+		var menu_button := Button.new()
+		menu_button.name = entry[0]
+		menu_button.icon = Icons.of(entry[1])
+		menu_button.tooltip_text = entry[2]
+		menu_button.expand_icon = true
+		menu_button.custom_minimum_size = Vector2(80, 80)
+		menu_button.pressed.connect(entry[3])
+		bottom.add_child(menu_button)
 	_summary = Label.new()
 	_summary.theme_type_variation = &"DimLabel"
-	_summary.custom_minimum_size.x = 300
+	_summary.custom_minimum_size.x = 120
 	bottom.add_child(_summary)
 	var down := Button.new()
 	down.text = "<"
@@ -230,7 +288,7 @@ func _card(tree: SkillTree) -> Button:
 	var accent: Color = ACCENTS.get(id, Color.WHITE)
 	var card := Button.new()
 	card.name = tree.class_title
-	card.custom_minimum_size = Vector2(178, 230)
+	card.custom_minimum_size = Vector2(178, 200)
 	card.clip_text = true
 	card.disabled = not playable
 	card.pressed.connect(choose.bind(id))
@@ -294,12 +352,16 @@ func _refresh() -> void:
 		var open := Dungeons.is_open(id, profile)
 		var here: bool = id == profile.dungeon
 		button.disabled = not open
-		button.text = info.title if open else "%s · clear the crypt" % info.title
+		button.text = "%s\n%s" % [info.title, Dungeons.level_range(id) if open else Dungeons.lock_reason(id, profile)]
+		if not open:
+			button.icon = Icons.of("locked")
 		button.tooltip_text = info.line
 		for state in [&"normal", &"hover", &"pressed", &"focus", &"disabled"]:
 			button.add_theme_stylebox_override(state, UiFx.box(Color(0.07, 0.05, 0.07, 0.92), 10,
 					info.color if here else Color(info.color, 0.3), 3 if here else 1))
 		button.add_theme_color_override(&"font_color", info.color.lightened(0.25) if here else Color(0.75, 0.7, 0.65))
+		for state in [&"icon_normal_color", &"icon_hover_color", &"icon_pressed_color", &"icon_focus_color"]:
+			button.add_theme_color_override(state, info.color.lightened(0.2) if here else Color(info.color, 0.7))
 	var current_look := ArtStyle.current()
 	for look: int in _look_buttons:
 		var look_button: Button = _look_buttons[look]
@@ -310,7 +372,12 @@ func _refresh() -> void:
 		look_button.add_theme_color_override(&"font_color", accent.lightened(0.3) if look == current_look else Color(0.7, 0.66, 0.6))
 	_enter_button.text = Dungeons.INFO[profile.dungeon].enter
 	_tier_label.text = "Tier %d" % profile.tier
-	_summary.text = "Level %d    Ash %d    Gold %d" % [profile.level, profile.ash, profile.gold]
+	_summary.text = "Level %d" % profile.level
+	for child in _purse.get_children():
+		_purse.remove_child(child)
+		child.queue_free()
+	_purse.add_child(WindowFrame.purse("gold", profile.gold, Color("#D9A44C")))
+	_purse.add_child(WindowFrame.purse("ash", profile.ash, Color("#A77BD6")))
 
 
 func _animate_in() -> void:
