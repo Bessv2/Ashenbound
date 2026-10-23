@@ -1582,3 +1582,42 @@ Known limits:
 - Web: sound starts after the first tap, and the reverb does not apply.
 - Library music, not scored; no voice lines.
 ```
+
+## 39. Motion-captured animation for looks A and B (branch `feature/mocap`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone / feature: realistic attack animations (owner, 2026-10-23), from
+free packs ("Go wild")
+Status: Validated, verified in runtime (desktop software Vulkan); not
+verified on device
+
+What changed:
+- Quaternius's Universal Animation Library 1 and 2, Standard (CC0),
+  downloaded by tools/anim/fetch_ual.py.
+- tools/anim/retarget_ual.gd: world-space rotation retarget onto the KayKit
+  rig; 28 clips saved as game/assets/third_party/quaternius/mocap.res.
+- CharacterAnimator: mocap_attacks, mocap_abilities, mocap_idle, mocap_run,
+  mocap_hit and mocap_death, used in looks A and B; "A|B" alternates as a
+  combo. Set on 13 scenes by tools/anim/assign_mocap.py.
+- docs/ANIMATION.md; ART_STYLE_TEST, ART_ASSET_PIPELINE, CURRENT_STATUS.
+
+Commands and tests:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 331 passed, 0 failed (6 new in test_mocap.gd)
+- Command: probe (combo frozen)
+  Result: the combo test failed, then passed once restored
+- Command: the Warden posed through four clips, and a look A fight strip,
+  under Xvfb
+  Result: clean swings, no broken limbs; enemies swing their mocap combos
+
+Not tested:
+- On a phone.
+
+Known limits:
+- Chibi proportions under realistic motion: up close a hand can pass
+  through the big head.
+- No crossbow or two-handed greatsword clips in the free editions.
+```

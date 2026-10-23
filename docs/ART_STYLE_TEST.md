@@ -52,10 +52,11 @@ deals the same 10 in each look.
 
 ## What this test cannot show yet
 
-- **New animation clips.** The characters still use the KayKit clips. Look
-  A's "realistic attack animations" are approximated with procedural weight
-  (hit-stop, lunge, flinch). Real motion-captured attacks need animation
-  assets, such as licensed mocap or an animator.
+- **Complete animation sets.** Since 2026-10-23 looks A and B play
+  motion-captured attacks, hits and deaths (Quaternius, CC0;
+  [ANIMATION.md](ANIMATION.md)), on top of the hit-stop and lunges. The free
+  library has no crossbow or two-handed greatsword clips, so those still
+  use KayKit motion.
 - **Truly realistic characters for Look B.** Look B gives the existing
   cartoon-proportioned models realistic materials. It cannot change their
   shapes or proportions. A real Look B needs realistic rigged character

@@ -82,6 +82,10 @@ part_materials = Dictionary[String, Material]({
 
 [node name="Animator" type="Node" parent="." node_paths=PackedStringArray("body", "enemy", "animation_player", "health", "attacks")]
 script = ExtResource("18_animator")
+mocap_hit = "Hit_Knockback"
+mocap_run = "Zombie_Walk_Fwd_Loop"
+mocap_idle = "Zombie_Idle_Loop"
+mocap_attacks = Array[String](["Zombie_Scratch"])
 body = NodePath("..")
 enemy = NodePath("..")
 animation_player = NodePath("../Visual/Model/AnimationPlayer")
