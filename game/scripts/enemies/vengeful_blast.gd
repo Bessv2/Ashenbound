@@ -31,6 +31,8 @@ static func erupt(parent: Node, at: Vector3, damage_scale: float, mask: int) -> 
 	blast.target_mask = mask
 	parent.add_child(blast)
 	blast.global_position = Vector3(at.x, 0.0, at.z)
+	# The fuse: the blast's warning, as the ring grows.
+	Audio.play(&"ignite", blast.global_position, 0.8, 4.0)
 	return blast
 
 
@@ -75,5 +77,6 @@ func _physics_process(delta: float) -> void:
 	Vfx.flames(get_parent(), global_position + Vector3.UP * 0.3, COLOR, 14, 2.4, 0.55)
 	Vfx.smoke(get_parent(), global_position + Vector3.UP * 0.5, Color(0.3, 0.26, 0.24), 8, 2.6, 1.4)
 	Vfx.scorch(get_parent(), global_position, RADIUS)
+	Audio.play(&"explosion", global_position)
 	queue_free()
 	set_physics_process(false)

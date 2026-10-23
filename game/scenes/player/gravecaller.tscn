@@ -20,6 +20,7 @@
 [ext_resource type="Script" path="res://scripts/presentation/occlusion_focus.gd" id="25_occlusion"]
 [ext_resource type="Script" path="res://scripts/player/character_stats.gd" id="26_stats"]
 [ext_resource type="Resource" path="res://resources/skills/gravecaller_tree.tres" id="27_tree"]
+[ext_resource type="Script" path="res://scripts/audio/character_sounds.gd" id="sounds_script"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.38
@@ -78,6 +79,7 @@ health = NodePath("../Health")
 
 [node name="RaiseForsaken" type="Node" parent="."]
 script = ExtResource("14_raise")
+sound = &"raise_dead"
 display_name = "RAISE"
 action = &"ability_1"
 cooldown = 14.0
@@ -85,6 +87,7 @@ hud_color = Color(0.35, 1, 0.75, 1)
 
 [node name="WraithSwarm" type="Node" parent="."]
 script = ExtResource("15_wraiths")
+sound = &"ghost_moan"
 display_name = "WRAITHS"
 action = &"ability_2"
 cooldown = 7.0
@@ -92,6 +95,7 @@ hud_color = Color(0.55, 1, 0.85, 1)
 
 [node name="SoulHarvest" type="Node" parent="." node_paths=PackedStringArray("health")]
 script = ExtResource("16_harvest")
+sound = &"drain"
 display_name = "HARVEST"
 action = &"ability_3"
 cooldown = 3.0
@@ -125,3 +129,11 @@ script = ExtResource("25_occlusion")
 script = ExtResource("26_stats")
 player = NodePath("..")
 skill_tree = ExtResource("27_tree")
+
+[node name="Sounds" type="Node" parent="."]
+script = ExtResource("sounds_script")
+footsteps = &"footstep"
+death = &"hero_death"
+hurt_chance = 0.6
+hurt = &"hero_hurt"
+impact = &"hit_flesh"

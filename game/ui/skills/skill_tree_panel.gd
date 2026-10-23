@@ -63,9 +63,12 @@ func open() -> void:
 	_refresh()
 	show()
 	UiFx.pop_layer(self)
+	Audio.play(&"ui_open")
 
 
 func close() -> void:
+	if visible:
+		Audio.play(&"ui_close")
 	hide()
 
 
@@ -87,6 +90,7 @@ func select(node_id: String) -> void:
 ## Learns a rank of the selected node. Returns "" or why it could not.
 func learn_selected() -> String:
 	var problem: String = profile.learn(current_tree(), _selected)
+	Audio.play(&"ui_confirm" if problem == "" else &"ui_error")
 	_refresh()
 	return problem
 

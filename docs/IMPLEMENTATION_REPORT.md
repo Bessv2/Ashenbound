@@ -1535,6 +1535,54 @@ Known limits:
   realistic rigged character assets.
 ```
 
+## 37. Sound and music (branch `feature/audio`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone / feature: sound and music (owner, 2026-10-23: "I opened up
+network access. Go wild.")
+Status: Validated, verified in runtime (headless mix recorded and measured;
+web build in Chromium); not listened to by a person; not verified on device
+
+What changed:
+- About 250 CC0 sound files from 29 packs (Kenney, OpenGameArt), cut,
+  normalised and encoded by tools/audio/import_audio.py from the original
+  downloads; sources in docs/AUDIO.md and packs.json.
+- Audio autoload: cues, buses (Master with a limiter; Sfx: World with
+  reverb, Ui, Ambience; Music), 16 pooled positional voices, crossfading
+  music, ducking while paused, per-cue gaps and pitch variation.
+- CharacterSounds on every hero, enemy and summon; sounds named in the data
+  (AttackData windup and swing, Ability.sound, Projectile.impact_sound),
+  written by tools/audio/assign_sounds.py.
+- SoundDirector: music per dungeon, combat and boss tracks, tolls, gates,
+  loot by rarity, potions, champions, level-ups.
+- Pause menu: Music and Effects sliders (GameSettings, saved).
+- Camera rig: an AudioListener3D at the hero.
+
+Commands and tests:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 325 passed, 0 failed (11 new in test_audio.gd)
+- Command: probes (a misspelt cue; the combat music removed)
+  Result: the matching tests failed, then passed once restored
+- Command: a scripted 47 s Warden fight in the crypt, recorded from the
+  master bus (AudioEffectRecord), measured with ffmpeg ebur128
+  Result: -15.6 LUFS integrated, 8.8 LU range, sample peak -0.3 dBFS
+- Command: tools/export-web.sh; tools/web/smoke.js; a play-through in
+  Chromium
+  Result: export check passed, smoke test passed, no console errors
+
+Not tested:
+- By ear: no person has listened yet.
+- On a phone: the cost of the voices and the reverb, and the mix on a
+  phone speaker.
+
+Known limits:
+- Web: sound starts after the first tap, and the reverb does not apply.
+- Library music, not scored; no voice lines.
+```
+
 ## 38. Effect sprites and photographed stone (branch `feature/vfx-pack`)
 
 ```text

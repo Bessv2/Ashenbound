@@ -4,6 +4,7 @@
 
 [resource]
 script = ExtResource("1_data")
+swing_sound = &"blade_fan"
 damage = 12
 reach = 2.4
 arc_degrees = 360.0

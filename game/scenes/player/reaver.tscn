@@ -21,6 +21,7 @@
 [ext_resource type="Script" path="res://scripts/player/character_stats.gd" id="26_stats"]
 [ext_resource type="Resource" path="res://resources/skills/reaver_tree.tres" id="27_tree"]
 [ext_resource type="Script" path="res://scripts/presentation/attack_swoosh.gd" id="28_swoosh"]
+[ext_resource type="Script" path="res://scripts/audio/character_sounds.gd" id="sounds_script"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.38
@@ -78,6 +79,7 @@ health = NodePath("../Health")
 
 [node name="VeilRend" type="Node" parent="."]
 script = ExtResource("14_veil")
+sound = &"dark_magic"
 display_name = "VEIL"
 action = &"ability_1"
 cooldown = 6.0
@@ -97,6 +99,7 @@ attack = NodePath("../FanAttack")
 
 [node name="Hemorrhage" type="Node" parent="."]
 script = ExtResource("17_bleed")
+sound = &"bleed"
 display_name = "BLEED"
 action = &"ability_3"
 cooldown = 6.0
@@ -139,3 +142,12 @@ skill_tree = ExtResource("27_tree")
 script = ExtResource("28_swoosh")
 attacks = [NodePath("../MeleeAttack"), NodePath("../FanAttack")]
 color = Color(0.9, 0.12, 0.18, 1)
+
+[node name="Sounds" type="Node" parent="."]
+script = ExtResource("sounds_script")
+pitch = 1.05
+footsteps = &"footstep"
+death = &"hero_death"
+hurt_chance = 0.6
+hurt = &"hero_hurt"
+impact = &"hit_flesh"

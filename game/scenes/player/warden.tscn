@@ -27,6 +27,7 @@
 [ext_resource type="Resource" path="res://resources/skills/warden_tree.tres" id="27_tree"]
 
 [ext_resource type="Script" path="res://scripts/presentation/attack_swoosh.gd" id="28_swoosh"]
+[ext_resource type="Script" path="res://scripts/audio/character_sounds.gd" id="sounds_script"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
@@ -112,6 +113,7 @@ data = ExtResource("18_counter_data")
 
 [node name="Guard" type="Node" parent="." node_paths=PackedStringArray("counter", "health", "visual")]
 script = ExtResource("17_guard")
+sound = &"guard_brace"
 display_name = "GUARD"
 action = &"ability_2"
 cooldown = 6.0
@@ -122,6 +124,7 @@ visual = NodePath("../Visual/GuardRing")
 
 [node name="Brand" type="Node" parent="."]
 script = ExtResource("19_brand")
+sound = &"fire_cast"
 display_name = "BRAND"
 action = &"ability_3"
 cooldown = 7.0
@@ -158,3 +161,12 @@ skill_tree = ExtResource("27_tree")
 [node name="Swoosh" type="Node" parent="." node_paths=PackedStringArray("attacks")]
 script = ExtResource("28_swoosh")
 attacks = [NodePath("../MeleeAttack"), NodePath("../CleaveAttack"), NodePath("../CounterAttack")]
+
+[node name="Sounds" type="Node" parent="."]
+script = ExtResource("sounds_script")
+pitch = 0.95
+footsteps = &"footstep"
+death = &"hero_death"
+hurt_chance = 0.6
+hurt = &"hero_hurt"
+impact = &"hit_flesh"

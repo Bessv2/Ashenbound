@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://scripts/presentation/model_dressing.gd" id="17_dressing"]
 [ext_resource type="Script" path="res://scripts/presentation/character_animator.gd" id="18_animator"]
 [ext_resource type="Resource" path="res://resources/loot/skeleton_warrior_drops.tres" id="19_drops"]
+[ext_resource type="Script" path="res://scripts/audio/character_sounds.gd" id="sounds_script"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
@@ -92,3 +93,11 @@ idle_animation = &"Idle_Combat"
 run_animation = &"Running_B"
 death_animation = &"Death_C_Skeletons"
 run_reference_speed = 3.4
+
+[node name="Sounds" type="Node" parent="."]
+script = ExtResource("sounds_script")
+growl_chance = 0.35
+growl = &"undead_growl"
+death_layer = &"bones_collapse"
+death = &"undead_death"
+impact = &"hit_bone"

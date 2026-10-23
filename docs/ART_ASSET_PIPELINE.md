@@ -77,6 +77,12 @@ Each KayKit character is 6 to 10 separate skinned meshes, drawn again for
 shadows; that is most of the increase. If a phone struggles, the first steps
 are to merge each character's meshes and to turn off shadows on small parts.
 
+## Sound and music
+
+The sound effects and music (CC0, from Kenney and OpenGameArt) follow the same
+rules. They are listed with their sources in [AUDIO.md](AUDIO.md#the-files-and-where-they-come-from)
+and in `game/assets/third_party/audio/packs.json`. They are rebuilt from the
+original downloads by `tools/audio/import_audio.py`.
 ## Effect sprites and photographed stone (2026-10-23)
 
 | Pack | Source | Licence | Files | Used for |

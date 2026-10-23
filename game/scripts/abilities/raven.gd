@@ -24,6 +24,7 @@ func _ready() -> void:
 	_body = _build_body()
 	add_child(_body)
 	global_position = _circle_point()
+	Audio.play(&"wings", global_position)
 
 
 ## Restarts its time and its strike count down.
@@ -78,6 +79,7 @@ func _swoop(at: Vector3) -> void:
 	_dive = create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
 	_dive.tween_property(self, "global_position", at, 0.12).set_ease(Tween.EASE_IN)
 	_dive.tween_callback(func() -> void:
+		Audio.play(&"crow", at)
 		Vfx.burst(_hero().get_parent(), at, RavenAbility.COLOR, 8, 3.0, 0.25))
 	_dive.tween_property(self, "global_position", _circle_point(), 0.25).set_ease(Tween.EASE_OUT)
 

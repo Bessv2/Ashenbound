@@ -89,6 +89,7 @@ func _physics_process(delta: float) -> void:
 	var parent := get_parent()
 	Vfx.ring(parent, global_position, radius, DeadfallAbility.COLOR, 0.35)
 	Vfx.debris(parent, global_position + Vector3.UP * 0.2, Color(0.55, 0.5, 0.42), 6, 4.5, 0.5)
+	Audio.play(&"trap_snap", global_position)
 	for i in bolts:
 		var angle := TAU * i / bolts
 		var out := Vector3(cos(angle), 0.0, sin(angle))

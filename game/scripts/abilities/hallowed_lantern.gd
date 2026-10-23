@@ -62,3 +62,4 @@ func _pulse() -> void:
 		if Vector2(offset.x, offset.z).length() <= ability.radius:
 			hero_health.heal(ability.pulse_heal())
 	Vfx.ring(get_parent(), global_position, ability.radius, LanternAbility.COLOR, 0.4)
+	Audio.play(&"bell", global_position, 1.35, -7.0)

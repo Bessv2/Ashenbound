@@ -12,6 +12,9 @@ signal impacted(collider: Object)
 
 const WORLD_LAYER := 1
 
+## Played where the shot lands, on a target or a wall (a SoundBank cue).
+@export var impact_sound: StringName
+
 var direction: Vector3 = Vector3.FORWARD
 var speed: float = 10.0
 var damage: int = 10
@@ -50,5 +53,6 @@ func _impact(collider: Object) -> void:
 		var health := Health.of(collider as Node)
 		if health:
 			health.apply_damage(damage, global_position - direction)
+	Audio.play(impact_sound, global_position)
 	impacted.emit(collider)
 	queue_free()

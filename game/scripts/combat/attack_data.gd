@@ -18,3 +18,12 @@ extends Resource
 @export_range(0.0, 20.0, 0.1, "suffix:m") var aim_assist_radius: float = 4.0
 ## Pushes each target that took damage this far away from the attacker.
 @export_range(0.0, 10.0, 0.1, "suffix:m") var knockback: float = 0.0
+
+@export_group("Sound")
+## Played as the attack starts winding up: an enemy's audible telegraph
+## (a SoundBank cue; CharacterSounds plays it).
+@export var windup_sound: StringName
+## Played as the blow lands or the shot leaves.
+@export var swing_sound: StringName
+## Scales the pitch of both: a heavier swing sounds lower.
+@export_range(0.3, 2.0, 0.01) var sound_pitch: float = 1.0
