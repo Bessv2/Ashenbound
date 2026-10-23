@@ -23,9 +23,11 @@ var result: Result = Result.RUNNING
 var elapsed: float = 0.0
 var kills: int = 0
 var damage_taken: int = 0
-## Ash and gold earned so far; a defeat keeps what was earned.
+## Ash, gold and materials earned so far; a defeat keeps what was earned.
 var ash: int = 0
 var gold: int = 0
+## Materials id → amount.
+var materials: Dictionary = {}
 ## Unique per run, so a reward can be claimed only once.
 var run_id: String = ""
 
@@ -80,7 +82,15 @@ func claim_reward(profile: Node = null) -> bool:
 		return false
 	if profile == null:
 		profile = get_node_or_null(^"/root/Profile")
-	return profile != null and profile.grant_run_reward(run_id, ash, gold)
+	return profile != null and profile.grant_run_reward(run_id, ash, gold, materials)
+
+
+## Adds `found` (Materials id → amount) to the run's take, while it runs.
+func add_materials(found: Dictionary) -> void:
+	if result != Result.RUNNING:
+		return
+	for id: String in found:
+		materials[id] = int(materials.get(id, 0)) + int(found[id])
 
 
 func _on_enemy_killed(enemy: Node3D) -> void:

@@ -60,6 +60,7 @@ Status labels follow the charter:
 | Third class: Hexbinder | Validated, verified in runtime | [characters/hexbinder.md](characters/hexbinder.md): Hex Bolt, Black Testament, Grasp of the Grave, Unmake; playable tree. |
 | Concept HUD | Validated, verified in runtime | [UI.md](UI.md#the-hud): portrait, blue XP bar, minimap, icon buttons (game-icons.net, CC BY 3.0), red damage numbers, crescent slashes. |
 | Concept menus | Validated, verified in runtime | [UI.md](UI.md#menus-2026-10-23): Character window, icon inventory with the purse and item cards, dungeon cards with level ranges. |
+| Materials, crafting and camps | Validated, verified in runtime; camps **provisional** (device clock) | [CRAFTING.md](CRAFTING.md): six materials from runs, salvage and camps; Upgrade → Enchant → Craft → Legendary; four gathering camps with an 8-hour store. |
 | Visuals and living UI | Validated, verified in runtime | [UI.md](UI.md): fire, dust, grade, vignette, outlines, hit punch; health trail, banners, coloured buttons; title screen with class select. |
 | Second dungeon: the Forgotten Catacombs | Validated, verified in runtime | [dungeons/forgotten_catacombs.md](dungeons/forgotten_catacombs.md): opens after a crypt clear. Ghouls, three combat rooms, and the Hollow King (volley, spikes, nova, Ghoul adds); dungeon choice on the title screen. |
 | Art style test: Look A against Look B | Validated, verified in runtime | [ART_STYLE_TEST.md](ART_STYLE_TEST.md): a title-screen switch (Classic, A, B) restyles characters, the world, the grade, hits, kills and swings; both looks add hit-stop and lunges. Classic stays the default until the owner chooses. |
@@ -109,7 +110,8 @@ merged into `main`, apart from #6.
 - **Offline rewards before the backend:** the charter puts them in Milestone
   6, with trusted server time. The owner asked for them early; they use the
   device clock and are marked provisional until Milestone 5
-  ([OFFLINE_REWARDS.md](OFFLINE_REWARDS.md)).
+  ([OFFLINE_REWARDS.md](OFFLINE_REWARDS.md)). The gathering camps
+  ([CRAFTING.md](CRAFTING.md#gathering-camps)) follow the same rule.
 
 - **Names:** the hero is the Warden. The main scene's slot for it is still
   called `Player`, because that slot will hold any class. The arena is not yet
@@ -128,9 +130,8 @@ merged into `main`, apart from #6.
 ## Next task
 
 Build the rest of [GAME_LOOP.md](GAME_LOOP.md#order-of-work), in order:
-1. Materials, the crafting chain, and gathering camps that work while away.
-2. New regions and Demons.
-3. Quests (with the sheet's Quest window), achievements and daily
+1. New regions and Demons.
+2. Quests (with the sheet's Quest window), achievements and daily
    challenges.
 
 Still open from the owner: whether look B runs well enough on their phone

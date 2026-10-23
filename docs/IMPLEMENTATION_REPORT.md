@@ -1804,3 +1804,43 @@ Checks:
 - Captures under Xvfb of the title, Character and Inventory screens. They
   caught two problems, both fixed: the inventory was wider than the screen,
   and the upgrade and salvage labels were cut off.
+
+## 44. Materials, crafting and gathering camps (branch `feature/crafting`)
+
+Step 3 of [GAME_LOOP.md](GAME_LOOP.md); the design is
+[CRAFTING.md](CRAFTING.md).
+
+What changed:
+- **Rules (numbers only):**
+  - `Materials`: the six, with names and colours.
+  - `Crafting`: recipes, enchanting, ascending, salvage returns.
+  - `Camps`: hourly yields, the 8-hour store, upgrade costs.
+- **`Profile`** (save version 4):
+  - It holds materials and camps.
+  - New actions: `craft_item`, `enchant_item`, `ascend_item`,
+    `collect_camp`, `collect_all_camps`, `upgrade_camp`. Each checks the
+    whole price with `missing_for` before paying once.
+  - `grant_run_reward` pays a run's materials with its Ash and gold.
+  - Salvage now also returns materials.
+  - The camps open with the crypt's first clear, or on loading a save that
+    already has one.
+- **Runs:**
+  - `LootDropper.roll_materials` rolls the dungeon's materials per kill
+    (`Dungeons.INFO.materials`), and soul shards from champions, elites and
+    bosses.
+  - `RunController.add_materials` counts them.
+  - Main shows a toast per find and lists them in the summary.
+- **Screens:**
+  - `ForgePanel`: the chain and crafting.
+  - `CampsPanel`: camp cards with a live store bar.
+  - Enchant (tap an affix) and Ascend on the item card.
+  - `WindowFrame.cost_line` and `materials_line` show prices and holdings.
+  - Forge and Camps buttons on the title screen.
+
+Checks:
+- `tests/test_crafting.gd`: 13 tests. Coverage is listed in
+  [CRAFTING.md](CRAFTING.md#tests).
+- Captures under Xvfb of the Forge, Camps and an item card with an affix
+  chosen.
+  - The first capture cut off the card's Upgrade label; its button font
+    was made smaller.

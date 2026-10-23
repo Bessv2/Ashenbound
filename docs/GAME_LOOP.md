@@ -29,9 +29,9 @@ From its store listing:
 |---|---|---|
 | Tap to dig | Active dungeon runs: real-time combat | Built |
 | Biomes | Regions with dungeons and level ranges: Ashen Crypt, Forgotten Catacombs, then Ruined Keep, Cursed Forest, Volcanic Depths, Ancient Temple, Ice Wastes | Two built; five planned |
-| Ores, wood, herbs, hunting | The sheet's six materials: iron ore, wood, leather, herbs, crystal, soul shard. Dropped in runs and gathered while idle | Planned |
-| Craft gear | The sheet's chain: upgrade → enchant → craft → legendary | Upgrade built; the rest planned |
-| Automate gathering | Gathering camps (mine, lumber, hunt, forage) that work while the player is away, in regions already cleared; upgraded with gold and materials | Planned |
+| Ores, wood, herbs, hunting | The sheet's six materials: iron ore, wood, leather, herbs, crystal, soul shard. Dropped in runs and gathered while idle | Built, [CRAFTING.md](CRAFTING.md) |
+| Craft gear | The sheet's chain: upgrade → enchant → craft → legendary | Built, [CRAFTING.md](CRAFTING.md) |
+| Automate gathering | Gathering camps (mine, lumber, hunt, forage) that work while the player is away, once the crypt is cleared; upgraded with gold and another camp's material | Built, [CRAFTING.md](CRAFTING.md#gathering-camps) |
 | Offline income | Offline rewards: the highest tier cleared, half a run an hour, 8-hour cap, device clock (provisional) | Built |
 | Achievements and awards | Achievements that grant a lasting bonus | Planned |
 | Daily and weekly challenges | Daily challenges: optional, never punishing a missed day (charter §2.6) | Planned |
@@ -47,6 +47,7 @@ From its store listing:
    icons, gold and Ash in the header, dungeon cards with level ranges.
    Built, see [UI.md](UI.md#menus-2026-10-23). The Quest window comes with
    step 5.
-3. **Materials, crafting and gathering camps**: the idle loop.
+3. **Materials, crafting and gathering camps**: the idle loop. Built, see
+   [CRAFTING.md](CRAFTING.md).
 4. **New regions and Demons.**
 5. **Quests, achievements and daily challenges.**

@@ -39,6 +39,8 @@ var _time: float = 0.0
 var _purse: HBoxContainer
 var _character: CharacterPanel
 var _inventory: InventoryPanel
+var _forge: ForgePanel
+var _camps: CampsPanel
 
 
 func _ready() -> void:
@@ -56,6 +58,14 @@ func _ready() -> void:
 	_inventory.name = "Inventory"
 	add_child(_inventory)
 	_inventory.close_requested.connect(_inventory.close)
+	_forge = ForgePanel.new()
+	_forge.name = "Forge"
+	add_child(_forge)
+	_forge.close_requested.connect(_forge.close)
+	_camps = CampsPanel.new()
+	_camps.name = "Camps"
+	add_child(_camps)
+	_camps.close_requested.connect(_camps.close)
 	profile.changed.connect(_refresh)
 	_refresh()
 	_animate_in()
@@ -119,6 +129,24 @@ func open_character() -> void:
 ## Opens the bag and the gear.
 func open_inventory() -> void:
 	_inventory.open()
+
+
+## Opens the forge (crafting).
+func open_forge() -> void:
+	_forge.open()
+
+
+## Opens the gathering camps.
+func open_camps() -> void:
+	_camps.open()
+
+
+func forge_panel() -> ForgePanel:
+	return _forge
+
+
+func camps_panel() -> CampsPanel:
+	return _camps
 
 
 func character_panel() -> CharacterPanel:
@@ -246,7 +274,8 @@ func _build() -> void:
 	bottom.alignment = BoxContainer.ALIGNMENT_CENTER
 	bottom.add_theme_constant_override(&"separation", 18)
 	page.add_child(bottom)
-	for entry in [["CharacterButton", "character", "Character", open_character], ["BagButton", "bag", "Inventory", open_inventory]]:
+	for entry in [["CharacterButton", "character", "Character", open_character], ["BagButton", "bag", "Inventory", open_inventory],
+			["ForgeButton", "craft", "Forge", open_forge], ["CampsButton", "mine", "Camps", open_camps]]:
 		var menu_button := Button.new()
 		menu_button.name = entry[0]
 		menu_button.icon = Icons.of(entry[1])
