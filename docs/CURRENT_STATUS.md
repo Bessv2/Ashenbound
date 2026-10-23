@@ -37,6 +37,8 @@ Status labels follow the charter:
 | 2026-10-22 | The charter was updated to v2.0 (`CLAUDE.md`) and reconciled with the repository. |
 | 2026-10-23 | "The graphics are still too basic. Too cartoony." Two directions named: (A) cartoony characters with realistic attack animations and effects, or (B) hyper-realistic characters and atmosphere with Castle Crashers-style effects. The owner chose to **see both first**: [ART_STYLE_TEST.md](ART_STYLE_TEST.md). **Pending: the owner's pick.** |
 | 2026-10-23 | The owner opened the environment's network to asset sites: "I opened up network access. Go wild." Acquiring free (CC0) resource packs began with sound: [AUDIO.md](AUDIO.md). |
+| 2026-10-23 | **Look B chosen**: "Look B is really nice but it's extremely poor performance. I like the effects better. Look A is just a cooler toned classic." Look B is now the default; its cost was cut (see [ART_STYLE_TEST.md](ART_STYLE_TEST.md#performance)). Classic and look A stay selectable until look B is confirmed on the owner's phone. |
+| 2026-10-23 | **The web preview always reflects `main`**: every merge publishes it ([WEB_PREVIEW.md](WEB_PREVIEW.md#publishing)). |
 | 2026-10-21 | **A browser build is a playtest preview** ([WEB_PREVIEW.md](WEB_PREVIEW.md)), not a platform change: Android stays the target. |
 
 ## Milestones
@@ -95,7 +97,8 @@ merged into `main`, apart from #6.
 | #39 | `feature/style-lab` | Merged: the art style test. |
 | #40 | `feature/audio` | Merged: sound and music. |
 | #41 | `feature/vfx-pack` | Merged: effect sprites and photographed stone. |
-| #42 | `feature/mocap` | Motion-captured animation for looks A and B. |
+| #42 | `feature/mocap` | Merged: motion-captured animation for looks A and B. |
+| (new) | `feature/look-b-perf` | Look B as the default, made faster; the preview publishes on every merge. |
 | #6 | `feature/loot` | Open draft, **obsolete**: the early loot work, superseded by Milestone 4's loot. Kept for reference; it can be closed. |
 
 ## Deviations from the charter
@@ -121,18 +124,11 @@ merged into `main`, apart from #6.
 
 ## Next task
 
-The owner listens to the new sound in the web preview and says what to
-change; any cue can be swapped in `tools/audio/import_audio.py`. More free
-packs follow now that the network is open: real effect sprites and surface
-textures, then an animation library for the attacks
-([ART_STYLE_TEST.md](ART_STYLE_TEST.md#what-this-test-cannot-show-yet)).
-
-The owner also plays **Look A** and **Look B** ([ART_STYLE_TEST.md](ART_STYLE_TEST.md))
-and picks a direction. Then the chosen look becomes the default and is
-pushed through every class, enemy, boss and dungeon, and the charter's art
-direction (§9) is updated. Look B needs realistic rigged character models,
-which must be bought, licensed or provided. Real attack animations need
-animation assets either way.
+The owner plays look B, now the default, in the web preview on their phone
+and says whether it runs well enough. If it does, look B becomes the art
+direction in the charter (§9), and the Classic and look A switch goes. If it
+does not, the next cuts are shadows from the torches and the fog, and a lower
+3D resolution on phones ([ART_STYLE_TEST.md](ART_STYLE_TEST.md#performance)).
 
 Device checks for Milestones 1 to 4 are still open: they need the Android app
 on a phone ([DEVICE_TESTING.md](DEVICE_TESTING.md)). The owner's playtests so

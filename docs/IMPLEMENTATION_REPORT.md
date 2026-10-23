@@ -1664,3 +1664,37 @@ Known limits:
   through the big head.
 - No crossbow or two-handed greatsword clips in the free editions.
 ```
+
+## 40. Look B as the default, made fast enough for phones; the preview follows main (branch `feature/look-b-perf`)
+
+```text
+ASHENBOUND MILESTONE REPORT
+
+Milestone / feature: the owner chose look B but found it "extremely poor
+performance"; the preview had not been published since 2026-10-22 ("Yes
+have the preview always reflect all changes")
+Status: Validated, verified in runtime (desktop software Vulkan; Chromium
+emulating a phone); not verified on device
+
+What changed:
+- grim_surface.gdshader: baked noise texture instead of per-pixel noise;
+  stone read along the dominant axis only (from nine reads to three).
+- The stone photos and the noise: mipmaps and GPU compression; the web
+  export carries ETC2 for phones.
+- Settings: on phones the 3D scene renders at most 810 pixels tall.
+- Look B is the default look; tests pin the classic look unless they pick
+  one.
+- web-preview.yml: every push to main publishes to GitHub Pages.
+
+Commands and tests:
+- Command: tools/test.sh
+  Exit code: 0
+  Result: 335 passed, 0 failed (1 new: the phone 3D cap)
+- Command: frame-time benchmark, crypt opening view, software Vulkan
+  Result: classic 138 ms; look B 222 ms before, 155 ms after
+- Command: Chromium emulating a phone (DPR 3, Android user agent)
+  Result: canvas 2400x1080; about 40% more frames per second with the cap
+
+Not tested:
+- On the owner's phone, where it was too slow.
+```

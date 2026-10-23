@@ -88,6 +88,12 @@ func _reset_global_state() -> void:
 	if profile:
 		profile.save_path = ""
 		profile.reset()
+	# Suites test the classic look unless they choose one: the player's
+	# default look and a developer's saved choice must not change them.
+	var settings := root.get_node_or_null(^"Settings")
+	if settings:
+		settings.current.art_style = ArtStyle.Look.CLASSIC
+	ArtStyle.override_look = -1
 
 
 func _suite_files() -> PackedStringArray:

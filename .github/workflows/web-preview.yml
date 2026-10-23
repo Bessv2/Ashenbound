@@ -2,8 +2,10 @@ name: Web preview
 
 # Builds the browser version of the game so it can be playtested on a phone with
 # nothing to install (docs/WEB_PREVIEW.md). Every run builds it, boots it in a
-# headless browser and uploads it. Publishing it to GitHub Pages is manual:
-# Actions > Web preview > Run workflow > publish.
+# headless browser and uploads it. Every push to main also publishes it to
+# GitHub Pages (the owner asked for the preview to always reflect main); any
+# other branch can be published by hand: Actions > Web preview > Run workflow >
+# publish.
 
 on:
   push:
@@ -95,8 +97,8 @@ jobs:
   publish:
     name: Publish to GitHub Pages (gh-pages branch)
     needs: build
-    # Runs on every pull request as a dry run that stops before pushing, so the
-    # steps are proven before anyone publishes.
+    # Pushes for main and for a manual run with "publish"; on pull requests it
+    # is a dry run that stops before pushing, so the steps are proven first.
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
@@ -120,7 +122,7 @@ jobs:
           git show --stat --format= HEAD | tail -3
 
       - name: Push to gh-pages
-        if: github.event_name == 'workflow_dispatch' && inputs.publish
+        if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.publish)
         working-directory: site
         run: |
           git push --force "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" gh-pages

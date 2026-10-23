@@ -30,6 +30,8 @@ const LINES: Dictionary[Look, String] = {
 
 const ToonShader := preload("res://resources/shaders/toon_character.gdshader")
 const GrimShader := preload("res://resources/shaders/grim_surface.gdshader")
+## Look B's relief and grime, baked by tools/art/make_grime_noise.py.
+const GrimeNoise := preload("res://resources/textures/grime_noise.png")
 const OutlineShader := preload("res://resources/shaders/outline.gdshader")
 const CutoutShader := preload("res://resources/shaders/occluder_cutout.gdshader")
 
@@ -82,6 +84,7 @@ static func character_material(source: Material, look: Look, outline: bool = tru
 			styled.next_pass = pass_material
 	else:
 		styled.shader = GrimShader
+		styled.set_shader_parameter(&"grime_noise", GrimeNoise)
 		styled.set_shader_parameter(&"noise_scale", 7.0)
 		styled.set_shader_parameter(&"relief", 0.5)
 		styled.set_shader_parameter(&"desaturate", 0.3)
@@ -107,6 +110,7 @@ static func world_material(source: Material, look: Look) -> Material:
 	var styled := ShaderMaterial.new()
 	styled.shader = GrimShader
 	styled.set_shader_parameter(&"albedo_texture", texture)
+	styled.set_shader_parameter(&"grime_noise", GrimeNoise)
 	styled.set_shader_parameter(&"metal_bias", 0.25)
 	styled.set_shader_parameter(&"relief", 1.8)
 	styled.set_shader_parameter(&"noise_scale", 1.7)

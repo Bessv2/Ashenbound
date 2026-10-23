@@ -22,9 +22,9 @@ const AUDIO := "audio"
 @export_range(0, 240, 1) var max_fps: int = 60
 ## Camera shake on heavy hits. Off for players it bothers.
 @export var screen_shake: bool = true
-## The look (ArtStyle.Look): 0 classic, 1 look A, 2 look B. Applies to the
-## next run.
-@export_range(0, 2, 1) var art_style: int = 0
+## The look (ArtStyle.Look): 0 classic, 1 look A, 2 look B (the default since
+## the owner chose it on 2026-10-23). Applies to the next run.
+@export_range(0, 2, 1) var art_style: int = 2
 
 @export_group("Audio")
 ## Music loudness, 0 (off) to 1.

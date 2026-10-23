@@ -658,6 +658,10 @@ Known simplifications:
 - The `Settings` autoload loads `user://settings.cfg` at startup (a missing file
   means defaults), applies graphics options to the engine, and emits `changed`.
   Values read from disk are type-checked and clamped.
+- `scaling_3d_scale` is the player's render scale, further capped on phones
+  so the 3D scene is drawn at most 810 pixels tall (`scale_3d`; phone
+  screens have two to three times the pixels the game needs). It is
+  re-applied when the window changes size.
 - Systems pull what they need on `changed`. For example, the HUD forwards the
   joystick options to `TouchJoystick`, and `Audio` sets its bus volumes. The
   pause menu changes screen shake and the two volumes, and saves them.
