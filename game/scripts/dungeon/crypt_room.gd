@@ -8,9 +8,10 @@ extends Node3D
 ## walls are the far ones: full-height stone walls. The south and east walls
 ## are the near ones: low colonnades, so they never hide the player.
 ##
-## Each of the north and south sides can be a solid wall, a wall with a 4 m gap
-## in its middle (for a CryptGate, or a corridor joining from outside), or
-## absent (the open ends of a corridor). West and east are always walls.
+## Each side can be a solid wall, a wall with a 4 m gap in its middle (for a
+## CryptGate, or a corridor joining from outside), or absent (the open ends of
+## a corridor). A side with a gap should be 12, 20 or 28 m long, so the wall
+## pieces on either side of the gap come out whole.
 ##
 ## Place a CryptRoom under the level's BakedNavigationRegion: it builds in its
 ## own _ready, before the region bakes in its _ready.
@@ -39,6 +40,8 @@ const CutoutMaterial := preload("res://resources/materials/dungeon_cutout.tres")
 @export var size: Vector2i = Vector2i(12, 12)
 @export var north: Edge = Edge.WALL
 @export var south: Edge = Edge.WALL
+@export var west: Edge = Edge.WALL
+@export var east: Edge = Edge.WALL
 @export var torches: bool = true
 ## The torches' fire: warm by default; the Forgotten Catacombs burn cold.
 @export var torch_light_color: Color = Color(1.0, 0.5, 0.2)
@@ -61,10 +64,8 @@ func _ready() -> void:
 	_build_floor()
 	_build_north()
 	_build_south()
-	# West: a far wall along the whole side.
-	_far_wall_along_z(-_half.x - 0.5, -_half.y, _half.y)
-	# East: a near colonnade along the whole side.
-	_near_wall_along_z(_half.x + 0.5, -_half.y, _half.y)
+	_build_west()
+	_build_east()
 	if torches:
 		_place_torches()
 	_add_dust()
@@ -127,7 +128,7 @@ func _build_north() -> void:
 		Edge.GAP:
 			_far_wall_along_x(z, -_half.x, -GAP_WIDTH * 0.5)
 			_far_wall_along_x(z, GAP_WIDTH * 0.5, _half.x)
-	if north != Edge.NONE:
+	if north != Edge.NONE and west != Edge.NONE:
 		# The north-west corner, where the two far walls meet.
 		var corner := CornerPiece.instantiate() as Node3D
 		corner.name = "CornerPillar"
@@ -149,6 +150,29 @@ func _build_south() -> void:
 			_near_wall_along_x(z, GAP_WIDTH * 0.5, _half.x)
 
 
+## West: a far wall (see-through around the hero, like the north walls, since
+## a corridor can now run behind it).
+func _build_west() -> void:
+	var x := -_half.x - 0.5
+	match west:
+		Edge.WALL:
+			_far_wall_along_z(x, -_half.y, _half.y)
+		Edge.GAP:
+			_far_wall_along_z(x, -_half.y, -GAP_WIDTH * 0.5)
+			_far_wall_along_z(x, GAP_WIDTH * 0.5, _half.y)
+
+
+## East: a near colonnade.
+func _build_east() -> void:
+	var x := _half.x + 0.5
+	match east:
+		Edge.WALL:
+			_near_wall_along_z(x, -_half.y, _half.y)
+		Edge.GAP:
+			_near_wall_along_z(x, -_half.y, -GAP_WIDTH * 0.5)
+			_near_wall_along_z(x, GAP_WIDTH * 0.5, _half.y)
+
+
 ## A full-height wall whose inner face runs along z = `z_center` + 0.5, from
 ## x = `from` to `to`.
 func _far_wall_along_x(z_center: float, from: float, to: float) -> void:
@@ -163,6 +187,7 @@ func _far_wall_along_x(z_center: float, from: float, to: float) -> void:
 ## z = `from` to `to`.
 func _far_wall_along_z(x_center: float, from: float, to: float) -> void:
 	var grid := _wall_grid(to - from)
+	grid.material_override = CutoutMaterial
 	# Cells run along local +X; this basis turns them to run along +Z.
 	grid.transform = Transform3D(Basis(Vector3(0, 0, 1), Vector3(0, 1, 0), Vector3(-1, 0, 0)),
 			Vector3(x_center + 0.5, 0.0, from))
@@ -210,7 +235,8 @@ func _grid(pieces: Array[PackedScene], cells: Vector2i, spacing: Vector2) -> Til
 
 
 ## Torches on the inner faces of the far walls: one in the middle of each
-## stretch of north wall, and one per 12 m (at least one) along the west wall.
+## stretch of north wall, and one per 12 m (at least one) along the west wall,
+## or one in the middle of each stretch beside a west gap.
 func _place_torches() -> void:
 	var north_x: Array[float] = []
 	match north:
@@ -221,9 +247,16 @@ func _place_torches() -> void:
 			north_x = [-middle, middle]
 	for x in north_x:
 		_add_torch(Transform3D(Basis(), Vector3(x, TORCH_HEIGHT, -_half.y)))
-	var count := maxi(1, ceili(size.y / 12.0))
-	for i in count:
-		var z := -_half.y + (i + 0.5) * size.y / float(count)
+	var west_z: Array[float] = []
+	match west:
+		Edge.WALL:
+			var count := maxi(1, ceili(size.y / 12.0))
+			for i in count:
+				west_z.append(-_half.y + (i + 0.5) * size.y / float(count))
+		Edge.GAP:
+			var middle := (_half.y + GAP_WIDTH * 0.5) * 0.5
+			west_z = [-middle, middle]
+	for z in west_z:
 		_add_torch(Transform3D(Basis(Vector3(0, 0, -1), Vector3(0, 1, 0), Vector3(1, 0, 0)),
 				Vector3(-_half.x, TORCH_HEIGHT, z)))
 

@@ -1961,3 +1961,46 @@ Checks:
   being knocked flying.
   - The first launch capture had the death puffs hiding the flight. The
     puffs now come at the landing, with a star at the blow.
+
+## 48. Generated dungeons and steeper tiers (branch `feature/procedural-dungeons`)
+
+The owner: "We need to scale the enemies to be much harder the deeper into
+the dungeons you go. The tier should enhance enemy difficulty and also drop
+higher rarity items. The dungeons need to be randomly generated in design,
+right now every single play through looks the exact same."
+
+**Generated layouts** ([dungeons/generation.md](dungeons/generation.md)):
+- `DungeonGenerator` rebuilds each authored dungeon between its start room
+  and boss hall:
+  - a winding chain of random-sized rooms, turning north, east and west;
+  - corridors and gates, with optional sealed vaults;
+  - random props, braziers, spawn points and waves.
+- The story fights keep their titles and order, so quests still work.
+- `CryptRoom` gained west and east doorways; west walls are now see-through
+  around the hero like the north ones.
+- Main generates a layout for every run (`random_layout`, `layout_seed`).
+  - Tests keep the authored layout.
+  - Vaults are `Level.optional_encounters`: `RunController.watch_optional`
+    counts their kills, and `LootDropper.drop_cache` lays out their hoard.
+
+**Steeper tiers** ([dungeons/tiers.md](dungeons/tiers.md)):
+- Health ×1.35 and damage ×1.13 per tier, compounding (tier 10: ×14.9 and
+  ×3.0, up from ×4.6 and ×2.35).
+- Enemies 3% faster per tier.
+- One more enemy per wave every two tiers.
+- Deeper rooms of a run: +8% health and +4% damage each.
+- The rarity boost compounds ×1.35 per tier.
+- A rarity floor: Uncommon from tier 3, Rare from 6, Epic from 9.
+- Champions: +4 points per tier (cap 45%), two affixes from tier 4, three
+  from tier 7.
+- The Ashen Lord's last phase now multiplies its speed instead of replacing
+  it, so the tier's speed stays.
+
+**Checks:**
+- `tests/test_dungeon_generator.gd` (8 tests). The tier and champion tests
+  were updated to the new numbers.
+- Full suite: see the PR.
+- Captures under Xvfb, from above and in play, of generated layouts in the
+  crypt, the catacombs, the Volcanic Depths and the Cursed Forest.
+  - The first captures ran mostly straight north. The way now turns after
+    each step north when it can.

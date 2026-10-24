@@ -20,9 +20,11 @@ const BOSS_CRYSTALS := 3
 @export_range(1, 100, 1) var item_level: int = 1
 ## The dungeon played: which materials its enemies drop.
 var dungeon: String = Dungeons.CRYPT
-## Set from the crypt tier: more drops, and rarer ones.
+## Set from the crypt tier: more drops, rarer ones, and none below
+## `rarity_floor`.
 var chance_scale: float = 1.0
 var rarity_scale: float = 1.0
+var rarity_floor: int = Rarity.Tier.COMMON
 
 var inventory: Inventory
 var catalog: ItemCatalog
@@ -45,10 +47,10 @@ func on_enemy_killed(enemy: Node3D) -> void:
 	var items: Array[ItemInstance] = []
 	var table: DropTable = (enemy as EnemyController).drop_table
 	if table:
-		items.append_array(table.roll(catalog, item_level, _rng, chance_scale, rarity_scale))
+		items.append_array(table.roll(catalog, item_level, _rng, chance_scale, rarity_scale, rarity_floor))
 	var champion := Champion.of(enemy)
 	if champion and champion.bonus_drops:
-		items.append_array(champion.bonus_drops.roll(catalog, item_level, _rng, 1.0, rarity_scale))
+		items.append_array(champion.bonus_drops.roll(catalog, item_level, _rng, 1.0, rarity_scale, rarity_floor))
 	for i in items.size():
 		var angle := TAU * i / maxf(items.size(), 1.0)
 		drop(items[i], enemy.global_position + Vector3(cos(angle), 0.0, sin(angle)) * (0.0 if items.size() == 1 else 1.0))
@@ -77,6 +79,21 @@ func roll_materials(enemy: EnemyController) -> Dictionary:
 		found[Materials.SOUL_SHARD] = int(found.get(Materials.SOUL_SHARD, 0)) + BOSS_SHARDS
 		found[Materials.CRYSTAL] = int(found.get(Materials.CRYSTAL, 0)) + BOSS_CRYSTALS
 	return found
+
+
+## A vault's hoard at `at`: `count` items, each Rare or better (or the tier's
+## floor, when higher), in a ring.
+func drop_cache(at: Vector3, count: int) -> Array[LootPickup]:
+	var hoard := DropTable.new()
+	hoard.chance = 1.0
+	hoard.rolls = count
+	hoard.min_rarity = Rarity.Tier.RARE
+	var pickups: Array[LootPickup] = []
+	var items := hoard.roll(catalog, item_level, _rng, 1.0, rarity_scale, rarity_floor)
+	for i in items.size():
+		var angle := TAU * i / maxf(items.size(), 1.0)
+		pickups.append(drop(items[i], at + Vector3(cos(angle), 0.0, sin(angle)) * 1.4))
+	return pickups
 
 
 ## Lays `item` on the floor at `at`.

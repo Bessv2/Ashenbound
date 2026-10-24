@@ -31,8 +31,8 @@ func test_a_tier_scales_health_damage_and_rewards() -> void:
 	var tier_one := Difficulty.new(1)
 	var tier_three := Difficulty.new(3)
 	check(Difficulty.new(0).tier == 1 and Difficulty.new(99).tier == Difficulty.MAX_TIER, "tiers stay within 1 to 10")
-	check_near(tier_three.health_scale(), 1.8, 0.0001, "tier 3: +80% health")
-	check_near(tier_three.damage_scale(), 1.3, 0.0001, "tier 3: +30% damage")
+	check_near(tier_three.health_scale(), 1.35 * 1.35, 0.0001, "tier 3: +82% health")
+	check_near(tier_three.damage_scale(), 1.13 * 1.13, 0.0001, "tier 3: +28% damage")
 	check(tier_three.item_level(1) == 9, "tier 3: item level 9")
 	for scene: PackedScene in [SkeletonScene, CultistScene, LordScene]:
 		var plain: EnemyController = scene.instantiate()
@@ -41,14 +41,14 @@ func test_a_tier_scales_health_damage_and_rewards() -> void:
 		tier_three.apply(scaled)
 		add_child(plain)
 		add_child(scaled)
-		check(scaled.health.max_health == roundi(plain.health.max_health * 1.8) and scaled.health.current == scaled.health.max_health,
+		check(scaled.health.max_health == roundi(plain.health.max_health * tier_three.health_scale()) and scaled.health.current == scaled.health.max_health,
 				"%s: %d health at full" % [scaled.name, scaled.health.max_health])
 		check(scaled.ash_value == plain.ash_value * 2 and scaled.xp_value == plain.xp_value * 2,
 				"%s: double Ash and XP" % scaled.name)
 		var attacks := _attacks_of(scaled)
 		check(not attacks.is_empty(), "%s has attacks" % scaled.name)
 		for attack in attacks:
-			check(attack.roll_damage() == maxi(roundi(attack.data.damage * 1.3), 1),
+			check(attack.roll_damage() == maxi(roundi(attack.data.damage * tier_three.damage_scale()), 1),
 					"%s %s hits for %d" % [scaled.name, attack.name, attack.roll_damage()])
 		for attack in _attacks_of(plain):
 			check(attack.roll_damage() == attack.data.damage, "tier 1 leaves %s as built" % attack.name)

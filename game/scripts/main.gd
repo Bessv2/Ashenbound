@@ -27,6 +27,11 @@ const TITLE_SCENE := "res://scenes/title.tscn"
 ## When false, no enemy rises as a Champion: runs whose rewards must be exact
 ## (tests).
 @export var champions_appear: bool = true
+## When true, a dungeon's layout is generated anew for the run
+## (DungeonGenerator); when false, its authored layout is played (tests).
+@export var random_layout: bool = true
+## The layout's seed; below 0, a random one.
+@export var layout_seed: int = -1
 
 var level: Level
 ## The crypt tier of this run, from Profile.tier when the scene starts.
@@ -231,6 +236,9 @@ func _load_level() -> void:
 	difficulty = Difficulty.new(Profile.tier)
 	if not champions_appear:
 		difficulty.champion_chance_override = 0.0
+	var dungeon_id := Dungeons.id_of_scene(level_scene.resource_path)
+	if random_layout and Dungeons.has_scene(level_scene.resource_path):
+		DungeonGenerator.new(dungeon_id, difficulty, layout_seed if layout_seed >= 0 else randi()).generate(level)
 	for node in level.find_children("*", "Node3D", true, false):
 		if node is EncounterController:
 			node.difficulty = difficulty
@@ -244,6 +252,7 @@ func _load_level() -> void:
 		_player.reset_physics_interpolation()
 		_camera_rig.snap_to_target()
 	_run.watch(level.encounters)
+	_run.watch_optional(level.optional_encounters)
 	_hud.track_minimap(level, _player, _camera_rig.yaw_degrees)
 	_sound.watch_level(level, Dungeons.id_of_scene(level_scene.resource_path))
 	for node in level.find_children("*", "Node3D", true, false):
@@ -253,10 +262,13 @@ func _load_level() -> void:
 				encounter.started.connect(_on_encounter_started.bind(encounter))
 			encounter.champion_spawned.connect(_on_champion_spawned)
 			encounter.cleared.connect(_on_encounter_cleared.bind(encounter))
+	for vault in level.optional_encounters:
+		vault.cleared.connect(_on_vault_cleared.bind(vault))
 	_loot.item_level = difficulty.item_level(level.item_level)
 	_loot.chance_scale = difficulty.drop_chance_scale()
-	_loot.dungeon = Dungeons.id_of_scene(level_scene.resource_path)
+	_loot.dungeon = dungeon_id
 	_loot.rarity_scale = difficulty.rarity_scale()
+	_loot.rarity_floor = difficulty.min_rarity()
 
 
 ## Looks A and B (ArtStyle) restyle the level's surfaces and its grade.
@@ -309,6 +321,18 @@ func _on_encounter_cleared(encounter: EncounterController) -> void:
 	_hud.show_toast("Quest: %s - done" % text, Color("#D9A44C"))
 	if Profile.quest_complete(dungeon_id):
 		_hud.show_toast("%s complete: claim the reward in Quests" % quest.title, Color("#F2C9A0"))
+
+
+## Items in a cleared vault's hoard.
+const VAULT_HOARD := 3
+
+
+## A cleared vault spills its hoard where its guardians stood.
+func _on_vault_cleared(vault: EncounterController) -> void:
+	if _run.is_over():
+		return
+	_loot.drop_cache(vault.global_position, VAULT_HOARD)
+	_hud.show_toast("The vault's hoard spills out", Color("#D9A44C"))
 
 
 func _on_materials_found(found: Dictionary, _at: Vector3) -> void:

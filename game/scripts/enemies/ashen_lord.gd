@@ -111,7 +111,7 @@ func _enter_phase(next: int) -> void:
 	if next == 2:
 		_summon()
 	elif next == 3:
-		speed_multiplier = phase_three_speed_scale
+		speed_multiplier *= phase_three_speed_scale
 		for each in [attack, slam_attack, special_attack]:
 			if each:
 				(each as MeleeAttack).windup_scale = phase_three_windup_scale

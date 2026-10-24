@@ -27,6 +27,12 @@ enum Phase { WAITING, ACTIVE, CLEARED }
 ## The banner's colour (a boss's is red).
 @export var title_color: Color = Color("#E8D9C0")
 @export_range(0.0, 30.0, 0.1, "suffix:s") var start_delay: float = 1.5
+## How many fighting rooms into the run this one is (0 for the first): deeper
+## rooms are tougher (Difficulty.apply).
+@export_range(0, 20, 1) var depth: int = 0
+## Added to the tier's chance for an enemy to rise as a Champion (a vault's
+## guardians).
+@export_range(0.0, 1.0, 0.01) var champion_chance_bonus: float = 0.0
 
 var phase: Phase = Phase.WAITING
 ## The crypt tier its enemies are scaled to (set by Main); null is tier 1.
@@ -87,7 +93,7 @@ func adopt(enemy: Node3D) -> void:
 	if health == null or health.is_dead():
 		return
 	if difficulty:
-		difficulty.apply(enemy)
+		difficulty.apply(enemy, depth)
 	health.died.connect(_on_enemy_died.bind(enemy), CONNECT_ONE_SHOT)
 	_living.append(enemy)
 
@@ -103,7 +109,7 @@ func _spawn(scene: PackedScene, marker_name: String) -> void:
 	if enemy is EnemyController:
 		(enemy as EnemyController).hunting = true
 	if difficulty:
-		difficulty.apply(enemy)
+		difficulty.apply(enemy, depth)
 	var champion := _maybe_promote(enemy)
 	add_child(enemy)
 	if enemy is EnemyController:
@@ -123,7 +129,7 @@ func _spawn(scene: PackedScene, marker_name: String) -> void:
 func _maybe_promote(enemy: Node3D) -> Champion:
 	if difficulty == null or not enemy is EnemyController or not (enemy as EnemyController).champion_eligible:
 		return null
-	if _rng.randf() >= difficulty.champion_chance():
+	if _rng.randf() >= difficulty.champion_chance() + champion_chance_bonus:
 		return null
 	var controller := enemy as EnemyController
 	return Champion.promote(controller, Champion.roll(controller, difficulty.champion_affix_count(), _rng))
