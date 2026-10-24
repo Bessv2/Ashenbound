@@ -8,6 +8,9 @@ extends Node3D
 @export var player_start: Marker3D
 ## Clearing every one of these wins the run.
 @export var encounters: Array[EncounterController] = []
+## Fights the hero may skip (a generated dungeon's vaults): their kills count,
+## and clearing one lays out a hoard.
+@export var optional_encounters: Array[EncounterController] = []
 ## Shown when the run is won.
 @export var victory_title: String = "The hall is cleared"
 ## Item level of the loot found here.

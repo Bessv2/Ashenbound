@@ -56,6 +56,14 @@ func _on_player_died() -> void:
 	_finish(Result.DEFEAT)
 
 
+## Counts the kills of `list` too, without making them needed to win (a
+## dungeon's optional vaults).
+func watch_optional(list: Array[EncounterController]) -> void:
+	for encounter in list:
+		if not encounter.enemy_killed.is_connected(_on_enemy_killed):
+			encounter.enemy_killed.connect(_on_enemy_killed)
+
+
 ## Adds `list` to the encounters that must be cleared to win.
 func watch(list: Array[EncounterController]) -> void:
 	for encounter in list:

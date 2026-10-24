@@ -143,7 +143,7 @@ func test_a_champion_always_drops_a_rare_or_better() -> void:
 func test_encounters_raise_champions_by_the_tiers_chance() -> void:
 	var difficulty := Difficulty.new(4)
 	check(Difficulty.new(1).champion_affix_count() == 1 and difficulty.champion_affix_count() == 2 \
-			and Difficulty.new(8).champion_affix_count() == 3, "one affix, two from tier 4, three from tier 8")
+			and Difficulty.new(7).champion_affix_count() == 3, "one affix, two from tier 4, three from tier 7")
 	check_near(Difficulty.new(1).champion_chance(), 0.1, 0.001, "10% at tier 1")
 	check_near(Difficulty.new(10).champion_chance(), Difficulty.CHAMPION_CHANCE_MAX, 0.001, "capped")
 	difficulty.champion_chance_override = 1.0

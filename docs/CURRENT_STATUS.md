@@ -5,7 +5,7 @@ Update this file whenever a milestone's state, a decision or the next task
 changes. The full history of what was built, and how it was checked, is in
 [IMPLEMENTATION_REPORT.md](IMPLEMENTATION_REPORT.md).
 
-**Last updated:** 2026-10-23
+**Last updated:** 2026-10-24
 
 Status labels follow the charter:
 
@@ -41,6 +41,7 @@ Status labels follow the charter:
 | 2026-10-23 | **The web preview always reflects `main`**: every merge publishes it ([WEB_PREVIEW.md](WEB_PREVIEW.md#publishing)). |
 | 2026-10-23 | **Build the concept sheet's game**: its HUD, menus, crafting, more regions and Demons ("2 3 4 5 should be achieved easily"), as "something of a full game like idle miner. Or Diablo 4 style mechanics", with Idle Pocket Crafter 2 as the baseline for active play against idle time. Plan and mapping: [GAME_LOOP.md](GAME_LOOP.md). Realistic characters (gap 1) are not in this order. |
 | 2026-10-23 | **Look B's tone**: "too sharp and grainy … keep the edgy darkness with funny animations … ominous and serious but also goofy and over the top or pace changing." Surfaces softened, and cartoon knock-outs, wind-ups and slow-motion beats added ([ART_STYLE_TEST.md](ART_STYLE_TEST.md#look-bs-tone-2026-10-23)). |
+| 2026-10-24 | "Scale the enemies to be much harder the deeper into the dungeons you go … also drop higher rarity items. The dungeons need to be randomly generated." Tiers now compound (×15 health at tier 10), add enemies and speed, and raise the lowest rarity ([tiers.md](dungeons/tiers.md)). Every run's layout is generated, with side vaults ([generation.md](dungeons/generation.md)). |
 | 2026-10-21 | **A browser build is a playtest preview** ([WEB_PREVIEW.md](WEB_PREVIEW.md)), not a platform change: Android stays the target. |
 
 ## Milestones
@@ -132,8 +133,11 @@ merged into `main`, apart from #6.
 
 ## Next task
 
-The five steps of [GAME_LOOP.md](GAME_LOOP.md#order-of-work) are built. Next,
+The five steps of [GAME_LOOP.md](GAME_LOOP.md#order-of-work) are built, and
+every run's layout is generated with much steeper tiers (2026-10-24). Next,
 from the owner's playtest of the preview:
+- **Do the generated dungeons and the new tiers feel right?** Run length,
+  how hard tiers 2 to 5 are, and whether vaults are worth the risk.
 - **Balance in real play:** material drop rates, crafting and camp costs,
   the region level ranges, and the boss health of the new regions.
 - **Owner decisions waiting:**

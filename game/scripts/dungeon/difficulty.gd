@@ -1,23 +1,36 @@
 class_name Difficulty
 extends RefCounted
 ## A crypt tier (docs/dungeons/tiers.md): how much tougher the enemies are and
-## how much better the rewards. Tier 1 is the crypt as built. Each tier above
-## it scales enemy health, enemy damage, Ash and XP, the item level of drops,
-## and the drop chance and rarity. One place for the numbers, so the
-## encounter, the loot and the summary agree.
+## how much better the rewards. Tier 1 is the dungeon as built. Each tier above
+## it multiplies enemy health and damage, makes enemies quicker and more
+## numerous, and raises Ash and XP, the item level of drops, the drop chance,
+## the rarity and the lowest rarity that can drop. Deeper rooms of a run are
+## tougher again. One place for the numbers, so the encounter, the loot and
+## the summary agree.
 
 const MAX_TIER := 10
 
-const HEALTH_PER_TIER := 0.4
-const DAMAGE_PER_TIER := 0.15
+## Health and damage grow by these factors per tier (compounding).
+const HEALTH_GROWTH := 1.35
+const DAMAGE_GROWTH := 1.13
+## Movement speed per tier above 1.
+const SPEED_PER_TIER := 0.03
+## One more enemy in every wave per this many tiers above 1.
+const TIERS_PER_EXTRA_ENEMY := 2
+## Per fighting room of a run after the first (EncounterController.depth).
+const HEALTH_PER_ROOM := 0.08
+const DAMAGE_PER_ROOM := 0.04
 const REWARD_PER_TIER := 0.5
 const ITEM_LEVELS_PER_TIER := 4
 const DROP_CHANCE_PER_TIER := 0.1
-const RARITY_PER_TIER := 0.25
+## Rarer tiers (above Uncommon) grow this much more likely per tier.
+const RARITY_GROWTH := 1.35
+## The lowest rarity that drops, from each tier up.
+const RARITY_FLOORS := {3: Rarity.Tier.UNCOMMON, 6: Rarity.Tier.RARE, 9: Rarity.Tier.EPIC}
 ## Chance for each ordinary enemy of an encounter to rise as a Champion.
 const CHAMPION_CHANCE := 0.1
-const CHAMPION_CHANCE_PER_TIER := 0.03
-const CHAMPION_CHANCE_MAX := 0.35
+const CHAMPION_CHANCE_PER_TIER := 0.04
+const CHAMPION_CHANCE_MAX := 0.45
 
 var tier: int = 1
 ## When 0 or more, used instead of the tier's champion chance (0 turns
@@ -29,12 +42,22 @@ func _init(chosen: int = 1) -> void:
 	tier = clampi(chosen, 1, MAX_TIER)
 
 
-func health_scale() -> float:
-	return 1.0 + HEALTH_PER_TIER * (tier - 1)
+## For an enemy `depth` fighting rooms into the run (0 for the first).
+func health_scale(depth: int = 0) -> float:
+	return pow(HEALTH_GROWTH, tier - 1) * (1.0 + HEALTH_PER_ROOM * depth)
 
 
-func damage_scale() -> float:
-	return 1.0 + DAMAGE_PER_TIER * (tier - 1)
+func damage_scale(depth: int = 0) -> float:
+	return pow(DAMAGE_GROWTH, tier - 1) * (1.0 + DAMAGE_PER_ROOM * depth)
+
+
+func speed_scale() -> float:
+	return 1.0 + SPEED_PER_TIER * (tier - 1)
+
+
+## Enemies added to every wave of a generated dungeon.
+func extra_enemies() -> int:
+	return (tier - 1) / TIERS_PER_EXTRA_ENEMY
 
 
 ## Applies to Ash, XP and gold from kills.
@@ -51,7 +74,16 @@ func drop_chance_scale() -> float:
 
 
 func rarity_scale() -> float:
-	return 1.0 + RARITY_PER_TIER * (tier - 1)
+	return pow(RARITY_GROWTH, tier - 1)
+
+
+## The lowest rarity an item found at this tier can have.
+func min_rarity() -> int:
+	var floor_rarity: int = Rarity.Tier.COMMON
+	for from: int in RARITY_FLOORS:
+		if tier >= from:
+			floor_rarity = maxi(floor_rarity, RARITY_FLOORS[from])
+	return floor_rarity
 
 
 ## Chance for an ordinary enemy to rise as a Champion.
@@ -61,25 +93,27 @@ func champion_chance() -> float:
 	return minf(CHAMPION_CHANCE + CHAMPION_CHANCE_PER_TIER * (tier - 1), CHAMPION_CHANCE_MAX)
 
 
-## How many affixes a Champion has: one, two from tier 4, three from tier 8.
+## How many affixes a Champion has: one, two from tier 4, three from tier 7.
 func champion_affix_count() -> int:
-	return 1 + int(tier >= 4) + int(tier >= 8)
+	return 1 + int(tier >= 4) + int(tier >= 7)
 
 
-## Makes `enemy` match this tier: more health (at full), harder hits, more Ash,
-## XP and gold. Call once per enemy, before it enters the tree or right after.
-func apply(enemy: Node3D) -> void:
-	if tier == 1:
+## Makes `enemy` match this tier, `depth` fighting rooms into the run: more
+## health (at full), harder hits, quicker feet, more Ash, XP and gold. Call
+## once per enemy, before it enters the tree or right after.
+func apply(enemy: Node3D, depth: int = 0) -> void:
+	if tier == 1 and depth == 0:
 		return
 	var health := Health.of(enemy)
 	if health:
-		health.max_health = roundi(health.max_health * health_scale())
+		health.max_health = roundi(health.max_health * health_scale(depth))
 		health.current = health.max_health
 	for node in enemy.find_children("*", "", true, false):
 		if node is MeleeAttack:
-			(node as MeleeAttack).damage_scale *= damage_scale()
+			(node as MeleeAttack).damage_scale *= damage_scale(depth)
 	if enemy is EnemyController:
 		var controller := enemy as EnemyController
+		controller.speed_multiplier *= speed_scale()
 		controller.ash_value = roundi(controller.ash_value * reward_scale())
 		controller.xp_value = roundi(controller.xp_value * reward_scale())
 		controller.gold_value = roundi(controller.gold_value * reward_scale())

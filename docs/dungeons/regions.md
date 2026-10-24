@@ -4,8 +4,10 @@ Step 4 of [GAME_LOOP.md](../GAME_LOOP.md): the concept sheet's environments
 (Ruined Keep, Cursed Forest, Volcanic Depths, Ancient Temple, Ice Wastes) and
 its Demons.
 
-All five are written by `tools/levels/make_regions.py` from recipes, so they
-share the catacombs' proven shape:
+All five are written by `tools/levels/make_regions.py` from recipes. In play,
+each run lays out its own winding way between their start room and boss hall
+([generation.md](generation.md)). The authored layout below is the frame and
+the layout the tests use:
 - a stairwell, then three fighting rooms and a boss hall;
 - corridors between the rooms, with gates that seal during a fight and open
   after it.

@@ -16,12 +16,15 @@ mid-fight are never champions either.
 | Crypt tier | Chance per ordinary enemy | Affixes |
 |---|---|---|
 | 1 | 10% | 1 |
-| 2 to 3 | 13%, 16% | 1 |
-| 4 to 7 | 19% to 28% | 2 |
-| 8 to 10 | 31%, then 35% (the cap) | 3 |
+| 2 to 3 | 14%, 18% | 1 |
+| 4 to 6 | 22% to 30% | 2 |
+| 7 to 10 | 34% to 45% (the cap) | 3 |
 
-There are 13 ordinary enemies in a crypt run, so tier 1 averages about one
-champion per run and tier 10 about four or five. The numbers are in
+A generated crypt run at tier 1 has about 15 to 35 ordinary enemies (the
+authored crypt had 13), and many more at higher tiers, so tier 1 averages two
+or three champions per run and tier 10 a dozen or more.
+Vault guardians are 40 points likelier ([generation.md](dungeons/generation.md)).
+Steeper since 2026-10-24 ([tiers.md](dungeons/tiers.md)). The numbers are in
 `Difficulty` (`champion_chance()`, `champion_affix_count()`).
 
 ### What a champion is

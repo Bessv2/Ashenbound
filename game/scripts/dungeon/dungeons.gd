@@ -148,6 +148,11 @@ static func music_of(id: String) -> StringName:
 	return INFO.get(id, INFO[CRYPT]).music
 
 
+## Whether `scene_path` is the level of one of the dungeons.
+static func has_scene(scene_path: String) -> bool:
+	return ORDER.any(func(id: String) -> bool: return INFO[id].scene == scene_path)
+
+
 ## The dungeon whose level is `scene_path` (the crypt's for any other level).
 static func id_of_scene(scene_path: String) -> String:
 	for id in ORDER:

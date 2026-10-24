@@ -11,9 +11,10 @@ extends Resource
 
 
 ## The items one death drops at `item_level`. A higher crypt tier passes
-## `chance_scale` (capped at a certain drop) and `rarity_scale`.
+## `chance_scale` (capped at a certain drop), `rarity_scale` and the lowest
+## rarity it allows, `rarity_floor`.
 func roll(catalog: ItemCatalog, item_level: int, rng: RandomNumberGenerator,
-		chance_scale: float = 1.0, rarity_scale: float = 1.0) -> Array[ItemInstance]:
+		chance_scale: float = 1.0, rarity_scale: float = 1.0, rarity_floor: int = Rarity.Tier.COMMON) -> Array[ItemInstance]:
 	var items: Array[ItemInstance] = []
 	for i in rolls:
 		if rng.randf() >= minf(chance * chance_scale, 1.0):
@@ -22,5 +23,5 @@ func roll(catalog: ItemCatalog, item_level: int, rng: RandomNumberGenerator,
 		if bases.is_empty():
 			continue
 		var base: ItemBase = bases[rng.randi_range(0, bases.size() - 1)]
-		items.append(catalog.roll(base, item_level, Rarity.roll(rng, min_rarity, rarity_boost * rarity_scale), rng))
+		items.append(catalog.roll(base, item_level, Rarity.roll(rng, maxi(min_rarity, rarity_floor), rarity_boost * rarity_scale), rng))
 	return items

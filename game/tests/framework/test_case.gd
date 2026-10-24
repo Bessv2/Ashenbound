@@ -18,6 +18,8 @@ func instantiate_main(with_enemies: bool = false, level: PackedScene = ArenaScen
 	var main: Node3D = MainScene.instantiate()
 	main.level_scene = level
 	main.use_chosen_dungeon = false
+	# The authored layout, so tests know where every room is.
+	main.random_layout = false
 	main.encounters_start_by_themselves = with_enemies
 	# Champions are random; a test that wants them turns them back on.
 	main.champions_appear = false
